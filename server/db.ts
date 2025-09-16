@@ -8,7 +8,11 @@ export type Database = NeonHttpDatabase<typeof schema>;
 
 function ensureSslMode(url: string): string {
   if (url.toLowerCase().includes('sslmode=')) {
-    return url;
+    if (url.toLowerCase().includes('sslmode=require')) {
+      return url;
+    }
+    return url.replace(/sslmode=[^&]*/i, 'sslmode=require');
+  }
   }
 
   const separator = url.includes('?') ? '&' : '?';
