@@ -6,6 +6,9 @@ export const config = {
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Handles POST requests to sweep self-destructing attachments.
+ */
 export default async function handler(request: Request): Promise<Response> {
   if (request.method !== 'POST') {
     return new Response('Method Not Allowed', {
