@@ -13,8 +13,6 @@ function ensureSslMode(url: string): string {
     }
     return url.replace(/sslmode=[^&]*/i, 'sslmode=require');
   }
-  }
-
   const separator = url.includes('?') ? '&' : '?';
   return `${url}${separator}sslmode=require`;
 }
