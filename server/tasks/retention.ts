@@ -9,6 +9,15 @@ type AttachmentRow = {
   url: string;
 };
 
+/**
+ * Deletes blobs associated with the provided attachment rows.
+ *
+ * This function takes an array of AttachmentRow objects and attempts to delete the blobs by their URLs.
+ * It uses Promise.all to handle multiple asynchronous delete operations concurrently.
+ * If an error occurs during the deletion of a blob, it logs the error along with the corresponding URL.
+ *
+ * @param {AttachmentRow[]} rows - An array of AttachmentRow objects containing the URLs of the blobs to be deleted.
+ */
 async function purgeBlobs(rows: AttachmentRow[]): Promise<void> {
   await Promise.all(
     rows.map(async ({ url }) => {
