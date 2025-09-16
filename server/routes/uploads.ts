@@ -38,6 +38,10 @@ uploadsRouter.post('/', upload.single('file'), async (req, res, next) => {
   try {
     const db = getDb();
     const { originalname, buffer, mimetype, size } = req.file;
+    if (!originalname) {
+      res.status(400).json({ error: 'Filename is required' });
+      return;
+    }
     const { url, pathname } = await uploadBufferToBlob({
       buffer,
       contentType: mimetype,
