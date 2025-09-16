@@ -7,3 +7,5 @@ npm-install.log
 
 # Drizzle generated artifacts
 /drizzle
+.vercel
+.env*.local
