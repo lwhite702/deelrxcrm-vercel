@@ -1,0 +1,9 @@
+node_modules
+.dist
+.DS_Store
+dist
+.env
+npm-install.log
+
+# Drizzle generated artifacts
+/drizzle
