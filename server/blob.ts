@@ -27,6 +27,9 @@ export async function uploadBufferToBlob({ filename, buffer, contentType, prefix
   pathname: string;
 }> {
   const pathname = buildPathname(filename, prefix);
+  if (!pathname || pathname.includes('..')) {
+    throw new Error('Invalid filename');
+  }
   const body = Readable.from(buffer);
   const { url, pathname: storedPathname } = await put(pathname, body, {
     access: 'public',
