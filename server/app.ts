@@ -4,6 +4,7 @@ import express, { type Express, type NextFunction, type Request, type Response }
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 
 import { env } from './config/env';
 import { registerRoutes } from './routes';
@@ -35,6 +36,21 @@ export function createApp(): Express {
   app.use(morgan(env.nodeEnv === 'production' ? 'tiny' : 'dev'));
 
   registerRoutes(app);
+
+  // Serve static client when running in production or when explicitly requested.
+  const shouldServeStatic = process.env.SERVE_STATIC === 'true' || env.nodeEnv === 'production';
+  if (shouldServeStatic) {
+    const staticDir = path.resolve(process.cwd(), 'dist', 'public');
+    app.use(express.static(staticDir, { index: false }));
+
+    // For any GET request not handled by API routes, serve index.html for SPA routing
+    app.get('*', (req, res, next) => {
+      if (req.method !== 'GET') return next();
+      res.sendFile(path.join(staticDir, 'index.html'), (err) => {
+        if (err) next(err);
+      });
+    });
+  }
 
   app.use((req, res) => {
     res.status(404).json({ error: 'Not found' });
