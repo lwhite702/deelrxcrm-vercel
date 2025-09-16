@@ -13,11 +13,9 @@ async function purgeBlobs(rows: AttachmentRow[]): Promise<void> {
   await Promise.all(
     rows.map(async ({ url }) => {
       try {
-      try {
         await deleteBlobByUrl(url);
       } catch (error) {
         console.error('Failed to delete blob', { url, error });
-      }
       }
     })
   );
