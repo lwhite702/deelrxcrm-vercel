@@ -9,6 +9,15 @@ import path from 'path';
 import { env } from './config/env';
 import { registerRoutes } from './routes';
 
+/**
+ * Create and configure an Express application.
+ *
+ * This function initializes an Express app with various middleware for security, performance, and logging.
+ * It sets up CORS based on environment variables, serves static files in production, and registers API routes.
+ * Additionally, it handles 404 errors and general error responses based on the environment.
+ *
+ * @returns The configured Express application instance.
+ */
 export function createApp(): Express {
   const app = express();
 
