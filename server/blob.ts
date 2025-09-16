@@ -5,7 +5,7 @@ import { del, list, put } from '@vercel/blob';
 const DEFAULT_PREFIX = 'uploads';
 
 function sanitizeFilename(name: string): string {
-  return name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+  return name.replace(/[^a-zA-Z0-9.\-_]/g, '_').replace(/\.\.+\/|\/\.\.+|[.]{2,}/g, '_');
 }
 
 function buildPathname(filename: string, prefix = DEFAULT_PREFIX): string {
