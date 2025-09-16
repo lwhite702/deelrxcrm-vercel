@@ -75,3 +75,26 @@ Uploads use in-memory `multer` buffers and stream them to [Vercel Blob](https://
 7. Verify uploads land in your Blob store and records insert into the Neon database.
 
 Once deployed the static client is served from the generated assets and the API executes as Node serverless functions.
+
+## Quick Deploy Checklist
+
+Follow this short checklist when you trigger a deployment on Vercel:
+
+1. In Vercel Project Settings -> Build & Development:
+  - Install Command: `npm install`
+  - Build Command: `npm run build`
+  - Output Directory: `dist/public`
+  - Node Version: confirm `18.x` (this repo pins `engines.node` in `package.json`).
+2. Add required Environment Variables (Preview + Production): `DATABASE_URL`, `CORS_ORIGIN`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ENCRYPTION_KEY`.
+3. Confirm `vercel.json` is present at repository root (this project uses it to set function options).
+4. Trigger deploy and monitor logs for any runtime errors.
+
+### Stripe Webhook note
+
+Point your Stripe webhook at:
+
+```
+https://<your-project>.vercel.app/api/webhooks/stripe
+```
+
+Be sure the `STRIPE_WEBHOOK_SECRET` set in Vercel matches the secret Stripe provides for that webhook. Use the Stripe CLI to test locally with `stripe listen --forward-to localhost:3000/api/webhooks/stripe`.
