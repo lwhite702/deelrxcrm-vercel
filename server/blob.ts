@@ -10,7 +10,7 @@ function sanitizeFilename(name: string): string {
 
 function buildPathname(filename: string, prefix = DEFAULT_PREFIX): string {
   const safeName = sanitizeFilename(filename);
-  const trimmedPrefix = prefix.replace(/^\/+|\/+$|\s+/g, '');
+  const trimmedPrefix = prefix.replace(/^\/+|\/+$|\s+/g, '').replace(/\.\.+\/|\/\.\.+|[.]{2,}/g, '_');
   const finalPrefix = trimmedPrefix.length > 0 ? `${trimmedPrefix}/` : '';
   return `${finalPrefix}${Date.now()}-${safeName}`;
 }
