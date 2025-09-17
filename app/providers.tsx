@@ -30,7 +30,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
           setStripePromise(sp);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error("Failed to load providers:", error);
         // If dynamic imports fail, leave providers unmounted to avoid crashing
       });
     return () => {
