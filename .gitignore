@@ -10,6 +10,7 @@ npm-install.log
 .vercel
 .env*.local
 
+
 # Next.js build outputs and caches
 .next
 next-dev.log
