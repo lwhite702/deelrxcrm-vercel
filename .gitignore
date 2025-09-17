@@ -9,3 +9,12 @@ npm-install.log
 /drizzle
 .vercel
 .env*.local
+
+
+# Next.js build outputs and caches
+.next
+next-dev.log
+.turbo
+
+# pnpm store
+.pnpm-store
