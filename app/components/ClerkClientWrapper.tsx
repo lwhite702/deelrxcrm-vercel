@@ -21,7 +21,7 @@ export default function ClerkClientWrapper({
     const k =
       typeof window !== "undefined" &&
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-    setHasKey(!!k && k !== "pk_test_PLACEHOLDER");
+    setHasKey(!!k);
   }, []);
 
   if (!hasKey) return <>{children}</>;
