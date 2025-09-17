@@ -19,7 +19,7 @@ See [`README-VERCEL.md`](./README-VERCEL.md) for the step-by-step redeploy guide
 
 ## Deployment
 
-Production is deployed to: https://deelrxcrm-vercel-7oo951018-wrelik.vercel.app
+Production is deployed to: https://deelrxcrm.app
 
 Quick deploy steps using the Vercel CLI:
 

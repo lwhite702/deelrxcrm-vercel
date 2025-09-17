@@ -1,5 +1,7 @@
 # DeelRx CRM on Vercel
 
+**Production site:** https://deelrxcrm.app
+
 Follow these steps to redeploy the monorepo as static Vite assets + serverless API on Vercel.
 
 ## 1. Install & test locally
@@ -98,3 +100,90 @@ https://<your-project>.vercel.app/api/webhooks/stripe
 ```
 
 Be sure the `STRIPE_WEBHOOK_SECRET` set in Vercel matches the secret Stripe provides for that webhook. Use the Stripe CLI to test locally with `stripe listen --forward-to localhost:3000/api/webhooks/stripe`.
+
+If you want to test against the deployed site or explicitly reference the production URL for docs, use:
+
+```
+https://deelrxcrm.app/api/webhooks/stripe
+```
+
+Common Stripe CLI workflows
+
+- Listen locally and forward events to your local server (recommended when developing):
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+- In a second terminal, trigger a sample event (after starting the listener):
+
+```bash
+stripe trigger payment_intent.succeeded
+```
+
+- If you need the webhook signing secret produced by the CLI, copy the `Signing secret` value printed by `stripe listen` and set it locally as `STRIPE_WEBHOOK_SECRET`.
+
+- To verify the deployed webhook from Stripe's dashboard, use the production URL `https://deelrxcrm.app/api/webhooks/stripe` and set the webhook secret in Vercel's environment variables.
+
+Signed webhook curl example (using Stripe CLI)
+
+If you need to replay a signed webhook locally or craft a signed request for testing, use the Stripe CLI to generate a signed payload and then POST it with curl. This ensures the `stripe-signature` header matches and the server's signature validation passes.
+
+1. Start the Stripe listener and save the signing secret shown by the CLI:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+# note the `Signing secret` printed by the CLI and set it locally:
+export STRIPE_WEBHOOK_SECRET="whsec_..."
+```
+
+2. In another terminal, trigger an event and replay it (the CLI will print the event id):
+
+```bash
+stripe trigger payment_intent.succeeded
+# find the event id (e.g. evt_1...) printed by the CLI
+stripe events retrieve <EVENT_ID> --output json > payload.json
+```
+
+3. Use the CLI helper to sign the payload and print the signature header, then curl the signed body:
+
+```bash
+# CLI: generate a signature for the payload (example uses the `--raw` flag to avoid extra CLI formatting)
+stripe events construct --payload @payload.json --secret "$STRIPE_WEBHOOK_SECRET" > signed.json
+
+# signed.json will contain `payload` and `signature` fields; extract them (jq required)
+payload=$(jq -r '.payload' signed.json)
+sig_header=$(jq -r '.signature' signed.json)
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "stripe-signature: $sig_header" \
+  --data "$payload" \
+  http://localhost:3000/api/webhooks/stripe
+```
+
+Notes:
+- The Stripe CLI offers convenient helpers for forwarding and replaying events; prefer those for end-to-end testing.
+- The `stripe events construct` command above is an illustrative example — adjust CLI subcommands per your installed CLI version.
+
+Curl smoke-test (unsigned, local-only)
+
+If you need a quick curl-based smoke test (local-only and unsigned), you can POST a minimal payload to the webhook endpoint — only use this for quick local checks and never for production because the handler requires a valid Stripe signature when `STRIPE_WEBHOOK_SECRET` is set.
+
+```bash
+# create a small JSON file `sample_event.json` containing a minimal event body
+cat > sample_event.json <<'JSON'
+{
+  "id": "evt_test_123",
+  "type": "payment_intent.succeeded",
+  "data": { "object": { "id": "pi_test_123" } }
+}
+JSON
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  --data @sample_event.json \
+  http://localhost:3000/api/webhooks/stripe
+```
+
+Use the Stripe CLI for signed, realistic events (recommended). See the `stripe listen` + `stripe trigger` examples above.
