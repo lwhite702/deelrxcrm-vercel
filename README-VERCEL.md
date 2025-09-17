@@ -187,3 +187,8 @@ curl -X POST \
 ```
 
 Use the Stripe CLI for signed, realistic events (recommended). See the `stripe listen` + `stripe trigger` examples above.
+
+
+## Consolidated repo note
+
+This repository is consolidated into a single repository. The `DeelrzCRM` app is a regular folder at the repository root; run the app from `DeelrzCRM` (see `README.md`). Use `pnpm` or `npm` as described in the README for local development.
