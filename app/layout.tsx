@@ -1,35 +1,18 @@
-import './globals.css'
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+"use client"
 
-export const metadata = {
-  title: 'Clerk Next.js Quickstart',
-  description: 'Clerk integration (App Router) example',
-}
+import './globals.css'
+import ClerkClientWrapper from './components/ClerkClientWrapper'
+import ViteHeader from './components/ViteHeader'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body>
-          <header>
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
+    <html lang="en">
+      <body>
+        <ClerkClientWrapper>
+          <ViteHeader />
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkClientWrapper>
+      </body>
+    </html>
   )
 }

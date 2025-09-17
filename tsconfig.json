@@ -18,14 +18,28 @@
       "node"
     ],
     "baseUrl": ".",
-    "jsx": "react-jsx"
+    "paths": {
+      "@/*": ["DeelrzCRM/client/src/*"],
+      "@shared/*": ["DeelrzCRM/shared/*"]
+    },
+    "jsx": "preserve",
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "src",
     "server",
     "api",
     "drizzle.config.ts",
-    "vite.config.ts"
+    "vite.config.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "dist",

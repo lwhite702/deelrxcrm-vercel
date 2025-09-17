@@ -1,0 +1,15 @@
+nohup: ignoring input
+
+> deelrxcrm-vercel@1.0.0 dev:next /workspaces/deelrxcrm-vercel
+> next dev
+
+  ▲ Next.js 14.2.32
+  - Local:        http://localhost:3000
+  - Environments: .env.development.local, .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ✓ Compiled /middleware in 460ms (158 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 4.2s (863 modules)
+ GET / 200 in 4398ms
