@@ -31,3 +31,9 @@ Quick deploy steps using the Vercel CLI:
 Note: Vercel no longer accepts the runtime string `nodejs18.x` in function `config` objects. The codebase was updated to use `runtime: 'nodejs'` for server functions.
 
 ```
+
+
+**Repository Layout**
+
+- The project is consolidated into a single repository. The previous nested `DeelrzCRM` is now a regular folder at the repository root.
+- Run the frontend server from `DeelrzCRM` for the full app and use top-level `README-VERCEL.md` for deployment instructions.
