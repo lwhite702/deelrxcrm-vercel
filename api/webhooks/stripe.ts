@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { handleStripeEvent } from '../../server/stripe/handlers';
 
 export const config = {
-  runtime: 'nodejs18.x'
+  runtime: 'nodejs'
 };
 
 export const dynamic = 'force-dynamic';

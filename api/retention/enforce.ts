@@ -1,7 +1,7 @@
 import { enforceRetention } from '../../server/tasks/retention';
 
 export const config = {
-  runtime: 'nodejs18.x'
+  runtime: 'nodejs'
 };
 
 export const dynamic = 'force-dynamic';
