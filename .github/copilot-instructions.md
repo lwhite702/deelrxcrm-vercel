@@ -1,4 +1,5 @@
 <!-- Copilot instructions for DeelRx CRM (Vercel deployment) -->
+
 # Copilot Usage Hints
 
 This repository is a Vite React client bundled into `dist/public` and an Express API exported as Vercel serverless functions under `api/`.
@@ -23,10 +24,10 @@ Build / dev workflow (examples)
 
 - Local app (Express):
   - `npm install`
-  - `npm run dev`  # starts Express server on `PORT` (default 3000)
-  - `npm run client:dev`  # optional Vite dev server for client at 5173
+  - `npm run dev` # starts Express server on `PORT` (default 3000)
+  - `npm run client:dev` # optional Vite dev server for client at 5173
 - Production build (what Vercel runs):
-  - `npm run build`  # emits `dist/public` and bundles `server/index.ts` into `dist/`
+  - `npm run build` # emits `dist/public` and bundles `server/index.ts` into `dist/`
   - Output directory: `dist/public` (set in Vercel project settings)
 
 Database & migrations
@@ -54,7 +55,7 @@ Files and locations to reference when making changes
 Testing tips
 
 - Use the Stripe CLI to forward events locally: `stripe listen --forward-to localhost:3000/api/webhooks/stripe` (ensure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set).
- - Use the Stripe CLI to forward events locally: `stripe listen --forward-to localhost:3000/api/webhooks/stripe` (ensure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set). For production verification use `https://deelrxcrm.app/api/webhooks/stripe` and set the webhook secret in Vercel.
+- Use the Stripe CLI to forward events locally: `stripe listen --forward-to localhost:3000/api/webhooks/stripe` (ensure `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set). For production verification use `https://deelrxcrm.app/api/webhooks/stripe` and set the webhook secret in Vercel.
 - To emulate production assets locally, run `npm run build` then `node dist/index.js`.
 
 When in doubt
