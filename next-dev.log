@@ -1,4 +1,3 @@
-nohup: ignoring input
 
 > deelrxcrm-vercel@1.0.0 dev:next /workspaces/deelrxcrm-vercel
 > next dev
@@ -8,8 +7,32 @@ nohup: ignoring input
   - Environments: .env.development.local, .env.local, .env
 
  ✓ Starting...
- ✓ Ready in 2.1s
- ✓ Compiled /middleware in 460ms (158 modules)
+ ✓ Ready in 2.8s
+ ✓ Compiled /middleware in 374ms (158 modules)
  ○ Compiling / ...
- ✓ Compiled / in 4.2s (863 modules)
- GET / 200 in 4398ms
+ ✓ Compiled / in 4.9s (1081 modules)
+ GET / 200 in 5196ms
+ ○ Compiling /home ...
+ ✓ Compiled /home in 3.6s (1120 modules)
+ GET /home 200 in 3705ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 793ms (1192 modules)
+ GET /dashboard 200 in 852ms
+ ○ Compiling /vite ...
+ ✓ Compiled /vite in 3.1s (1864 modules)
+ GET /vite 200 in 3115ms
+ ○ Compiling /customers ...
+ ✓ Compiled /customers in 929ms (1560 modules)
+ GET /customers 200 in 1194ms
+ ✓ Compiled /payments in 394ms (1585 modules)
+ GET /payments 200 in 491ms
+ ✓ Compiled /settings in 373ms (1598 modules)
+ GET /settings 200 in 426ms
+ ✓ Compiled /inventory in 345ms (1605 modules)
+ GET /inventory 200 in 417ms
+ ○ Compiling /pos ...
+ ✓ Compiled /pos in 1093ms (1616 modules)
+ GET /pos 200 in 1155ms
+ ✓ Compiled in 469ms (878 modules)
+ ✓ Compiled in 682ms (878 modules)
+ ✓ Compiled in 490ms (878 modules)
