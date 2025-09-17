@@ -1,0 +1,77 @@
+# Agents — DeelRx CRM
+
+Rules all AI agents must follow within the DeelRx CRM codebase.
+
+---
+
+## Wrelik Universal Rules
+
+DeelRx CRM inherits the universal rules defined in `/AGENTS_UNIVERSAL.md`. Key points:
+
+- Brand & Legal
+  - Maintain correct brand voice: graffiti / street-smart visual identity, approachable but sharp.
+  - Attach the correct disclaimer: DeelRx CRM is not a flagship Wrelik app, so use the Generic Wrelik App Disclaimer.
+  - Routes must stay local (`/legal`, `/features`, `/pricing`, `/dashboard`).
+- Changelog
+  - Every change requires a dated entry in `/CHANGELOG.md` (format: `YYYY-MM-DD`).
+  - Old items must be marked “Outdated — superseded by [date/ref]” rather than deleted.
+- Knowledge Files
+  - Outdated info may be deleted only from `/docs/knowledge/`.
+  - Elsewhere, mark items as Outdated and cross-reference new entries.
+- Branding
+  - Update `/README.md` and `/public/logo*` whenever branding or scope changes.
+- Commits
+  - Conventional Commit format. Include Why, What, Risk, Follow-up.
+
+---
+
+## DeelRx CRM — Local Specializations
+
+### Brand Voice
+- Graffiti / street-smart theme — bold visuals, direct language, but professional.
+- Messaging: “High Business. High Quality CRM. Powered by Clouds.”
+
+### Legal
+- Generic Wrelik App Disclaimer (standard):
+  © 2025 DeelRx CRM by Wrelik Brands, LLC. DeelRx CRM must not be used for any illegal drug or controlled substance activity. Users are responsible for operating in compliance with all applicable laws. Full terms: /legal
+- Mid-length Legal Notice (for onboarding/marketing):
+  © 2025 DeelRx CRM by Wrelik Brands, LLC. DeelRx CRM must not be used for any illegal drug or controlled substance activity. Users are responsible for operating in compliance with all applicable laws. Full terms: /legal
+- Full Terms are maintained at `/legal`.
+
+### Security Rules (Domain-Specific)
+- All “markets content” (customer names, usernames, product nicknames, pricing, transaction notes, delivery addresses) must be encrypted at rest.
+- Use AES-256 equivalent.
+- Store per-tenant keys; do not reuse across customers.
+- Agents generating code must enforce encryption/decryption hooks in data models, migrations, and APIs.
+
+### Agent Types in This Repo
+- Codex Agents
+  - Build features in React (Vite) + Express (serverless on Vercel).
+  - Enforce CRM-specific encryption rules in Drizzle schemas and APIs.
+  - Ensure disclaimers are included in any customer-facing modules.
+- Content Agents
+  - Generate landing pages, feature writeups, and blog posts.
+  - Follow graffiti / street-smart branding.
+  - Always include one of the approved legal disclaimers.
+- Customer-Facing Agents
+  - Automations that interact with end-users (e.g., onboarding flows, CRM workflows).
+  - Must apply disclaimers to outputs.
+  - Must log actions into the CRM activity log for audit.
+
+---
+
+## Required Companion Docs
+- `/docs/codex-rules.md`
+- `/docs/content-agent-rules.md`
+- `/docs/customer-agent-rules.md` (if applicable)
+- `/docs/knowledge/` (knowledge base for DeelRx CRM features and specs)
+
+---
+
+## Enforcement
+- All PRs must include:
+  - A dated `/CHANGELOG.md` entry.
+  - Updates to `/README.md` and logo assets if branding/scope changed.
+  - Proof that disclaimers are correct (footer, onboarding, `/legal`).
+  - Blog posts/articles tagged correctly (`DeelRxCRM`) when pulled from WrelikBrands.com.
+- CI will block merges if `CHANGELOG.md` or `Agents.md` is missing or out of date.
