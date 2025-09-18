@@ -23,6 +23,12 @@ export default function DashboardClient() {
 
   const { data: kpis, isLoading } = useQuery<DashboardKPIs>({
     queryKey: ["/api/tenants", currentTenant, "dashboard", "kpis"],
+    queryFn: async () => {
+      if (!currentTenant) throw new Error("No tenant selected");
+      const res = await fetch(`/api/tenants/${currentTenant}/dashboard/kpis`);
+      if (!res.ok) throw new Error("Failed to fetch dashboard KPIs");
+      return res.json();
+    },
     enabled: !!currentTenant,
   });
 
