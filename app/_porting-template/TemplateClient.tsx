@@ -6,6 +6,9 @@ import React from "react";
 // Example props (usually none while porting 1:1)
 interface TemplateClientProps {}
 
+/**
+ * Renders the Template Page component.
+ */
 export default function TemplateClient(_: TemplateClientProps) {
   // Example of deferring side-effects to client
   // useEffect(() => { /* any localStorage or window access */ }, []);
