@@ -9,7 +9,9 @@ import { Providers } from "./providers";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const GlobalHeader = dyn(() => import("./components/GlobalHeader"), { ssr: false });
+const GlobalHeader = dyn(() => import("./components/GlobalHeader"), {
+  ssr: false,
+});
 
 export default function RootLayout({
   children,
