@@ -12,7 +12,9 @@ export default function TemplateClient(_: TemplateClientProps) {
   return (
     <div className="p-4">
       <h1 className="text-xl font-semibold">Template Page</h1>
-      <p className="text-sm text-muted-foreground">Replace with ported content.</p>
+      <p className="text-sm text-muted-foreground">
+        Replace with ported content.
+      </p>
     </div>
   );
 }

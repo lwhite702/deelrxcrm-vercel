@@ -1,12 +1,25 @@
 {
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(auth)/org/page": "app/(auth)/org/page.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/(auth)/signup/page": "app/(auth)/signup/page.js",
+  "/(auth)/user/page": "app/(auth)/user/page.js",
+  "/admin/kb-management/page": "app/admin/kb-management/page.js",
+  "/api/clerk/webhooks/route": "app/api/clerk/webhooks/route.js",
+  "/credit/page": "app/credit/page.js",
   "/customers/page": "app/customers/page.js",
   "/dashboard/page": "app/dashboard/page.js",
+  "/delivery/page": "app/delivery/page.js",
+  "/help/page": "app/help/page.js",
   "/home/page": "app/home/page.js",
   "/inventory/page": "app/inventory/page.js",
+  "/landing/page": "app/landing/page.js",
+  "/loyalty/page": "app/loyalty/page.js",
   "/page": "app/page.js",
   "/payments/page": "app/payments/page.js",
   "/pos/page": "app/pos/page.js",
   "/settings/page": "app/settings/page.js",
-  "/vite/page": "app/vite/page.js"
+  "/tenant-selector/page": "app/tenant-selector/page.js",
+  "/vite/page": "app/vite/page.js",
+  "/super-admin/page": "app/super-admin/page.js"
 }

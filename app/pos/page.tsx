@@ -3,4 +3,6 @@ import dynamic from "next/dynamic";
 
 const PosClient = dynamic(() => import("./PosClient"), { ssr: false });
 
-export default function PosPage() { return <PosClient />; }
+export default function PosPage() {
+  return <PosClient />;
+}

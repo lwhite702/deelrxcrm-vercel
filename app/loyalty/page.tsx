@@ -3,4 +3,6 @@ import dynamic from "next/dynamic";
 
 const LoyaltyClient = dynamic(() => import("./LoyaltyClient"), { ssr: false });
 
-export default function LoyaltyPage() { return <LoyaltyClient />; }
+export default function LoyaltyPage() {
+  return <LoyaltyClient />;
+}

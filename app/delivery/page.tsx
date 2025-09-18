@@ -1,6 +1,10 @@
 import React from "react";
 import dynamic from "next/dynamic";
 
-const DeliveryClient = dynamic(() => import("./DeliveryClient"), { ssr: false });
+const DeliveryClient = dynamic(() => import("./DeliveryClient"), {
+  ssr: false,
+});
 
-export default function DeliveryPage() { return <DeliveryClient />; }
+export default function DeliveryPage() {
+  return <DeliveryClient />;
+}
