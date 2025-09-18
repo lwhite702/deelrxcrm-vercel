@@ -4,7 +4,9 @@ import dynamic from "next/dynamic";
 import { useUser, SignedIn, SignedOut } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-const SuperAdminClient = dynamic(() => import("./SuperAdminClient"), { ssr: false });
+const SuperAdminClient = dynamic(() => import("./SuperAdminClient"), {
+  ssr: false,
+});
 
 export default function SuperAdminPage() {
   const { user } = useUser();

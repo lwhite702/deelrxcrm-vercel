@@ -324,7 +324,6 @@ Pending / Next:
 - Add `products` or other domain tables with tenant_id columns to exercise RLS.
 - Add `scripts/rls-test.ts` to validate isolation end-to-end.
 
-
 ## Follow-Up Enhancements
 
 - Add caching layer for `getActiveTenant`.

@@ -1,9 +1,9 @@
 // Basic RLS isolation test scaffold (placeholder - requires real set_config capable client)
-import { getDb } from '../lib/db';
+import { getDb } from "../lib/db";
 
 async function main() {
   const db = getDb();
-  console.log('RLS test placeholder: implement once set_config pattern added.');
+  console.log("RLS test placeholder: implement once set_config pattern added.");
   // Future steps:
   // 1. Insert two tenants A,B
   // 2. Insert products for each (after products table exists)
