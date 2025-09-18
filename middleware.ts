@@ -2,13 +2,10 @@
 // Clerk protection should be enforced at the API layer or re-enabled here once Edge-compatible.
 import { NextResponse } from "next/server";
 
-export default function noopMiddleware() {
+// Clerk's authMiddleware is not available in current package version.
+// Temporary pass-through; enforce auth in route handlers.
+export default function middleware() {
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: [
-    "/((?!_next|[^?]*.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
-  ],
-};
+export const config = { matcher: ["/((?!_next|.*\\..*).*)"], runtime: "nodejs" };
