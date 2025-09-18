@@ -10,6 +10,7 @@ import { Button } from "../../DeelrzCRM/client/src/components/ui/button";
 import { Skeleton } from "../../DeelrzCRM/client/src/components/ui/skeleton";
 import { TooltipHelp } from "../../DeelrzCRM/client/src/components/ui/tooltip-help";
 
+
 interface DashboardKPIs {
   todayRevenue: string;
   ordersToday: number;
@@ -17,13 +18,18 @@ interface DashboardKPIs {
   overdueCredits: string;
 }
 
-export default function DashboardClient() {
+type DashboardClientProps = {
+  initialKPIs?: DashboardKPIs;
+};
+
+export default function DashboardClient({ initialKPIs }: DashboardClientProps) {
   const { currentTenant } = useTenant();
   const [, setLocation] = useLocation();
 
   const { data: kpis, isLoading } = useQuery<DashboardKPIs>({
     queryKey: ["/api/tenants", currentTenant, "dashboard", "kpis"],
     enabled: !!currentTenant,
+    initialData: initialKPIs,
   });
 
   return (
