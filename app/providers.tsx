@@ -57,7 +57,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
-  const wrap = (node: React.ReactNode) => TenantProvider ? React.createElement(TenantProvider, null, node) : node;
+  const wrap = (node: React.ReactNode) => TenantProvider ? React.createElement(TenantProvider, null, node) : <>{node}</>;
 
   return (
     // @ts-ignore - dynamic imports provide correct components at runtime
