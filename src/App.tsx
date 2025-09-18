@@ -1,4 +1,5 @@
 // Simple inline brand mark to avoid cross-package imports from the DeelrzCRM folder
+/** Renders a styled logo for DeelRx CRM. */
 function TextLogo() {
   return (
     <div style={{ fontWeight: 700, color: '#111827', fontSize: 20 }}>
@@ -7,6 +8,9 @@ function TextLogo() {
   );
 }
 
+/**
+ * Renders the main application component for DeelRx CRM.
+ */
 export default function App() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg,#f5f7fb,#eef2ff)' }}>
