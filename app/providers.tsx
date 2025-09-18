@@ -41,11 +41,29 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   if (!queryClient || !stripePromise) return <>{children}</>;
 
+  // Lazy-load tenant provider only on client (relies on localStorage)
+  const [TenantProvider, setTenantProvider] = useState<React.ComponentType<{ children: React.ReactNode }> | null>(null);
+  useEffect(() => {
+    import("../DeelrzCRM/client/src/contexts/tenant-context")
+      .then(m => {
+        if (m && typeof m.TenantProvider === "function") {
+          setTenantProvider(() => m.TenantProvider);
+        } else {
+          console.error("TenantProvider is not a valid React component:", m?.TenantProvider);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to dynamically import TenantProvider:", error);
+      });
+  }, []);
+
+  const wrap = (node: React.ReactNode) => TenantProvider ? React.createElement(TenantProvider, null, node) : <>{node}</>;
+
   return (
     // @ts-ignore - dynamic imports provide correct components at runtime
     <QueryClientProvider client={queryClient}>
       {/* @ts-ignore */}
-      <Elements stripe={stripePromise}>{children}</Elements>
+      <Elements stripe={stripePromise}>{wrap(children)}</Elements>
     </QueryClientProvider>
   );
 }

@@ -1,25 +1,6 @@
-"use client";
+import React from "react";
+import dynamic from "next/dynamic";
 
-import React, { useEffect, useState } from "react";
-import MainLayout from "../components/MainLayout";
+const PaymentsClient = dynamic(() => import("./PaymentsClient"), { ssr: false });
 
-export default function PaymentsMount() {
-  const [Comp, setComp] = useState<React.ComponentType | null>(null);
-  useEffect(() => {
-    let mounted = true;
-    Promise.all([
-      import("../../DeelrzCRM/client/src/index.css").catch(() => null),
-      import("../../DeelrzCRM/client/src/pages/payments").then(
-        (m) => m.default
-      ),
-    ])
-      .then(([_, C]) => mounted && setComp(() => C))
-      .catch(() => {});
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  return (
-    <MainLayout>{Comp ? <Comp /> : <div>Loading payments...</div>}</MainLayout>
-  );
-}
+export default function PaymentsPage() { return <PaymentsClient />; }
