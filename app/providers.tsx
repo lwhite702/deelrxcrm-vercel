@@ -44,9 +44,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Lazy-load tenant provider only on client (relies on localStorage)
   const [TenantProvider, setTenantProvider] = useState<React.ComponentType<{ children: React.ReactNode }> | null>(null);
   useEffect(() => {
-    import("../DeelrzCRM/client/src/contexts/tenant-context").then(m => {
-      setTenantProvider(() => (m.TenantProvider as React.ComponentType<{children: React.ReactNode}>));
-    }).catch(() => {});
+    import("../DeelrzCRM/client/src/contexts/tenant-context")
+      .then(m => {
+        if (m && typeof m.TenantProvider === "function") {
+          setTenantProvider(() => m.TenantProvider);
+        } else {
+          console.error("TenantProvider is not a valid React component:", m?.TenantProvider);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to dynamically import TenantProvider:", error);
+      });
   }, []);
 
   const wrap = (node: React.ReactNode) => TenantProvider ? React.createElement(TenantProvider, null, node) : node;
