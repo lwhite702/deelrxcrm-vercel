@@ -1,5 +1,4 @@
 import React from "react";
-
 export default function NotFound() {
   return (
     <div className="p-8 space-y-4">

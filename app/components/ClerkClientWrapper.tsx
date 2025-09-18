@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ClerkProvider,
   SignedIn,
@@ -15,38 +15,5 @@ export default function ClerkClientWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const [hasKey, setHasKey] = useState(false);
-
-  useEffect(() => {
-    const k =
-      typeof window !== "undefined" &&
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-    setHasKey(!!k);
-  }, []);
-
-  if (!hasKey) return <>{children}</>;
-
-  return (
-    <ClerkProvider>
-      <div>
-        <header
-          style={{
-            padding: 8,
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 8,
-          }}
-        >
-          <SignedOut>
-            <SignInButton />
-            <SignUpButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </header>
-        {children}
-      </div>
-    </ClerkProvider>
-  );
+  return <ClerkProvider>{children}</ClerkProvider>;
 }

@@ -48,16 +48,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       .then(m => {
         if (m && typeof m.TenantProvider === "function") {
           setTenantProvider(() => m.TenantProvider);
-        } else {
-          console.error("TenantProvider is not a valid React component:", m?.TenantProvider);
         }
       })
-      .catch((error) => {
-        console.error("Failed to dynamically import TenantProvider:", error);
-      });
+      .catch(() => {});
   }, []);
-
-  const wrap = (node: React.ReactNode) => TenantProvider ? React.createElement(TenantProvider, null, node) : <>{node}</>;
+  const wrap = (node: React.ReactNode) => TenantProvider ? React.createElement(TenantProvider, null, node) : node;
 
   return (
     // @ts-ignore - dynamic imports provide correct components at runtime

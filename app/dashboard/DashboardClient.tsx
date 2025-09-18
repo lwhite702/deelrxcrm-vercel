@@ -17,19 +17,15 @@ interface DashboardKPIs {
   overdueCredits: string;
 }
 
-export default function DashboardClient() {
+type DashboardClientProps = { initialKPIs?: DashboardKPIs };
+export default function DashboardClient({ initialKPIs }: DashboardClientProps) {
   const { currentTenant } = useTenant();
   const [, setLocation] = useLocation();
 
   const { data: kpis, isLoading } = useQuery<DashboardKPIs>({
     queryKey: ["/api/tenants", currentTenant, "dashboard", "kpis"],
-    queryFn: async () => {
-      if (!currentTenant) throw new Error("No tenant selected");
-      const res = await fetch(`/api/tenants/${currentTenant}/dashboard/kpis`);
-      if (!res.ok) throw new Error("Failed to fetch dashboard KPIs");
-      return res.json();
-    },
     enabled: !!currentTenant,
+    initialData: initialKPIs,
   });
 
   return (
@@ -56,9 +52,14 @@ export default function DashboardClient() {
             <TooltipHelp content="The dashboard provides a real-time overview of your pharmacy's key performance indicators and recent activity. Monitor revenue, orders, inventory alerts, and credit accounts from this central hub.">
               <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
             </TooltipHelp>
-            <p className="mt-1 text-sm text-muted-foreground">Overview of your pharmacy operations</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Overview of your pharmacy operations
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" data-testid="kpi-cards">
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+            data-testid="kpi-cards"
+          >
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center">
@@ -68,13 +69,23 @@ export default function DashboardClient() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <TooltipHelp content="Daily revenue shows your total sales for today. This includes all completed orders and payments received." side="top">
-                      <p className="text-sm font-medium text-muted-foreground">Today's Revenue</p>
+                    <TooltipHelp
+                      content="Daily revenue shows your total sales for today. This includes all completed orders and payments received."
+                      side="top"
+                    >
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Today's Revenue
+                      </p>
                     </TooltipHelp>
-                    <p className="text-2xl font-semibold text-foreground" data-testid="text-revenue-today">
+                    <p
+                      className="text-2xl font-semibold text-foreground"
+                      data-testid="text-revenue-today"
+                    >
                       ${kpis?.todayRevenue || "0"}
                     </p>
-                    <p className="text-xs text-green-600">+12.5% from yesterday</p>
+                    <p className="text-xs text-green-600">
+                      +12.5% from yesterday
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -88,13 +99,23 @@ export default function DashboardClient() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <TooltipHelp content="Number of orders processed today, including both pickup and delivery orders." side="top">
-                      <p className="text-sm font-medium text-muted-foreground">Orders Today</p>
+                    <TooltipHelp
+                      content="Number of orders processed today, including both pickup and delivery orders."
+                      side="top"
+                    >
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Orders Today
+                      </p>
                     </TooltipHelp>
-                    <p className="text-2xl font-semibold text-foreground" data-testid="text-orders-today">
+                    <p
+                      className="text-2xl font-semibold text-foreground"
+                      data-testid="text-orders-today"
+                    >
                       {kpis?.ordersToday || 0}
                     </p>
-                    <p className="text-xs text-blue-600">+8.2% from yesterday</p>
+                    <p className="text-xs text-blue-600">
+                      +8.2% from yesterday
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -108,10 +129,18 @@ export default function DashboardClient() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <TooltipHelp content="Products that have fallen below the minimum stock threshold. Click to view inventory details and restock recommendations." side="top">
-                      <p className="text-sm font-medium text-muted-foreground">Low Stock Items</p>
+                    <TooltipHelp
+                      content="Products that have fallen below the minimum stock threshold. Click to view inventory details and restock recommendations."
+                      side="top"
+                    >
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Low Stock Items
+                      </p>
                     </TooltipHelp>
-                    <p className="text-2xl font-semibold text-foreground" data-testid="text-low-stock">
+                    <p
+                      className="text-2xl font-semibold text-foreground"
+                      data-testid="text-low-stock"
+                    >
                       {kpis?.lowStockItems || 0}
                     </p>
                     <p className="text-xs text-yellow-600">Needs attention</p>
@@ -128,10 +157,18 @@ export default function DashboardClient() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <TooltipHelp content="Total amount owed by customers with overdue credit payments. Includes all accounts past their due date." side="top">
-                      <p className="text-sm font-medium text-muted-foreground">Overdue Credits</p>
+                    <TooltipHelp
+                      content="Total amount owed by customers with overdue credit payments. Includes all accounts past their due date."
+                      side="top"
+                    >
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Overdue Credits
+                      </p>
                     </TooltipHelp>
-                    <p className="text-2xl font-semibold text-foreground" data-testid="text-overdue-credits">
+                    <p
+                      className="text-2xl font-semibold text-foreground"
+                      data-testid="text-overdue-credits"
+                    >
                       ${kpis?.overdueCredits || "0"}
                     </p>
                     <p className="text-xs text-red-600">7 customers</p>
@@ -184,7 +221,7 @@ export default function DashboardClient() {
                     <i className="fas fa-user-plus text-primary text-xl"></i>
                     <span className="text-sm font-medium">Add Customer</span>
                   </Button>
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" data-testid="button-view-reports" onClick={() => setLocation("/reports")}>
+                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2" data-testid="button-view-reports" onClick={() => setLocation("/reports")}> 
                     <i className="fas fa-chart-bar text-primary text-xl"></i>
                     <span className="text-sm font-medium">View Reports</span>
                   </Button>

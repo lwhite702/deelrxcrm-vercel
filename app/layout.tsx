@@ -3,8 +3,15 @@
 import "./globals.css";
 import "../DeelrzCRM/client/src/index.css";
 import ClerkClientWrapper from "./components/ClerkClientWrapper";
-import ViteHeader from "./components/ViteHeader";
+import dyn from "next/dynamic";
 import { Providers } from "./providers";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const GlobalHeader = dyn(() => import("./components/GlobalHeader"), {
+  ssr: false,
+});
 
 export default function RootLayout({
   children,
@@ -16,7 +23,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <ClerkClientWrapper>
-            <ViteHeader />
+            <GlobalHeader />
             {children}
           </ClerkClientWrapper>
         </Providers>

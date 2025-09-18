@@ -1,35 +1,16 @@
 "use client";
+import React from "react";
 
-import React, { useEffect, useState } from "react";
-
+// Legacy Vite application mount removed for production stability.
+// This stub remains to preserve any existing links. Consider deleting if unused.
 export default function ViteMount() {
-  const [AppComponent, setAppComponent] = useState<React.ComponentType | null>(
-    null
-  );
-
-  useEffect(() => {
-    let mounted = true;
-
-    // Dynamically import the Vite app and its CSS only on the client
-    Promise.all([
-      import("../../DeelrzCRM/client/src/index.css").catch(() => null),
-      import("../../DeelrzCRM/client/src/App").then((m) => m.default),
-    ])
-      .then(([_, App]) => {
-        if (mounted) setAppComponent(() => App);
-      })
-      .catch(() => {
-        // ignore errors during dynamic client import
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   return (
-    <div id="vite-root" style={{ height: "100%" }}>
-      {AppComponent ? <AppComponent /> : <div>Loading Vite app...</div>}
+    <div style={{ padding: 32 }}>
+      <h2 className="text-xl font-semibold mb-2">Legacy App Removed</h2>
+      <p className="text-sm text-muted-foreground">
+        The legacy Vite bundle has been retired. All functionality now lives in
+        native Next.js routes.
+      </p>
     </div>
   );
 }
