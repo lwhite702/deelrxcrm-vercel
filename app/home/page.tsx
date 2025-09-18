@@ -1,6 +1,6 @@
 import React from "react";
-import dynamic from "next/dynamic";
+import HomeClient from "./HomeClient";
 
-const HomeClient = dynamic(() => import("./HomeClient"), { ssr: false });
-
-export default function HomePage() { return <HomeClient />; }
+export default function HomePage() {
+	return <HomeClient />;
+}

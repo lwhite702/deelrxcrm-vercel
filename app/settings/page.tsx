@@ -1,6 +1,6 @@
 import React from "react";
-import dynamic from "next/dynamic";
+import SettingsClient from "./SettingsClient";
 
-const SettingsClient = dynamic(() => import("./SettingsClient"), { ssr: false });
-
-export default function SettingsPage() { return <SettingsClient />; }
+export default function SettingsPage() {
+	return <SettingsClient />;
+}

@@ -1,6 +1,6 @@
 import React from "react";
-import dynamic from "next/dynamic";
+import LandingClient from "./LandingClient";
 
-const LandingClient = dynamic(() => import("./LandingClient"), { ssr: false });
-
-export default function LandingPage() { return <LandingClient />; }
+export default function LandingPage() {
+	return <LandingClient />;
+}
