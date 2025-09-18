@@ -1,25 +1,9 @@
-"use client";
+import React from "react";
+import dynamic from "next/dynamic";
 
-import React, { useEffect, useState } from "react";
-import MainLayout from "../components/MainLayout";
+// Ensure client-only code (hooks, localStorage) runs on client.
+const DashboardClient = dynamic(() => import("./DashboardClient"), { ssr: false });
 
-export default function DashboardMount() {
-  const [Comp, setComp] = useState<React.ComponentType | null>(null);
-  useEffect(() => {
-    let mounted = true;
-    Promise.all([
-      import("../../DeelrzCRM/client/src/index.css").catch(() => null),
-      import("../../DeelrzCRM/client/src/pages/dashboard").then(
-        (m) => m.default
-      ),
-    ])
-      .then(([_, C]) => mounted && setComp(() => C))
-      .catch(() => {});
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  return (
-    <MainLayout>{Comp ? <Comp /> : <div>Loading dashboard...</div>}</MainLayout>
-  );
+export default function DashboardPage() {
+  return <DashboardClient />;
 }

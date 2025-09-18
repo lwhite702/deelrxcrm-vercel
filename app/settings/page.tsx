@@ -1,25 +1,6 @@
-"use client";
+import React from "react";
+import dynamic from "next/dynamic";
 
-import React, { useEffect, useState } from "react";
-import MainLayout from "../components/MainLayout";
+const SettingsClient = dynamic(() => import("./SettingsClient"), { ssr: false });
 
-export default function SettingsMount() {
-  const [Comp, setComp] = useState<React.ComponentType | null>(null);
-  useEffect(() => {
-    let mounted = true;
-    Promise.all([
-      import("../../DeelrzCRM/client/src/index.css").catch(() => null),
-      import("../../DeelrzCRM/client/src/pages/settings").then(
-        (m) => m.default
-      ),
-    ])
-      .then(([_, C]) => mounted && setComp(() => C))
-      .catch(() => {});
-    return () => {
-      mounted = false;
-    };
-  }, []);
-  return (
-    <MainLayout>{Comp ? <Comp /> : <div>Loading settings...</div>}</MainLayout>
-  );
-}
+export default function SettingsPage() { return <SettingsClient />; }
