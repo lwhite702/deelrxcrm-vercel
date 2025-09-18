@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import "../../DeelrzCRM/client/src/index.css";
 
 export default function CustomersClient() {
   return (
