@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 // Import shared hooks/components from legacy layer as needed
-// import "../../DeelrzCRM/client/src/index.css"; // only if global styles not yet migrated
+import "../../DeelrzCRM/client/src/index.css";
 
 // Example props (usually none while porting 1:1)
 interface TemplateClientProps {}
