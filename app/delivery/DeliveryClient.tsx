@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders the Delivery tracking UI component.
+ */
 export default function DeliveryClient() {
   return (
     <div className="p-4 space-y-2">
