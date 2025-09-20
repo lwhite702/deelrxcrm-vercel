@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders the Credit management UI component.
+ */
 export default function CreditClient() {
   return (
     <div className="p-4 space-y-2">
