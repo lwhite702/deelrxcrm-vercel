@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders the Customers client component.
+ */
 export default function CustomersClient() {
   return (
     <div className="p-4 space-y-4">
