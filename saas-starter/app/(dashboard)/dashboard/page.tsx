@@ -25,8 +25,14 @@ type ActionState = {
   success?: string;
 };
 
+/**
+ * Fetches JSON data from the specified URL.
+ */
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+/**
+ * Renders a skeleton for a subscription card.
+ */
 function SubscriptionSkeleton() {
   return (
     <Card className="mb-8 h-[140px]">
@@ -37,6 +43,13 @@ function SubscriptionSkeleton() {
   );
 }
 
+/**
+ * Renders the subscription management interface for a team.
+ *
+ * This component fetches the team data using the `useSWR` hook and displays the current subscription plan and status.
+ * It provides a button to manage the subscription, which links to the customer portal action.
+ * The displayed plan name defaults to 'Free' if no plan is available, and the subscription status is conditionally rendered based on the fetched data.
+ */
 function ManageSubscription() {
   const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
 
@@ -72,6 +85,9 @@ function ManageSubscription() {
   );
 }
 
+/**
+ * Renders a skeleton loading component for team members.
+ */
 function TeamMembersSkeleton() {
   return (
     <Card className="mb-8 h-[140px]">
@@ -93,6 +109,15 @@ function TeamMembersSkeleton() {
   );
 }
 
+/**
+ * Renders a list of team members with their display names and roles.
+ *
+ * The function fetches team data using SWR and displays a message if no team members are present.
+ * It maps over the team members to display their names, roles, and an option to remove members,
+ * handling the removal state and potential errors accordingly.
+ *
+ * @returns A JSX element representing the team members or a message indicating no members are present.
+ */
 function TeamMembers() {
   const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
   const [removeState, removeAction, isRemovePending] = useActionState<
@@ -100,6 +125,9 @@ function TeamMembers() {
     FormData
   >(removeTeamMember, {});
 
+  /**
+   * Returns the display name of a user based on their name or email.
+   */
   const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
     return user.name || user.email || 'Unknown User';
   };
@@ -177,6 +205,9 @@ function TeamMembers() {
   );
 }
 
+/**
+ * Renders a skeleton component for inviting a team member.
+ */
 function InviteTeamMemberSkeleton() {
   return (
     <Card className="h-[260px]">
@@ -187,6 +218,11 @@ function InviteTeamMemberSkeleton() {
   );
 }
 
+/**
+ * Renders a form to invite a new team member.
+ *
+ * This component fetches the current user's data to determine if the user has the 'owner' role, which is required to invite new members. It manages the invite state and displays appropriate messages based on the success or error of the invite action. The form includes fields for email and role selection, and it is disabled for users who are not owners.
+ */
 function InviteTeamMember() {
   const { data: user } = useSWR<User>('/api/user', fetcher);
   const isOwner = user?.role === 'owner';
@@ -269,6 +305,9 @@ function InviteTeamMember() {
   );
 }
 
+/**
+ * Renders the settings page for team management.
+ */
 export default function SettingsPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
