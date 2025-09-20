@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
-import { getActiveTenant } from '@/lib/tenant';
-import { withTenant } from '@/lib/db/withTenant';
-import { sql } from 'drizzle-orm';
+import { NextResponse } from "next/server";
+import { getActiveTenant } from "@/lib/tenant";
+import { withTenant } from "@/lib/db/withTenant";
+import { sql } from "drizzle-orm";
 
 export async function GET() {
   const tenant = await getActiveTenant();
-  if (!tenant) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!tenant)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const data = await withTenant(tenant.id, async (dbScoped) => {
     // Placeholder KPI queries; replace with real aggregates

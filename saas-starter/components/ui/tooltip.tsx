@@ -53,4 +53,10 @@ function TooltipArrow({
   );
 }
 
-export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, TooltipArrow };
+export {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipArrow,
+};

@@ -17,11 +17,11 @@ This repo includes a simple Model Context Protocol (MCP) server that exposes Pla
 Most MCP clients accept a JSON config. Add this entry:
 
 {
-  "mcpServers": {
-    "playwright": {
-      "url": "http://localhost:3334/sse"
-    }
-  }
+"mcpServers": {
+"playwright": {
+"url": "http://localhost:3334/sse"
+}
+}
 }
 
 If your client supports streamable HTTP, you can use `http://localhost:3334/mcp` instead of `/sse`.
@@ -31,18 +31,19 @@ If your client supports streamable HTTP, you can use `http://localhost:3334/mcp`
 If you use the hosted Context7 MCP server, include it like this (replace `YOUR_API_KEY` or load from env):
 
 {
-  "mcpServers": {
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp",
-      "headers": {
-        "CONTEXT7_API_KEY": "YOUR_API_KEY"
-      }
-    }
-  }
+"mcpServers": {
+"context7": {
+"type": "http",
+"url": "https://mcp.context7.com/mcp",
+"headers": {
+"CONTEXT7_API_KEY": "YOUR_API_KEY"
+}
+}
+}
 }
 
 Quickstart:
+
 - Copy `.env.example` to `.env` and set `CONTEXT7_API_KEY`.
 - Use `mcp.config.sample.json` as a template and keep secrets out of VCS.
 
@@ -61,37 +62,37 @@ You can connect to the GitHub-hosted MCP endpoint with a PAT. Use either prompt-
 Prompt-injected example (many MCP clients support this):
 
 {
-  "servers": {
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "headers": {
-        "Authorization": "Bearer ${input:github_mcp_pat}"
-      }
-    }
-  },
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "github_mcp_pat",
-      "description": "GitHub Personal Access Token",
-      "password": true
-    }
-  ]
+"servers": {
+"github": {
+"type": "http",
+"url": "https://api.githubcopilot.com/mcp/",
+"headers": {
+"Authorization": "Bearer ${input:github_mcp_pat}"
+}
+}
+},
+"inputs": [
+{
+"type": "promptString",
+"id": "github_mcp_pat",
+"description": "GitHub Personal Access Token",
+"password": true
+}
+]
 }
 
 Env-based example (prefer for non-interactive contexts):
 
 {
-  "mcpServers": {
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "headers": {
-        "Authorization": "Bearer ${env:GITHUB_MCP_PAT}"
-      }
-    }
-  }
+"mcpServers": {
+"github": {
+"type": "http",
+"url": "https://api.githubcopilot.com/mcp/",
+"headers": {
+"Authorization": "Bearer ${env:GITHUB_MCP_PAT}"
+}
+}
+}
 }
 
 Scopes: At minimum, grant read scopes you need (e.g., `repo:read`). Avoid over-scoping. Store tokens in your secret manager when possible.
@@ -105,20 +106,21 @@ You can run Codacy’s MCP via `npx` without installing it globally. Configure i
 Example config:
 
 {
-  "mcp": {
-    "inputs": [],
-    "servers": {
-      "codacy": {
-        "command": "npx",
-        "args": ["-y", "@codacy/codacy-mcp"],
-        "env": {
-          "CODACY_ACCOUNT_TOKEN": "${env:CODACY_ACCOUNT_TOKEN}"
-        }
-      }
-    }
-  }
+"mcp": {
+"inputs": [],
+"servers": {
+"codacy": {
+"command": "npx",
+"args": ["-y", "@codacy/codacy-mcp"],
+"env": {
+"CODACY_ACCOUNT_TOKEN": "${env:CODACY_ACCOUNT_TOKEN}"
+}
+}
+}
+}
 }
 
 Setup:
+
 - Add `CODACY_ACCOUNT_TOKEN` to your environment (see `.env.example`).
 - Some clients require specifying a working directory; if needed, add `cwd`.

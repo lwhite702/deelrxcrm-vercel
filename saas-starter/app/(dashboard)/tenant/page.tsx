@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import useSWR from 'swr';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import useSWR from "swr";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function TenantDashboardPage() {
-  const { data, error, isLoading } = useSWR('/api/tenant/kpis', fetcher);
+  const { data, error, isLoading } = useSWR("/api/tenant/kpis", fetcher);
 
   if (isLoading) return <p className="p-4">Loading...</p>;
-  if (error || data?.error) return <p className="p-4 text-red-500">Unauthorized or error.</p>;
+  if (error || data?.error)
+    return <p className="p-4 text-red-500">Unauthorized or error.</p>;
 
   return (
     <section className="flex-1 p-4 lg:p-8">

@@ -1,7 +1,7 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { client } from './drizzle';
-import * as schema from './schema';
-import { getCurrentUserId } from '@/lib/tenant';
+import { drizzle } from "drizzle-orm/postgres-js";
+import { client } from "./drizzle";
+import * as schema from "./schema";
+import { getCurrentUserId } from "@/lib/tenant";
 
 export async function withTenant<T>(
   tenantId: string,
