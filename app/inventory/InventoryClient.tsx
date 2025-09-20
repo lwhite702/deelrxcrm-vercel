@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders the Inventory client UI.
+ */
 export default function InventoryClient() {
   return (
     <div className="p-4 space-y-4">
