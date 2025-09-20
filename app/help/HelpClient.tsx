@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
 
+/**
+ * Renders the Help Center component.
+ */
 export default function HelpClient() {
   return (
     <div className="p-4 space-y-2">
