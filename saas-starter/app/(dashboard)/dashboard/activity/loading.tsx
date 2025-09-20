@@ -1,5 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+/**
+ * Renders a skeleton layout for the activity page.
+ */
 export default function ActivityPageSkeleton() {
   return (
     <section className="flex-1 p-4 lg:p-8">
