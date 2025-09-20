@@ -6,6 +6,17 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Users, Settings, Shield, Activity, Menu } from 'lucide-react';
 
+/**
+ * Renders the dashboard layout with a sidebar and main content area.
+ *
+ * This component manages the visibility of the sidebar and provides navigation links
+ * for different sections of the dashboard. It utilizes the `usePathname` hook to
+ * determine the current route and highlight the active navigation item. The sidebar
+ * can be toggled on mobile devices, allowing for a responsive design.
+ *
+ * @param {Object} props - The component props.
+ * @param {React.ReactNode} props.children - The content to be displayed in the main area.
+ */
 export default function DashboardLayout({
   children
 }: {
