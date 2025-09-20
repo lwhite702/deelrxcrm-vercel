@@ -1,35 +1,39 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { use, useState, Suspense } from 'react';
-import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut } from 'lucide-react';
+import Link from "next/link";
+import { use, useState, Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import { CircleIcon, Home, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import { signOut } from '@/app/(login)/actions';
-import { useRouter } from 'next/navigation';
-import { User } from '@/lib/db/schema';
-import useSWR, { mutate } from 'swr';
-import TenantSwitcher from '@/components/TenantSwitcher';
-import { TooltipProvider } from '@/components/ui/tooltip';
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { signOut } from "@/app/(login)/actions";
+import { useRouter } from "next/navigation";
+import { User } from "@/lib/db/schema";
+import useSWR, { mutate } from "swr";
+import TenantSwitcher from "@/components/TenantSwitcher";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 function UserMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data: user } = useSWR<User>('/api/user', fetcher);
+  const { data: user } = useSWR<User>("/api/user", fetcher);
   const router = useRouter();
 
   async function handleSignOut() {
     await signOut();
-    mutate('/api/user');
-    router.push('/');
+    mutate("/api/user");
+    router.push("/");
   }
 
   if (!user) {
@@ -54,12 +58,12 @@ function UserMenu() {
         <TooltipTrigger asChild>
           <DropdownMenuTrigger>
             <Avatar className="cursor-pointer size-9">
-              <AvatarImage alt={user.name || ''} />
+              <AvatarImage alt={user.name || ""} />
               <AvatarFallback>
                 {user.email
-                  .split(' ')
+                  .split(" ")
                   .map((n) => n[0])
-                  .join('')}
+                  .join("")}
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

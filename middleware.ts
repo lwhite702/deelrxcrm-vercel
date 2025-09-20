@@ -22,7 +22,10 @@ export default authMiddleware({
     // If not signed in redirect to login (preserve redirect url)
     if (!auth.userId) {
       const login = new URL("/login", req.url);
-      login.searchParams.set("redirect_url", req.nextUrl.pathname + req.nextUrl.search);
+      login.searchParams.set(
+        "redirect_url",
+        req.nextUrl.pathname + req.nextUrl.search
+      );
       return NextResponse.redirect(login);
     }
 
