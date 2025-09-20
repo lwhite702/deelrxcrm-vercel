@@ -1,0 +1,14 @@
+{
+  "mcp": {
+    "inputs": [],
+    "servers": {
+      "codacy": {
+        "command": "npx",
+        "args": ["-y", "@codacy/codacy-mcp"],
+        "env": {
+          "CODACY_ACCOUNT_TOKEN": "${env:CODACY_ACCOUNT_TOKEN}"
+        }
+      }
+    }
+  }
+}
