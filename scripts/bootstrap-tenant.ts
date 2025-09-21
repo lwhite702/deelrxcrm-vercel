@@ -1,5 +1,12 @@
 import postgres from 'postgres';
 
+/**
+ * Retrieves the raw user ID from various sources.
+ *
+ * This function checks the command line arguments for a user ID, followed by checking the environment variable USER_ID.
+ * If neither is found, it looks for super admin user IDs in the environment variables NEXT_PUBLIC_SUPER_ADMIN_USER_IDS or SUPER_ADMIN_USER_IDS,
+ * returning the first one found after trimming whitespace. If no user ID is available, it returns undefined.
+ */
 function rawUserId(): string | undefined {
   const arg = process.argv[2];
   if (arg) return arg;
@@ -10,11 +17,27 @@ function rawUserId(): string | undefined {
   return undefined;
 }
 
+/**
+ * Generates a slug from the given user ID string.
+ */
 function mkSlug(userIdStr: string): string {
   const suffix = userIdStr.replace(/[^a-zA-Z0-9]/g, '').slice(-8) || 'user';
   return `personal-${suffix.toLowerCase()}`;
 }
 
+/**
+ * Main function to bootstrap a personal tenant in the database.
+ *
+ * It retrieves the database URL from environment variables, checks for the presence of user IDs, and determines their types.
+ * Depending on the user ID type, it either uses a provided user ID or fetches the first available numeric user ID.
+ * The function then ensures the tenant exists, inserts tenant membership, and updates or inserts user settings accordingly.
+ * Finally, it logs the bootstrapped tenant information and ensures the SQL connection is closed.
+ *
+ * @throws Error If the DATABASE_URL or DATABASE_URL_UNPOOLED is missing.
+ * @throws Error If no numeric USER_ID is provided and no users are found.
+ * @throws Error If a user ID is not provided when needed.
+ * @throws Error If fetching tenant ID after insert/select fails.
+ */
 async function main() {
   const url = process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED;
   if (!url) throw new Error('Missing DATABASE_URL or DATABASE_URL_UNPOOLED');
