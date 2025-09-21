@@ -14,8 +14,26 @@ const addressSchema = z.object({
 });
 
 const updateDeliverySchema = z.object({
-  method: z.enum(["pickup", "standard_delivery", "express_delivery", "overnight", "courier", "postal"]).optional(),
-  status: z.enum(["pending", "assigned", "in_transit", "delivered", "failed", "returned"]).optional(),
+  method: z
+    .enum([
+      "pickup",
+      "standard_delivery",
+      "express_delivery",
+      "overnight",
+      "courier",
+      "postal",
+    ])
+    .optional(),
+  status: z
+    .enum([
+      "pending",
+      "assigned",
+      "in_transit",
+      "delivered",
+      "failed",
+      "returned",
+    ])
+    .optional(),
   costCents: z.number().int().min(0).optional(),
   deliveryAddress: addressSchema.optional(),
   instructions: z.string().optional(),
@@ -42,10 +60,9 @@ export async function GET(
     const [delivery] = await db
       .select()
       .from(deliveries)
-      .where(and(
-        eq(deliveries.id, deliveryId),
-        eq(deliveries.tenantId, teamId)
-      ));
+      .where(
+        and(eq(deliveries.id, deliveryId), eq(deliveries.tenantId, teamId))
+      );
 
     if (!delivery) {
       return NextResponse.json(
@@ -87,12 +104,14 @@ export async function PATCH(
       updatedAt: new Date(),
       updatedBy: user.id,
     };
-    
+
     // Convert date strings to Date objects
     if (validatedData.estimatedDeliveryAt) {
-      updateData.estimatedDeliveryAt = new Date(validatedData.estimatedDeliveryAt);
+      updateData.estimatedDeliveryAt = new Date(
+        validatedData.estimatedDeliveryAt
+      );
     }
-    
+
     if (validatedData.actualDeliveryAt) {
       updateData.actualDeliveryAt = new Date(validatedData.actualDeliveryAt);
     }
@@ -100,10 +119,9 @@ export async function PATCH(
     const [updatedDelivery] = await db
       .update(deliveries)
       .set(updateData)
-      .where(and(
-        eq(deliveries.id, deliveryId),
-        eq(deliveries.tenantId, teamId)
-      ))
+      .where(
+        and(eq(deliveries.id, deliveryId), eq(deliveries.tenantId, teamId))
+      )
       .returning();
 
     if (!updatedDelivery) {
@@ -145,10 +163,9 @@ export async function DELETE(
 
     const [deletedDelivery] = await db
       .delete(deliveries)
-      .where(and(
-        eq(deliveries.id, deliveryId),
-        eq(deliveries.tenantId, teamId)
-      ))
+      .where(
+        and(eq(deliveries.id, deliveryId), eq(deliveries.tenantId, teamId))
+      )
       .returning();
 
     if (!deletedDelivery) {

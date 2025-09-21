@@ -16,6 +16,7 @@ Phase 2 builds upon the foundation CRM system with four key operational modules:
 ### New Tables Added
 
 #### `inventoryAdjustments`
+
 ```sql
 -- Tracks all inventory quantity changes outside of sales
 CREATE TABLE inventory_adjustments (
@@ -34,6 +35,7 @@ CREATE TABLE inventory_adjustments (
 ```
 
 #### `customerReferrals`
+
 ```sql
 -- Customer referral tracking and reward management
 CREATE TABLE customer_referrals (
@@ -54,6 +56,7 @@ CREATE TABLE customer_referrals (
 ```
 
 #### `deliveries`
+
 ```sql
 -- Delivery management and tracking
 CREATE TABLE deliveries (
@@ -72,6 +75,7 @@ CREATE TABLE deliveries (
 ```
 
 #### `loyaltyPrograms`
+
 ```sql
 -- Loyalty program definitions
 CREATE TABLE loyalty_programs (
@@ -86,6 +90,7 @@ CREATE TABLE loyalty_programs (
 ```
 
 #### `loyaltyAccounts`
+
 ```sql
 -- Customer loyalty account balances
 CREATE TABLE loyalty_accounts (
@@ -105,7 +110,7 @@ CREATE TABLE loyalty_accounts (
 ```sql
 -- Inventory adjustment reasons
 CREATE TYPE adjustment_reason AS ENUM (
-  'waste', 'damage', 'theft', 'expiry', 'sample', 
+  'waste', 'damage', 'theft', 'expiry', 'sample',
   'personal', 'recount', 'other'
 );
 
@@ -116,7 +121,7 @@ CREATE TYPE delivery_method AS ENUM (
 
 -- Delivery status tracking
 CREATE TYPE delivery_status AS ENUM (
-  'pending', 'confirmed', 'preparing', 'out_for_delivery', 
+  'pending', 'confirmed', 'preparing', 'out_for_delivery',
   'delivered', 'cancelled'
 );
 
@@ -137,6 +142,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
 - `DELETE /api/teams/[teamId]/adjustments/[adjustmentId]` - Delete adjustment
 
 **Create Adjustment Schema:**
+
 ```typescript
 {
   productId: string (UUID),
@@ -155,6 +161,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
 - `PUT /api/teams/[teamId]/referrals/[referralId]` - Update referral status
 
 **Create Referral Schema:**
+
 ```typescript
 {
   referrerCustomerId: string (UUID),
@@ -175,6 +182,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
 - `PUT /api/teams/[teamId]/deliveries/[deliveryId]` - Update delivery status
 
 **Create Delivery Schema:**
+
 ```typescript
 {
   orderId: string (UUID),
@@ -201,6 +209,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
 - `DELETE /api/teams/[teamId]/loyalty/programs/[programId]` - Delete program
 
 **Create Program Schema:**
+
 ```typescript
 {
   name: string,
@@ -218,6 +227,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
 - `POST /api/teams/[teamId]/loyalty/accounts/[accountId]/redeem` - Redeem points
 
 **Points Accrual Schema:**
+
 ```typescript
 {
   points: number (positive integer),
@@ -227,6 +237,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
 ```
 
 **Points Redemption Schema:**
+
 ```typescript
 {
   points: number (positive integer),
@@ -237,14 +248,16 @@ CREATE TYPE loyalty_event_type AS ENUM (
 ## 🎨 User Interface Components
 
 ### Inventory Management
+
 - **Location**: `/app/(authenticated)/crm/inventory/page.tsx`
-- **Features**: 
+- **Features**:
   - Product grid with stock quantities
   - Adjustments panel with reason selection
   - Real-time stock updates
   - Adjustment history tracking
 
 ### Delivery Management
+
 - **Location**: `/app/(authenticated)/crm/deliveries/page.tsx`
 - **Features**:
   - Delivery status dashboard
@@ -253,6 +266,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
   - Status progression workflow
 
 ### Loyalty Management
+
 - **Location**: `/app/(authenticated)/crm/loyalty/page.tsx`
 - **Features**:
   - Dual-tab interface (Programs & Accounts)
@@ -261,6 +275,7 @@ CREATE TYPE loyalty_event_type AS ENUM (
   - Transaction history
 
 ### Customer Referrals (Integrated)
+
 - **Location**: `/app/(authenticated)/crm/customers/CustomersClient.tsx`
 - **Features**:
   - Referral creation from customer record
@@ -271,7 +286,9 @@ CREATE TYPE loyalty_event_type AS ENUM (
 ## 🔒 Security & Validation
 
 ### Multi-tenant Isolation
+
 All endpoints enforce team-based access control:
+
 ```typescript
 // Example middleware pattern
 const { teamId } = await params;
@@ -280,14 +297,18 @@ const { teamId } = await params;
 ```
 
 ### Data Validation
+
 Comprehensive Zod schemas validate all input data:
+
 - Required field validation
 - Type checking (UUIDs, emails, numbers)
 - Business rule enforcement
 - Nested object validation
 
 ### Transaction Safety
+
 Critical operations use database transactions:
+
 ```typescript
 // Inventory adjustments with stock updates
 await db.transaction(async (tx) => {
@@ -300,24 +321,28 @@ await db.transaction(async (tx) => {
 ## 📈 Business Logic
 
 ### Inventory Adjustments
+
 - Automatically updates product stock quantities
 - Maintains audit trail of all changes
 - Supports both increases and decreases
 - Tracks previous/new quantities for verification
 
 ### Customer Referrals
+
 - Flexible referral identification (email, phone, or existing customer)
 - Reward tracking and payment status
 - Expiration date management
 - Status progression: pending → converted/expired
 
 ### Delivery Tracking
+
 - Order-to-delivery relationship mapping
 - Multi-method support (pickup, delivery, shipping)
 - Address normalization and storage
 - Status workflow management
 
 ### Loyalty Programs
+
 - Points-per-dollar customization
 - Multi-program support per team
 - Balance tracking with transaction history
@@ -326,6 +351,7 @@ await db.transaction(async (tx) => {
 ## 🧪 Testing & Validation
 
 ### API Testing
+
 Use tools like Postman or curl to test endpoints:
 
 ```bash
@@ -352,6 +378,7 @@ curl -X POST http://localhost:3001/api/teams/{teamId}/referrals \
 ```
 
 ### UI Testing
+
 1. Navigate to each management page
 2. Test CRUD operations
 3. Verify data persistence
@@ -361,6 +388,7 @@ curl -X POST http://localhost:3001/api/teams/{teamId}/referrals \
 ## 🚀 Deployment Notes
 
 ### Database Migration
+
 The schema extensions are automatically applied when using Drizzle's `db:push` command:
 
 ```bash
@@ -368,9 +396,11 @@ npm run db:push
 ```
 
 ### Environment Variables
+
 No additional environment variables required for Phase 2 features.
 
 ### Build Process
+
 Standard Next.js build process handles all Phase 2 components:
 
 ```bash
@@ -381,6 +411,7 @@ npm start
 ## 📝 Future Enhancements
 
 ### Phase 3 Considerations
+
 - Advanced reporting and analytics
 - Automated loyalty point accrual
 - Delivery route optimization
@@ -388,6 +419,7 @@ npm start
 - Integration with external delivery services
 
 ### Performance Optimizations
+
 - Database indexing for frequently queried fields
 - Caching for loyalty program calculations
 - Batch processing for large adjustment imports
@@ -398,16 +430,19 @@ npm start
 ### Common Issues
 
 1. **Inventory Adjustment Failures**
+
    - Verify product exists and belongs to team
    - Check adjustment quantity doesn't result in negative stock
    - Ensure proper permissions
 
 2. **Referral Creation Problems**
+
    - Validate referrer customer ID
    - Ensure either email, phone, or customer ID provided
    - Check expiration date format
 
 3. **Delivery Status Updates**
+
    - Verify order exists and belongs to team
    - Check delivery method enum values
    - Validate address format
@@ -433,6 +468,7 @@ npm run db:reset
 ## 📞 Support
 
 For technical support or questions about Phase 2 implementation:
+
 - Review the API documentation above
 - Check the GitHub issues for known problems
 - Consult the main README.md for general setup
@@ -440,4 +476,4 @@ For technical support or questions about Phase 2 implementation:
 ---
 
 **Phase 2 Implementation Complete** ✅  
-*Extended Operations module successfully integrated into DeelRx CRM*
+_Extended Operations module successfully integrated into DeelRx CRM_

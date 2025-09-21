@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { and, eq, desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db/drizzle";
-import { 
-  loyaltyAccounts, 
-  loyaltyEvents, 
+import {
+  loyaltyAccounts,
+  loyaltyEvents,
   loyaltyTransactions,
   loyaltyPrograms,
-  customers 
+  customers,
 } from "@/lib/db/schema";
 import { getUser } from "@/lib/db/queries";
 
@@ -87,7 +87,10 @@ export async function GET(
         updatedAt: loyaltyAccounts.updatedAt,
       })
       .from(loyaltyAccounts)
-      .innerJoin(loyaltyPrograms, eq(loyaltyAccounts.programId, loyaltyPrograms.id))
+      .innerJoin(
+        loyaltyPrograms,
+        eq(loyaltyAccounts.programId, loyaltyPrograms.id)
+      )
       .innerJoin(customers, eq(loyaltyAccounts.customerId, customers.id))
       .where(and(...conditions))
       .orderBy(desc(loyaltyAccounts.updatedAt))
@@ -140,7 +143,9 @@ export async function POST(
     }
     console.error("Loyalty Action POST error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 }
     );
   }
@@ -154,29 +159,38 @@ async function accruePoints(body: any, teamId: string, userId: number) {
     let [account] = await tx
       .select()
       .from(loyaltyAccounts)
-      .where(and(
-        eq(loyaltyAccounts.tenantId, teamId),
-        eq(loyaltyAccounts.customerId, validatedData.customerId),
-        eq(loyaltyAccounts.programId, validatedData.programId)
-      ));
+      .where(
+        and(
+          eq(loyaltyAccounts.tenantId, teamId),
+          eq(loyaltyAccounts.customerId, validatedData.customerId),
+          eq(loyaltyAccounts.programId, validatedData.programId)
+        )
+      );
 
     if (!account) {
       // Verify customer and program exist
       const [customer] = await tx
         .select({ id: customers.id })
         .from(customers)
-        .where(and(
-          eq(customers.id, validatedData.customerId),
-          eq(customers.tenantId, teamId)
-        ));
+        .where(
+          and(
+            eq(customers.id, validatedData.customerId),
+            eq(customers.tenantId, teamId)
+          )
+        );
 
       const [program] = await tx
-        .select({ id: loyaltyPrograms.id, expirationMonths: loyaltyPrograms.expirationMonths })
+        .select({
+          id: loyaltyPrograms.id,
+          expirationMonths: loyaltyPrograms.expirationMonths,
+        })
         .from(loyaltyPrograms)
-        .where(and(
-          eq(loyaltyPrograms.id, validatedData.programId),
-          eq(loyaltyPrograms.tenantId, teamId)
-        ));
+        .where(
+          and(
+            eq(loyaltyPrograms.id, validatedData.programId),
+            eq(loyaltyPrograms.tenantId, teamId)
+          )
+        );
 
       if (!customer || !program) {
         throw new Error("Customer or program not found");
@@ -208,7 +222,8 @@ async function accruePoints(body: any, teamId: string, userId: number) {
         orderId: validatedData.orderId,
         type: "earned",
         points: validatedData.points,
-        description: validatedData.description || `Earned ${validatedData.points} points`,
+        description:
+          validatedData.description || `Earned ${validatedData.points} points`,
         metadata: validatedData.metadata,
         createdBy: userId,
       })
@@ -227,17 +242,15 @@ async function accruePoints(body: any, teamId: string, userId: number) {
     }
 
     // Create transaction record
-    await tx
-      .insert(loyaltyTransactions)
-      .values({
-        tenantId: teamId,
-        accountId: account.id,
-        eventId: event.id,
-        pointsChange: validatedData.points,
-        balanceBefore,
-        balanceAfter,
-        expiresAt,
-      });
+    await tx.insert(loyaltyTransactions).values({
+      tenantId: teamId,
+      accountId: account.id,
+      eventId: event.id,
+      pointsChange: validatedData.points,
+      balanceBefore,
+      balanceAfter,
+      expiresAt,
+    });
 
     // Update account balances
     await tx
@@ -249,11 +262,14 @@ async function accruePoints(body: any, teamId: string, userId: number) {
       })
       .where(eq(loyaltyAccounts.id, account.id));
 
-    return NextResponse.json({ 
-      message: "Points accrued successfully",
-      points: validatedData.points,
-      newBalance: balanceAfter
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: "Points accrued successfully",
+        points: validatedData.points,
+        newBalance: balanceAfter,
+      },
+      { status: 201 }
+    );
   });
 }
 
@@ -265,12 +281,14 @@ async function redeemPoints(body: any, teamId: string, userId: number) {
     const [account] = await tx
       .select()
       .from(loyaltyAccounts)
-      .where(and(
-        eq(loyaltyAccounts.tenantId, teamId),
-        eq(loyaltyAccounts.customerId, validatedData.customerId),
-        eq(loyaltyAccounts.programId, validatedData.programId),
-        eq(loyaltyAccounts.isActive, true)
-      ));
+      .where(
+        and(
+          eq(loyaltyAccounts.tenantId, teamId),
+          eq(loyaltyAccounts.customerId, validatedData.customerId),
+          eq(loyaltyAccounts.programId, validatedData.programId),
+          eq(loyaltyAccounts.isActive, true)
+        )
+      );
 
     if (!account) {
       throw new Error("Loyalty account not found or inactive");
@@ -278,7 +296,9 @@ async function redeemPoints(body: any, teamId: string, userId: number) {
 
     // Check if customer has enough points
     if (account.currentPoints < validatedData.points) {
-      throw new Error(`Insufficient points. Available: ${account.currentPoints}, Requested: ${validatedData.points}`);
+      throw new Error(
+        `Insufficient points. Available: ${account.currentPoints}, Requested: ${validatedData.points}`
+      );
     }
 
     // Check minimum redemption amount
@@ -288,7 +308,9 @@ async function redeemPoints(body: any, teamId: string, userId: number) {
       .where(eq(loyaltyPrograms.id, validatedData.programId));
 
     if (program && validatedData.points < program.minimumRedemption) {
-      throw new Error(`Minimum redemption is ${program.minimumRedemption} points`);
+      throw new Error(
+        `Minimum redemption is ${program.minimumRedemption} points`
+      );
     }
 
     const balanceBefore = account.currentPoints;
@@ -303,23 +325,23 @@ async function redeemPoints(body: any, teamId: string, userId: number) {
         orderId: validatedData.orderId,
         type: "redeemed",
         points: validatedData.points,
-        description: validatedData.description || `Redeemed ${validatedData.points} points`,
+        description:
+          validatedData.description ||
+          `Redeemed ${validatedData.points} points`,
         metadata: validatedData.metadata,
         createdBy: userId,
       })
       .returning();
 
     // Create transaction record
-    await tx
-      .insert(loyaltyTransactions)
-      .values({
-        tenantId: teamId,
-        accountId: account.id,
-        eventId: event.id,
-        pointsChange: -validatedData.points,
-        balanceBefore,
-        balanceAfter,
-      });
+    await tx.insert(loyaltyTransactions).values({
+      tenantId: teamId,
+      accountId: account.id,
+      eventId: event.id,
+      pointsChange: -validatedData.points,
+      balanceBefore,
+      balanceAfter,
+    });
 
     // Update account balances
     await tx
@@ -331,10 +353,13 @@ async function redeemPoints(body: any, teamId: string, userId: number) {
       })
       .where(eq(loyaltyAccounts.id, account.id));
 
-    return NextResponse.json({ 
-      message: "Points redeemed successfully",
-      points: validatedData.points,
-      newBalance: balanceAfter
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        message: "Points redeemed successfully",
+        points: validatedData.points,
+        newBalance: balanceAfter,
+      },
+      { status: 200 }
+    );
   });
 }

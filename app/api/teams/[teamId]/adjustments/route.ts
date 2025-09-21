@@ -10,7 +10,16 @@ const createAdjustmentSchema = z.object({
   productId: z.string().uuid(),
   adjustmentType: z.enum(["increase", "decrease", "correction"]),
   quantity: z.number().int().min(1),
-  reason: z.enum(["waste", "sample", "personal", "recount", "damage", "theft", "expired", "other"]),
+  reason: z.enum([
+    "waste",
+    "sample",
+    "personal",
+    "recount",
+    "damage",
+    "theft",
+    "expired",
+    "other",
+  ]),
   notes: z.string().optional(),
 });
 
@@ -105,10 +114,12 @@ export async function POST(
       const [product] = await tx
         .select({ stockQuantity: products.stockQuantity })
         .from(products)
-        .where(and(
-          eq(products.id, validatedData.productId),
-          eq(products.tenantId, teamId)
-        ));
+        .where(
+          and(
+            eq(products.id, validatedData.productId),
+            eq(products.tenantId, teamId)
+          )
+        );
 
       if (!product) {
         throw new Error("Product not found");
@@ -135,10 +146,10 @@ export async function POST(
       // Update product stock
       await tx
         .update(products)
-        .set({ 
+        .set({
           stockQuantity: newQuantity,
           updatedAt: new Date(),
-          updatedBy: user.id
+          updatedBy: user.id,
         })
         .where(eq(products.id, validatedData.productId));
 
@@ -149,9 +160,10 @@ export async function POST(
           tenantId: teamId,
           productId: validatedData.productId,
           adjustmentType: validatedData.adjustmentType,
-          quantity: validatedData.adjustmentType === "correction" 
-            ? Math.abs(newQuantity - previousQuantity)
-            : validatedData.quantity,
+          quantity:
+            validatedData.adjustmentType === "correction"
+              ? Math.abs(newQuantity - previousQuantity)
+              : validatedData.quantity,
           reason: validatedData.reason,
           notes: validatedData.notes,
           previousQuantity,
@@ -173,7 +185,9 @@ export async function POST(
     }
     console.error("Adjustments POST error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Internal server error" },
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 }
     );
   }

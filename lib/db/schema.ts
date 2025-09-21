@@ -370,13 +370,13 @@ export const payments = pgTable("payments", {
 // Inventory Adjustments table (PHASE 2)
 export const adjustmentReasonEnum = pgEnum("adjustment_reason", [
   "waste",
-  "sample", 
+  "sample",
   "personal",
   "recount",
   "damage",
   "theft",
   "expired",
-  "other"
+  "other",
 ]);
 
 export const inventoryAdjustments = pgTable("inventory_adjustments", {
@@ -406,8 +406,10 @@ export const customerReferrals = pgTable("customer_referrals", {
   referrerCustomerId: uuid("referrer_customer_id")
     .notNull()
     .references(() => customers.id, { onDelete: "cascade" }),
-  referredCustomerId: uuid("referred_customer_id")
-    .references(() => customers.id, { onDelete: "set null" }),
+  referredCustomerId: uuid("referred_customer_id").references(
+    () => customers.id,
+    { onDelete: "set null" }
+  ),
   referredEmail: text("referred_email"),
   referredPhone: text("referred_phone"),
   status: text("status").notNull().default("pending"), // pending, converted, expired
@@ -423,10 +425,10 @@ export const customerReferrals = pgTable("customer_referrals", {
 export const deliveryStatusEnum = pgEnum("delivery_status", [
   "pending",
   "assigned",
-  "in_transit", 
+  "in_transit",
   "delivered",
   "failed",
-  "returned"
+  "returned",
 ]);
 
 export const deliveryMethodEnum = pgEnum("delivery_method", [
@@ -435,7 +437,7 @@ export const deliveryMethodEnum = pgEnum("delivery_method", [
   "express_delivery",
   "overnight",
   "courier",
-  "postal"
+  "postal",
 ]);
 
 export const deliveries = pgTable("deliveries", {
@@ -446,8 +448,9 @@ export const deliveries = pgTable("deliveries", {
   orderId: uuid("order_id")
     .notNull()
     .references(() => orders.id, { onDelete: "cascade" }),
-  customerId: uuid("customer_id")
-    .references(() => customers.id, { onDelete: "set null" }),
+  customerId: uuid("customer_id").references(() => customers.id, {
+    onDelete: "set null",
+  }),
   method: deliveryMethodEnum("method").notNull().default("standard_delivery"),
   status: deliveryStatusEnum("status").notNull().default("pending"),
   costCents: integer("cost_cents").notNull().default(0),
@@ -507,7 +510,7 @@ export const loyaltyEventTypeEnum = pgEnum("loyalty_event_type", [
   "redeemed",
   "expired",
   "adjusted",
-  "bonus"
+  "bonus",
 ]);
 
 export const loyaltyEvents = pgTable("loyalty_events", {
@@ -518,8 +521,9 @@ export const loyaltyEvents = pgTable("loyalty_events", {
   accountId: uuid("account_id")
     .notNull()
     .references(() => loyaltyAccounts.id, { onDelete: "cascade" }),
-  orderId: uuid("order_id")
-    .references(() => orders.id, { onDelete: "set null" }),
+  orderId: uuid("order_id").references(() => orders.id, {
+    onDelete: "set null",
+  }),
   type: loyaltyEventTypeEnum("type").notNull(),
   points: integer("points").notNull(),
   description: text("description"),

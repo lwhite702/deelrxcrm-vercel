@@ -17,6 +17,7 @@ The DeelRx CRM uses a multi-tenant PostgreSQL database with the following key ar
 ### Users & Authentication
 
 #### `users`
+
 Primary user accounts with authentication information.
 
 ```sql
@@ -34,6 +35,7 @@ CREATE TABLE users (
 ```
 
 **Business Rules:**
+
 - Email must be unique across the system
 - Password hash is stored, never plain text
 - Users can belong to multiple teams
@@ -41,6 +43,7 @@ CREATE TABLE users (
 ### Multi-tenant Organization
 
 #### `teams`
+
 Organizations/tenants that own all business data.
 
 ```sql
@@ -56,6 +59,7 @@ CREATE TABLE teams (
 ```
 
 #### `team_memberships`
+
 Associates users with teams and defines their roles.
 
 ```sql
@@ -71,6 +75,7 @@ CREATE TABLE team_memberships (
 ```
 
 **Roles:**
+
 - `owner` - Full administrative access
 - `admin` - Administrative access without billing
 - `manager` - Operational management
@@ -81,6 +86,7 @@ CREATE TABLE team_memberships (
 ### Product Management
 
 #### `products`
+
 Core product catalog with inventory tracking.
 
 ```sql
@@ -103,6 +109,7 @@ CREATE TABLE products (
 ```
 
 **Business Rules:**
+
 - SKU must be unique within a team (when provided)
 - Stock quantity cannot be negative
 - Price must be non-negative
@@ -111,6 +118,7 @@ CREATE TABLE products (
 ### Customer Management
 
 #### `customers`
+
 Customer records with contact and demographic information.
 
 ```sql
@@ -130,6 +138,7 @@ CREATE TABLE customers (
 ```
 
 **Address Structure (JSONB):**
+
 ```json
 {
   "street": "123 Main St",
@@ -143,6 +152,7 @@ CREATE TABLE customers (
 ### Order Processing
 
 #### `orders`
+
 Sales transactions and order management.
 
 ```sql
@@ -167,6 +177,7 @@ CREATE TYPE order_status AS ENUM (
 ```
 
 #### `order_items`
+
 Individual line items within orders.
 
 ```sql
@@ -184,6 +195,7 @@ CREATE TABLE order_items (
 ### Payment Processing
 
 #### `payments`
+
 Payment records associated with orders.
 
 ```sql
@@ -213,6 +225,7 @@ CREATE TYPE payment_status AS ENUM (
 ### Inventory Management
 
 #### `inventoryAdjustments`
+
 Tracks all inventory changes outside of sales transactions.
 
 ```sql
@@ -236,6 +249,7 @@ CREATE TYPE adjustment_reason AS ENUM (
 ```
 
 **Business Rules:**
+
 - Adjustment quantity must be positive
 - New quantity = previous ± adjustment (based on type)
 - Cannot result in negative stock
@@ -244,6 +258,7 @@ CREATE TYPE adjustment_reason AS ENUM (
 ### Customer Referrals
 
 #### `customerReferrals`
+
 Customer referral program management and tracking.
 
 ```sql
@@ -262,8 +277,8 @@ CREATE TABLE customer_referrals (
   converted_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   CONSTRAINT referral_contact_check CHECK (
-    referred_email IS NOT NULL OR 
-    referred_phone IS NOT NULL OR 
+    referred_email IS NOT NULL OR
+    referred_phone IS NOT NULL OR
     referred_customer_id IS NOT NULL
   )
 );
@@ -272,6 +287,7 @@ CREATE TYPE referral_status AS ENUM ('pending', 'converted', 'expired');
 ```
 
 **Business Rules:**
+
 - Must provide at least one contact method for referred person
 - Status progresses: pending → converted/expired
 - Reward is paid when referral converts
@@ -280,6 +296,7 @@ CREATE TYPE referral_status AS ENUM ('pending', 'converted', 'expired');
 ### Delivery Management
 
 #### `deliveries`
+
 Order fulfillment and delivery tracking.
 
 ```sql
@@ -305,6 +322,7 @@ CREATE TYPE delivery_status AS ENUM (
 ```
 
 **Business Rules:**
+
 - One delivery record per order
 - Address stored as structured JSON
 - Status progression workflow enforced
@@ -313,6 +331,7 @@ CREATE TYPE delivery_status AS ENUM (
 ### Loyalty Programs
 
 #### `loyaltyPrograms`
+
 Loyalty program definitions and configuration.
 
 ```sql
@@ -329,6 +348,7 @@ CREATE TABLE loyalty_programs (
 ```
 
 #### `loyaltyAccounts`
+
 Customer loyalty account balances and statistics.
 
 ```sql
@@ -347,6 +367,7 @@ CREATE TABLE loyalty_accounts (
 ```
 
 #### `loyaltyEvents`
+
 Audit trail for all loyalty point transactions.
 
 ```sql
@@ -367,6 +388,7 @@ CREATE TYPE loyalty_event_type AS ENUM ('earned', 'redeemed', 'expired', 'adjust
 ```
 
 #### `loyaltyTransactions`
+
 Detailed transaction records for point accrual and redemption.
 
 ```sql
@@ -457,6 +479,7 @@ CREATE POLICY products_team_isolation ON products
 ### Application-Level Security
 
 Current security is enforced at the application layer:
+
 - All queries filter by team_id
 - User permissions checked via team_memberships
 - RBAC through role-based middleware
@@ -466,16 +489,19 @@ Current security is enforced at the application layer:
 ### Business Logic Constraints
 
 1. **Inventory Consistency**
+
    - Stock quantities updated atomically with adjustments
    - No negative stock allowed
    - Adjustment quantities must be positive
 
 2. **Order Processing**
+
    - Order totals calculated from line items
    - Payment amounts cannot exceed order total
    - Status transitions follow business workflow
 
 3. **Loyalty Points**
+
    - Points balance cannot be negative
    - Redemptions require sufficient balance
    - All transactions logged for audit

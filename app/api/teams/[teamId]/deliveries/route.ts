@@ -17,7 +17,14 @@ const addressSchema = z.object({
 const createDeliverySchema = z.object({
   orderId: z.string().uuid(),
   customerId: z.string().uuid().optional(),
-  method: z.enum(["pickup", "standard_delivery", "express_delivery", "overnight", "courier", "postal"]),
+  method: z.enum([
+    "pickup",
+    "standard_delivery",
+    "express_delivery",
+    "overnight",
+    "courier",
+    "postal",
+  ]),
   costCents: z.number().int().min(0).default(0),
   deliveryAddress: addressSchema,
   instructions: z.string().optional(),
@@ -27,8 +34,26 @@ const createDeliverySchema = z.object({
 });
 
 const updateDeliverySchema = z.object({
-  method: z.enum(["pickup", "standard_delivery", "express_delivery", "overnight", "courier", "postal"]).optional(),
-  status: z.enum(["pending", "assigned", "in_transit", "delivered", "failed", "returned"]).optional(),
+  method: z
+    .enum([
+      "pickup",
+      "standard_delivery",
+      "express_delivery",
+      "overnight",
+      "courier",
+      "postal",
+    ])
+    .optional(),
+  status: z
+    .enum([
+      "pending",
+      "assigned",
+      "in_transit",
+      "delivered",
+      "failed",
+      "returned",
+    ])
+    .optional(),
   costCents: z.number().int().min(0).optional(),
   deliveryAddress: addressSchema.optional(),
   instructions: z.string().optional(),
@@ -80,9 +105,7 @@ export async function GET(
     }
 
     if (search) {
-      conditions.push(
-        ilike(deliveries.trackingNumber, `%${search}%`)
-      );
+      conditions.push(ilike(deliveries.trackingNumber, `%${search}%`));
     }
 
     // Fetch deliveries with order and customer details
@@ -145,16 +168,12 @@ export async function POST(
     const [order] = await db
       .select({ id: orders.id, customerId: orders.customerId })
       .from(orders)
-      .where(and(
-        eq(orders.id, validatedData.orderId),
-        eq(orders.tenantId, teamId)
-      ));
+      .where(
+        and(eq(orders.id, validatedData.orderId), eq(orders.tenantId, teamId))
+      );
 
     if (!order) {
-      return NextResponse.json(
-        { error: "Order not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     // Use order's customer if not provided
@@ -171,8 +190,8 @@ export async function POST(
         deliveryAddress: validatedData.deliveryAddress,
         instructions: validatedData.instructions,
         trackingNumber: validatedData.trackingNumber,
-        estimatedDeliveryAt: validatedData.estimatedDeliveryAt 
-          ? new Date(validatedData.estimatedDeliveryAt) 
+        estimatedDeliveryAt: validatedData.estimatedDeliveryAt
+          ? new Date(validatedData.estimatedDeliveryAt)
           : null,
         notes: validatedData.notes,
         createdBy: user.id,

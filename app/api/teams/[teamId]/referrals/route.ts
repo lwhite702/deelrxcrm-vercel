@@ -6,21 +6,25 @@ import { customerReferrals, customers } from "@/lib/db/schema";
 import { getUser } from "@/lib/db/queries";
 
 // Validation schemas
-const createReferralSchema = z.object({
-  referrerCustomerId: z.string().uuid(),
-  referredEmail: z.string().email().optional(),
-  referredPhone: z.string().optional(),
-  referredCustomerId: z.string().uuid().optional(),
-  rewardAmount: z.number().int().min(0).default(0),
-  notes: z.string().optional(),
-  expiresAt: z.string().datetime().optional(),
-}).refine(
-  (data) => data.referredEmail || data.referredPhone || data.referredCustomerId,
-  {
-    message: "Must provide either referredEmail, referredPhone, or referredCustomerId",
-    path: ["referredEmail"],
-  }
-);
+const createReferralSchema = z
+  .object({
+    referrerCustomerId: z.string().uuid(),
+    referredEmail: z.string().email().optional(),
+    referredPhone: z.string().optional(),
+    referredCustomerId: z.string().uuid().optional(),
+    rewardAmount: z.number().int().min(0).default(0),
+    notes: z.string().optional(),
+    expiresAt: z.string().datetime().optional(),
+  })
+  .refine(
+    (data) =>
+      data.referredEmail || data.referredPhone || data.referredCustomerId,
+    {
+      message:
+        "Must provide either referredEmail, referredPhone, or referredCustomerId",
+      path: ["referredEmail"],
+    }
+  );
 
 const updateReferralSchema = z.object({
   status: z.enum(["pending", "converted", "expired"]).optional(),
@@ -63,7 +67,9 @@ export async function GET(
     }
 
     if (referrerCustomerId) {
-      conditions.push(eq(customerReferrals.referrerCustomerId, referrerCustomerId));
+      conditions.push(
+        eq(customerReferrals.referrerCustomerId, referrerCustomerId)
+      );
     }
 
     if (search) {
@@ -93,7 +99,10 @@ export async function GET(
         expiresAt: customerReferrals.expiresAt,
       })
       .from(customerReferrals)
-      .innerJoin(customers, eq(customerReferrals.referrerCustomerId, customers.id))
+      .innerJoin(
+        customers,
+        eq(customerReferrals.referrerCustomerId, customers.id)
+      )
       .where(and(...conditions))
       .orderBy(desc(customerReferrals.createdAt))
       .limit(limit)
@@ -130,10 +139,12 @@ export async function POST(
     const [referrerCustomer] = await db
       .select({ id: customers.id })
       .from(customers)
-      .where(and(
-        eq(customers.id, validatedData.referrerCustomerId),
-        eq(customers.tenantId, teamId)
-      ));
+      .where(
+        and(
+          eq(customers.id, validatedData.referrerCustomerId),
+          eq(customers.tenantId, teamId)
+        )
+      );
 
     if (!referrerCustomer) {
       return NextResponse.json(
@@ -147,10 +158,12 @@ export async function POST(
       const [referredCustomer] = await db
         .select({ id: customers.id })
         .from(customers)
-        .where(and(
-          eq(customers.id, validatedData.referredCustomerId),
-          eq(customers.tenantId, teamId)
-        ));
+        .where(
+          and(
+            eq(customers.id, validatedData.referredCustomerId),
+            eq(customers.tenantId, teamId)
+          )
+        );
 
       if (!referredCustomer) {
         return NextResponse.json(
@@ -170,7 +183,9 @@ export async function POST(
         referredPhone: validatedData.referredPhone,
         rewardAmount: validatedData.rewardAmount,
         notes: validatedData.notes,
-        expiresAt: validatedData.expiresAt ? new Date(validatedData.expiresAt) : null,
+        expiresAt: validatedData.expiresAt
+          ? new Date(validatedData.expiresAt)
+          : null,
       })
       .returning();
 

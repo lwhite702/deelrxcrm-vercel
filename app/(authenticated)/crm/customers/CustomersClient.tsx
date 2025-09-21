@@ -29,7 +29,9 @@ export default function CustomersClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [referrals, setReferrals] = useState<any[]>([]);
   const [showReferralForm, setShowReferralForm] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
 
   // Form state
   const [formData, setFormData] = useState({
@@ -530,12 +532,12 @@ export default function CustomersClient() {
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Created
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -633,9 +635,9 @@ export default function CustomersClient() {
           </div>
 
           <div className="space-y-4">
-            {referrals
-              .filter(r => r.referrerCustomerId === selectedCustomer.id)
-              .length === 0 ? (
+            {referrals.filter(
+              (r) => r.referrerCustomerId === selectedCustomer.id
+            ).length === 0 ? (
               <p className="text-gray-400 text-center py-8">
                 No referrals found for this customer.
               </p>
@@ -660,11 +662,15 @@ export default function CustomersClient() {
                   </thead>
                   <tbody className="divide-y divide-gray-700">
                     {referrals
-                      .filter(r => r.referrerCustomerId === selectedCustomer.id)
+                      .filter(
+                        (r) => r.referrerCustomerId === selectedCustomer.id
+                      )
                       .map((referral) => (
                         <tr key={referral.id} className="hover:bg-gray-800/50">
                           <td className="px-4 py-3 text-sm text-white">
-                            {referral.referredEmail || referral.referredPhone || "N/A"}
+                            {referral.referredEmail ||
+                              referral.referredPhone ||
+                              "N/A"}
                           </td>
                           <td className="px-4 py-3">
                             <span
@@ -723,7 +729,10 @@ export default function CustomersClient() {
                   type="email"
                   value={referralForm.referredEmail}
                   onChange={(e) =>
-                    setReferralForm({ ...referralForm, referredEmail: e.target.value })
+                    setReferralForm({
+                      ...referralForm,
+                      referredEmail: e.target.value,
+                    })
                   }
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
                   placeholder="Enter referred person's email"
@@ -738,7 +747,10 @@ export default function CustomersClient() {
                   type="tel"
                   value={referralForm.referredPhone}
                   onChange={(e) =>
-                    setReferralForm({ ...referralForm, referredPhone: e.target.value })
+                    setReferralForm({
+                      ...referralForm,
+                      referredPhone: e.target.value,
+                    })
                   }
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
                   placeholder="Enter referred person's phone"
@@ -755,7 +767,10 @@ export default function CustomersClient() {
                   step="1"
                   value={referralForm.rewardAmount}
                   onChange={(e) =>
-                    setReferralForm({ ...referralForm, rewardAmount: e.target.value })
+                    setReferralForm({
+                      ...referralForm,
+                      rewardAmount: e.target.value,
+                    })
                   }
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
                   placeholder="0"
@@ -785,7 +800,10 @@ export default function CustomersClient() {
                   type="datetime-local"
                   value={referralForm.expiresAt}
                   onChange={(e) =>
-                    setReferralForm({ ...referralForm, expiresAt: e.target.value })
+                    setReferralForm({
+                      ...referralForm,
+                      expiresAt: e.target.value,
+                    })
                   }
                   className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
                 />

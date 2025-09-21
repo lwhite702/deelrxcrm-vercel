@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Truck, Package, MapPin, Clock, CheckCircle, XCircle } from "lucide-react";
+import {
+  Plus,
+  Truck,
+  Package,
+  MapPin,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 
 interface Delivery {
   id: string;
@@ -42,13 +50,21 @@ export default function DeliveriesClient() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null);
+  const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(
+    null
+  );
   const [showUpdateForm, setShowUpdateForm] = useState(false);
 
   // Form state
   const [deliveryForm, setDeliveryForm] = useState({
     orderId: "",
-    method: "standard_delivery" as "pickup" | "standard_delivery" | "express_delivery" | "overnight" | "courier" | "postal",
+    method: "standard_delivery" as
+      | "pickup"
+      | "standard_delivery"
+      | "express_delivery"
+      | "overnight"
+      | "courier"
+      | "postal",
     costCents: "",
     deliveryAddress: {
       street: "",
@@ -64,7 +80,13 @@ export default function DeliveriesClient() {
   });
 
   const [updateForm, setUpdateForm] = useState({
-    status: "pending" as "pending" | "assigned" | "in_transit" | "delivered" | "failed" | "returned",
+    status: "pending" as
+      | "pending"
+      | "assigned"
+      | "in_transit"
+      | "delivered"
+      | "failed"
+      | "returned",
     trackingNumber: "",
     actualDeliveryAt: "",
     notes: "",
@@ -103,7 +125,7 @@ export default function DeliveriesClient() {
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch("/api/teams/1/deliveries", {
         method: "POST",
@@ -146,16 +168,21 @@ export default function DeliveriesClient() {
       }
 
       if (updateForm.actualDeliveryAt) {
-        updateData.actualDeliveryAt = new Date(updateForm.actualDeliveryAt).toISOString();
+        updateData.actualDeliveryAt = new Date(
+          updateForm.actualDeliveryAt
+        ).toISOString();
       }
 
-      const response = await fetch(`/api/teams/1/deliveries/${selectedDelivery.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updateData),
-      });
+      const response = await fetch(
+        `/api/teams/1/deliveries/${selectedDelivery.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
+        }
+      );
 
       if (response.ok) {
         await fetchDeliveries();
@@ -199,25 +226,39 @@ export default function DeliveriesClient() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "pending": return <Clock className="h-4 w-4 text-yellow-400" />;
-      case "assigned": return <Package className="h-4 w-4 text-blue-400" />;
-      case "in_transit": return <Truck className="h-4 w-4 text-purple-400" />;
-      case "delivered": return <CheckCircle className="h-4 w-4 text-green-400" />;
-      case "failed": return <XCircle className="h-4 w-4 text-red-400" />;
-      case "returned": return <XCircle className="h-4 w-4 text-orange-400" />;
-      default: return <Clock className="h-4 w-4 text-gray-400" />;
+      case "pending":
+        return <Clock className="h-4 w-4 text-yellow-400" />;
+      case "assigned":
+        return <Package className="h-4 w-4 text-blue-400" />;
+      case "in_transit":
+        return <Truck className="h-4 w-4 text-purple-400" />;
+      case "delivered":
+        return <CheckCircle className="h-4 w-4 text-green-400" />;
+      case "failed":
+        return <XCircle className="h-4 w-4 text-red-400" />;
+      case "returned":
+        return <XCircle className="h-4 w-4 text-orange-400" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-400" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "pending": return "text-yellow-400";
-      case "assigned": return "text-blue-400";
-      case "in_transit": return "text-purple-400";
-      case "delivered": return "text-green-400";
-      case "failed": return "text-red-400";
-      case "returned": return "text-orange-400";
-      default: return "text-gray-400";
+      case "pending":
+        return "text-yellow-400";
+      case "assigned":
+        return "text-blue-400";
+      case "in_transit":
+        return "text-purple-400";
+      case "delivered":
+        return "text-green-400";
+      case "failed":
+        return "text-red-400";
+      case "returned":
+        return "text-orange-400";
+      default:
+        return "text-gray-400";
     }
   };
 
@@ -238,7 +279,7 @@ export default function DeliveriesClient() {
             Total Deliveries: {deliveries.length}
           </div>
         </div>
-        <button 
+        <button
           onClick={() => setShowCreateForm(true)}
           className="urban-btn bg-blue-600"
         >
@@ -260,7 +301,11 @@ export default function DeliveriesClient() {
                     <h3 className="text-lg font-semibold text-white ml-2">
                       Order #{delivery.orderNumber}
                     </h3>
-                    <span className={`ml-2 px-2 py-1 bg-gray-700 text-xs rounded capitalize ${getStatusColor(delivery.status)}`}>
+                    <span
+                      className={`ml-2 px-2 py-1 bg-gray-700 text-xs rounded capitalize ${getStatusColor(
+                        delivery.status
+                      )}`}
+                    >
                       {delivery.status.replace("_", " ")}
                     </span>
                   </div>
@@ -286,7 +331,10 @@ export default function DeliveriesClient() {
                     <div>
                       <p className="text-sm text-gray-400">Address</p>
                       <p className="text-white text-sm">
-                        {delivery.deliveryAddress.street}, {delivery.deliveryAddress.city}, {delivery.deliveryAddress.state} {delivery.deliveryAddress.zipCode}
+                        {delivery.deliveryAddress.street},{" "}
+                        {delivery.deliveryAddress.city},{" "}
+                        {delivery.deliveryAddress.state}{" "}
+                        {delivery.deliveryAddress.zipCode}
                       </p>
                     </div>
                     {delivery.trackingNumber && (
@@ -299,9 +347,13 @@ export default function DeliveriesClient() {
                     )}
                     {delivery.estimatedDeliveryAt && (
                       <div>
-                        <p className="text-sm text-gray-400">Estimated Delivery</p>
+                        <p className="text-sm text-gray-400">
+                          Estimated Delivery
+                        </p>
                         <p className="text-white text-sm">
-                          {new Date(delivery.estimatedDeliveryAt).toLocaleDateString()}
+                          {new Date(
+                            delivery.estimatedDeliveryAt
+                          ).toLocaleDateString()}
                         </p>
                       </div>
                     )}
@@ -309,7 +361,9 @@ export default function DeliveriesClient() {
                   {delivery.instructions && (
                     <div className="mt-3">
                       <p className="text-sm text-gray-400">Instructions</p>
-                      <p className="text-white text-sm">{delivery.instructions}</p>
+                      <p className="text-white text-sm">
+                        {delivery.instructions}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -319,8 +373,10 @@ export default function DeliveriesClient() {
                     setUpdateForm({
                       status: delivery.status as any,
                       trackingNumber: delivery.trackingNumber || "",
-                      actualDeliveryAt: delivery.actualDeliveryAt 
-                        ? new Date(delivery.actualDeliveryAt).toISOString().slice(0, 16)
+                      actualDeliveryAt: delivery.actualDeliveryAt
+                        ? new Date(delivery.actualDeliveryAt)
+                            .toISOString()
+                            .slice(0, 16)
                         : "",
                       notes: delivery.notes || "",
                     });
@@ -347,7 +403,9 @@ export default function DeliveriesClient() {
       {showCreateForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-gray-900 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-bold text-white mb-4">Create Delivery</h3>
+            <h3 className="text-xl font-bold text-white mb-4">
+              Create Delivery
+            </h3>
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div>
@@ -356,10 +414,12 @@ export default function DeliveriesClient() {
                 </label>
                 <select
                   value={deliveryForm.orderId}
-                  onChange={(e) => setDeliveryForm(prev => ({
-                    ...prev,
-                    orderId: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setDeliveryForm((prev) => ({
+                      ...prev,
+                      orderId: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   required
                 >
@@ -379,10 +439,12 @@ export default function DeliveriesClient() {
                   </label>
                   <select
                     value={deliveryForm.method}
-                    onChange={(e) => setDeliveryForm(prev => ({
-                      ...prev,
-                      method: e.target.value as any
-                    }))}
+                    onChange={(e) =>
+                      setDeliveryForm((prev) => ({
+                        ...prev,
+                        method: e.target.value as any,
+                      }))
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                     required
                   >
@@ -403,10 +465,12 @@ export default function DeliveriesClient() {
                     type="number"
                     min="0"
                     value={deliveryForm.costCents}
-                    onChange={(e) => setDeliveryForm(prev => ({
-                      ...prev,
-                      costCents: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setDeliveryForm((prev) => ({
+                        ...prev,
+                        costCents: e.target.value,
+                      }))
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   />
                 </div>
@@ -414,8 +478,10 @@ export default function DeliveriesClient() {
 
               {/* Address Fields */}
               <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-white">Delivery Address</h4>
-                
+                <h4 className="text-lg font-semibold text-white">
+                  Delivery Address
+                </h4>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Street Address
@@ -423,13 +489,15 @@ export default function DeliveriesClient() {
                   <input
                     type="text"
                     value={deliveryForm.deliveryAddress.street}
-                    onChange={(e) => setDeliveryForm(prev => ({
-                      ...prev,
-                      deliveryAddress: {
-                        ...prev.deliveryAddress,
-                        street: e.target.value
-                      }
-                    }))}
+                    onChange={(e) =>
+                      setDeliveryForm((prev) => ({
+                        ...prev,
+                        deliveryAddress: {
+                          ...prev.deliveryAddress,
+                          street: e.target.value,
+                        },
+                      }))
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                     required
                   />
@@ -443,13 +511,15 @@ export default function DeliveriesClient() {
                     <input
                       type="text"
                       value={deliveryForm.deliveryAddress.city}
-                      onChange={(e) => setDeliveryForm(prev => ({
-                        ...prev,
-                        deliveryAddress: {
-                          ...prev.deliveryAddress,
-                          city: e.target.value
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setDeliveryForm((prev) => ({
+                          ...prev,
+                          deliveryAddress: {
+                            ...prev.deliveryAddress,
+                            city: e.target.value,
+                          },
+                        }))
+                      }
                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                       required
                     />
@@ -462,13 +532,15 @@ export default function DeliveriesClient() {
                     <input
                       type="text"
                       value={deliveryForm.deliveryAddress.state}
-                      onChange={(e) => setDeliveryForm(prev => ({
-                        ...prev,
-                        deliveryAddress: {
-                          ...prev.deliveryAddress,
-                          state: e.target.value
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setDeliveryForm((prev) => ({
+                          ...prev,
+                          deliveryAddress: {
+                            ...prev.deliveryAddress,
+                            state: e.target.value,
+                          },
+                        }))
+                      }
                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                       required
                     />
@@ -483,13 +555,15 @@ export default function DeliveriesClient() {
                     <input
                       type="text"
                       value={deliveryForm.deliveryAddress.zipCode}
-                      onChange={(e) => setDeliveryForm(prev => ({
-                        ...prev,
-                        deliveryAddress: {
-                          ...prev.deliveryAddress,
-                          zipCode: e.target.value
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setDeliveryForm((prev) => ({
+                          ...prev,
+                          deliveryAddress: {
+                            ...prev.deliveryAddress,
+                            zipCode: e.target.value,
+                          },
+                        }))
+                      }
                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                       required
                     />
@@ -502,13 +576,15 @@ export default function DeliveriesClient() {
                     <input
                       type="text"
                       value={deliveryForm.deliveryAddress.country}
-                      onChange={(e) => setDeliveryForm(prev => ({
-                        ...prev,
-                        deliveryAddress: {
-                          ...prev.deliveryAddress,
-                          country: e.target.value
-                        }
-                      }))}
+                      onChange={(e) =>
+                        setDeliveryForm((prev) => ({
+                          ...prev,
+                          deliveryAddress: {
+                            ...prev.deliveryAddress,
+                            country: e.target.value,
+                          },
+                        }))
+                      }
                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                       required
                     />
@@ -522,10 +598,12 @@ export default function DeliveriesClient() {
                 </label>
                 <textarea
                   value={deliveryForm.instructions}
-                  onChange={(e) => setDeliveryForm(prev => ({
-                    ...prev,
-                    instructions: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setDeliveryForm((prev) => ({
+                      ...prev,
+                      instructions: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   rows={3}
                 />
@@ -539,10 +617,12 @@ export default function DeliveriesClient() {
                   <input
                     type="text"
                     value={deliveryForm.trackingNumber}
-                    onChange={(e) => setDeliveryForm(prev => ({
-                      ...prev,
-                      trackingNumber: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setDeliveryForm((prev) => ({
+                        ...prev,
+                        trackingNumber: e.target.value,
+                      }))
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   />
                 </div>
@@ -554,10 +634,12 @@ export default function DeliveriesClient() {
                   <input
                     type="datetime-local"
                     value={deliveryForm.estimatedDeliveryAt}
-                    onChange={(e) => setDeliveryForm(prev => ({
-                      ...prev,
-                      estimatedDeliveryAt: e.target.value
-                    }))}
+                    onChange={(e) =>
+                      setDeliveryForm((prev) => ({
+                        ...prev,
+                        estimatedDeliveryAt: e.target.value,
+                      }))
+                    }
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   />
                 </div>
@@ -569,20 +651,19 @@ export default function DeliveriesClient() {
                 </label>
                 <textarea
                   value={deliveryForm.notes}
-                  onChange={(e) => setDeliveryForm(prev => ({
-                    ...prev,
-                    notes: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setDeliveryForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   rows={3}
                 />
               </div>
 
               <div className="flex space-x-3 pt-4">
-                <button
-                  type="submit"
-                  className="flex-1 urban-btn bg-blue-600"
-                >
+                <button type="submit" className="flex-1 urban-btn bg-blue-600">
                   Create Delivery
                 </button>
                 <button
@@ -616,10 +697,12 @@ export default function DeliveriesClient() {
                 </label>
                 <select
                   value={updateForm.status}
-                  onChange={(e) => setUpdateForm(prev => ({
-                    ...prev,
-                    status: e.target.value as any
-                  }))}
+                  onChange={(e) =>
+                    setUpdateForm((prev) => ({
+                      ...prev,
+                      status: e.target.value as any,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   required
                 >
@@ -639,10 +722,12 @@ export default function DeliveriesClient() {
                 <input
                   type="text"
                   value={updateForm.trackingNumber}
-                  onChange={(e) => setUpdateForm(prev => ({
-                    ...prev,
-                    trackingNumber: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setUpdateForm((prev) => ({
+                      ...prev,
+                      trackingNumber: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                 />
               </div>
@@ -654,10 +739,12 @@ export default function DeliveriesClient() {
                 <input
                   type="datetime-local"
                   value={updateForm.actualDeliveryAt}
-                  onChange={(e) => setUpdateForm(prev => ({
-                    ...prev,
-                    actualDeliveryAt: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setUpdateForm((prev) => ({
+                      ...prev,
+                      actualDeliveryAt: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                 />
               </div>
@@ -668,20 +755,19 @@ export default function DeliveriesClient() {
                 </label>
                 <textarea
                   value={updateForm.notes}
-                  onChange={(e) => setUpdateForm(prev => ({
-                    ...prev,
-                    notes: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setUpdateForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   rows={3}
                 />
               </div>
 
               <div className="flex space-x-3 pt-4">
-                <button
-                  type="submit"
-                  className="flex-1 urban-btn bg-blue-600"
-                >
+                <button type="submit" className="flex-1 urban-btn bg-blue-600">
                   Update Delivery
                 </button>
                 <button

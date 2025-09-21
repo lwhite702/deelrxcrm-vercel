@@ -31,7 +31,7 @@ export async function PATCH(
 
     // Build update data
     const updateData: any = { ...validatedData };
-    
+
     if (validatedData.status === "converted") {
       updateData.convertedAt = new Date();
     }
@@ -39,10 +39,12 @@ export async function PATCH(
     const [updatedReferral] = await db
       .update(customerReferrals)
       .set(updateData)
-      .where(and(
-        eq(customerReferrals.id, referralId),
-        eq(customerReferrals.tenantId, teamId)
-      ))
+      .where(
+        and(
+          eq(customerReferrals.id, referralId),
+          eq(customerReferrals.tenantId, teamId)
+        )
+      )
       .returning();
 
     if (!updatedReferral) {
@@ -84,10 +86,12 @@ export async function DELETE(
 
     const [deletedReferral] = await db
       .delete(customerReferrals)
-      .where(and(
-        eq(customerReferrals.id, referralId),
-        eq(customerReferrals.tenantId, teamId)
-      ))
+      .where(
+        and(
+          eq(customerReferrals.id, referralId),
+          eq(customerReferrals.tenantId, teamId)
+        )
+      )
       .returning();
 
     if (!deletedReferral) {

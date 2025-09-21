@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Package, TrendingUp, TrendingDown, RotateCcw } from "lucide-react";
+import {
+  Plus,
+  Package,
+  TrendingUp,
+  TrendingDown,
+  RotateCcw,
+} from "lucide-react";
 
 interface Product {
   id: string;
@@ -40,7 +46,15 @@ export default function InventoryClient() {
   const [adjustmentForm, setAdjustmentForm] = useState({
     adjustmentType: "increase" as "increase" | "decrease" | "correction",
     quantity: "",
-    reason: "other" as "waste" | "sample" | "personal" | "recount" | "damage" | "theft" | "expired" | "other",
+    reason: "other" as
+      | "waste"
+      | "sample"
+      | "personal"
+      | "recount"
+      | "damage"
+      | "theft"
+      | "expired"
+      | "other",
     notes: "",
   });
 
@@ -98,7 +112,7 @@ export default function InventoryClient() {
         // Refresh data
         await fetchProducts();
         await fetchAdjustments();
-        
+
         // Reset form
         setAdjustmentForm({
           adjustmentType: "increase",
@@ -133,9 +147,12 @@ export default function InventoryClient() {
 
   const getStockStatusColor = (status: string) => {
     switch (status) {
-      case "out-of-stock": return "text-red-400";
-      case "low-stock": return "text-yellow-400";
-      default: return "text-green-400";
+      case "out-of-stock":
+        return "text-red-400";
+      case "low-stock":
+        return "text-yellow-400";
+      default:
+        return "text-green-400";
     }
   };
 
@@ -152,9 +169,11 @@ export default function InventoryClient() {
       {/* Header Actions */}
       <div className="flex justify-between items-center">
         <div className="flex space-x-4">
-          <button 
+          <button
             onClick={() => setShowAdjustmentsPanel(!showAdjustmentsPanel)}
-            className={`urban-btn ${showAdjustmentsPanel ? 'bg-blue-600' : 'bg-gray-700'}`}
+            className={`urban-btn ${
+              showAdjustmentsPanel ? "bg-blue-600" : "bg-gray-700"
+            }`}
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             Adjustments History
@@ -172,9 +191,13 @@ export default function InventoryClient() {
               <div key={product.id} className="bg-gray-800 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">{product.name}</h3>
+                    <h3 className="text-lg font-semibold text-white">
+                      {product.name}
+                    </h3>
                     {product.sku && (
-                      <p className="text-sm text-gray-400">SKU: {product.sku}</p>
+                      <p className="text-sm text-gray-400">
+                        SKU: {product.sku}
+                      </p>
                     )}
                   </div>
                   <div className="text-right">
@@ -183,10 +206,14 @@ export default function InventoryClient() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-between items-center mb-4">
                   <div>
-                    <p className={`text-sm font-medium ${getStockStatusColor(status)}`}>
+                    <p
+                      className={`text-sm font-medium ${getStockStatusColor(
+                        status
+                      )}`}
+                    >
                       Stock: {product.stockQuantity}
                     </p>
                     <p className="text-xs text-gray-500">
@@ -226,14 +253,18 @@ export default function InventoryClient() {
       {/* Adjustments Panel */}
       {showAdjustmentsPanel && (
         <div className="urban-card">
-          <h2 className="text-2xl font-bold text-white mb-6">Recent Adjustments</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">
+            Recent Adjustments
+          </h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left py-3 px-4 text-gray-300">Product</th>
                   <th className="text-left py-3 px-4 text-gray-300">Type</th>
-                  <th className="text-left py-3 px-4 text-gray-300">Quantity</th>
+                  <th className="text-left py-3 px-4 text-gray-300">
+                    Quantity
+                  </th>
                   <th className="text-left py-3 px-4 text-gray-300">Reason</th>
                   <th className="text-left py-3 px-4 text-gray-300">Date</th>
                 </tr>
@@ -243,9 +274,13 @@ export default function InventoryClient() {
                   <tr key={adjustment.id} className="border-b border-gray-800">
                     <td className="py-3 px-4">
                       <div>
-                        <p className="text-white font-medium">{adjustment.productName}</p>
+                        <p className="text-white font-medium">
+                          {adjustment.productName}
+                        </p>
                         {adjustment.productSku && (
-                          <p className="text-sm text-gray-400">{adjustment.productSku}</p>
+                          <p className="text-sm text-gray-400">
+                            {adjustment.productSku}
+                          </p>
                         )}
                       </div>
                     </td>
@@ -269,7 +304,8 @@ export default function InventoryClient() {
                       <div className="text-white">
                         <p>{adjustment.quantity}</p>
                         <p className="text-xs text-gray-400">
-                          {adjustment.previousQuantity} → {adjustment.newQuantity}
+                          {adjustment.previousQuantity} →{" "}
+                          {adjustment.newQuantity}
                         </p>
                       </div>
                     </td>
@@ -313,10 +349,12 @@ export default function InventoryClient() {
                 </label>
                 <select
                   value={adjustmentForm.adjustmentType}
-                  onChange={(e) => setAdjustmentForm(prev => ({
-                    ...prev,
-                    adjustmentType: e.target.value as any
-                  }))}
+                  onChange={(e) =>
+                    setAdjustmentForm((prev) => ({
+                      ...prev,
+                      adjustmentType: e.target.value as any,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   required
                 >
@@ -328,16 +366,20 @@ export default function InventoryClient() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  {adjustmentForm.adjustmentType === "correction" ? "New Quantity" : "Quantity"}
+                  {adjustmentForm.adjustmentType === "correction"
+                    ? "New Quantity"
+                    : "Quantity"}
                 </label>
                 <input
                   type="number"
                   min="1"
                   value={adjustmentForm.quantity}
-                  onChange={(e) => setAdjustmentForm(prev => ({
-                    ...prev,
-                    quantity: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setAdjustmentForm((prev) => ({
+                      ...prev,
+                      quantity: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   required
                 />
@@ -349,10 +391,12 @@ export default function InventoryClient() {
                 </label>
                 <select
                   value={adjustmentForm.reason}
-                  onChange={(e) => setAdjustmentForm(prev => ({
-                    ...prev,
-                    reason: e.target.value as any
-                  }))}
+                  onChange={(e) =>
+                    setAdjustmentForm((prev) => ({
+                      ...prev,
+                      reason: e.target.value as any,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   required
                 >
@@ -373,20 +417,19 @@ export default function InventoryClient() {
                 </label>
                 <textarea
                   value={adjustmentForm.notes}
-                  onChange={(e) => setAdjustmentForm(prev => ({
-                    ...prev,
-                    notes: e.target.value
-                  }))}
+                  onChange={(e) =>
+                    setAdjustmentForm((prev) => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   rows={3}
                 />
               </div>
 
               <div className="flex space-x-3 pt-4">
-                <button
-                  type="submit"
-                  className="flex-1 urban-btn bg-blue-600"
-                >
+                <button type="submit" className="flex-1 urban-btn bg-blue-600">
                   Create Adjustment
                 </button>
                 <button

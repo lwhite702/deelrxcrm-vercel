@@ -32,10 +32,12 @@ export async function GET(
     const [program] = await db
       .select()
       .from(loyaltyPrograms)
-      .where(and(
-        eq(loyaltyPrograms.id, programId),
-        eq(loyaltyPrograms.tenantId, teamId)
-      ));
+      .where(
+        and(
+          eq(loyaltyPrograms.id, programId),
+          eq(loyaltyPrograms.tenantId, teamId)
+        )
+      );
 
     if (!program) {
       return NextResponse.json(
@@ -77,10 +79,12 @@ export async function PATCH(
         ...validatedData,
         updatedAt: new Date(),
       })
-      .where(and(
-        eq(loyaltyPrograms.id, programId),
-        eq(loyaltyPrograms.tenantId, teamId)
-      ))
+      .where(
+        and(
+          eq(loyaltyPrograms.id, programId),
+          eq(loyaltyPrograms.tenantId, teamId)
+        )
+      )
       .returning();
 
     if (!updatedProgram) {
@@ -122,10 +126,12 @@ export async function DELETE(
 
     const [deletedProgram] = await db
       .delete(loyaltyPrograms)
-      .where(and(
-        eq(loyaltyPrograms.id, programId),
-        eq(loyaltyPrograms.tenantId, teamId)
-      ))
+      .where(
+        and(
+          eq(loyaltyPrograms.id, programId),
+          eq(loyaltyPrograms.tenantId, teamId)
+        )
+      )
       .returning();
 
     if (!deletedProgram) {
@@ -135,7 +141,9 @@ export async function DELETE(
       );
     }
 
-    return NextResponse.json({ message: "Loyalty program deleted successfully" });
+    return NextResponse.json({
+      message: "Loyalty program deleted successfully",
+    });
   } catch (error) {
     console.error("Loyalty Program DELETE error:", error);
     return NextResponse.json(
