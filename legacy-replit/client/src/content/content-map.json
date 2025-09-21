@@ -1,0 +1,176 @@
+{
+  "app": {
+    "name": "DeelRxCRM"
+  },
+  "dashboard": {
+    "title": "Analytics Dashboard",
+    "subtitle": "Real-time insights and performance analytics",
+    "loading": "Loading your dashboard...",
+    "empty_state": "No records yet. Add a customer to get started.",
+    "error_state": "Something went wrong. Please refresh or contact support.",
+    "header_tooltip": "The analytics dashboard provides comprehensive insights for your business performance with real-time charts and advanced metrics.",
+    "ai_section": {
+      "title": "AI Business Intelligence",
+      "subtitle": "Intelligent insights and automated analysis"
+    },
+    "quick_actions": {
+      "title": "Quick Actions"
+    },
+    "kpis": {
+      "today_revenue": "Today's Revenue",
+      "orders_today": "Orders Today", 
+      "inventory_alerts": "Inventory Alerts",
+      "credit_approvals": "Credit Approvals",
+      "revenue_trend": "+12.5% vs yesterday",
+      "orders_trend": "+5 from yesterday",
+      "alerts_trend": "2 urgent items",
+      "credit_trend": "3 pending approvals"
+    },
+    "tabs": {
+      "insights": "Insights",
+      "pricing": "Pricing", 
+      "credit": "Credit",
+      "training": "Training"
+    },
+    "intelligence": {
+      "smart_pricing": {
+        "title": "Smart Pricing",
+        "description": "AI-powered dynamic pricing optimization",
+        "status": "4 price adjustments suggested",
+        "pending_msg": "Pricing optimizations pending",
+        "opportunity_title": "Pricing Opportunity Detected",
+        "opportunity_desc": "Consider increasing margin on high-demand products",
+        "intelligence_title": "AI Pricing Intelligence"
+      },
+      "credit_insights": {
+        "title": "Credit Insights", 
+        "description": "Intelligent credit risk assessment",
+        "status": "2 high-risk accounts flagged",
+        "available_msg": "Credit analyses available",
+        "alert_title": "Credit Risk Alert",
+        "alert_desc": "2 customers approaching credit limits",
+        "intelligence_title": "Credit Intelligence"
+      },
+      "data_quality": {
+        "title": "Data Quality",
+        "description": "Automated data validation and cleanup",
+        "status": "98% data quality score",
+        "accuracy_msg": "Data accuracy score"
+      },
+      "training_agent": {
+        "title": "AI Training Agent",
+        "description": "Interactive training and onboarding assistant",
+        "status": "Coming Soon"
+      },
+      "pricing_coming": {
+        "status": "Coming Soon",
+        "description": "Advanced pricing optimization based on market analysis"
+      },
+      "credit_coming": {
+        "status": "Coming Soon", 
+        "description": "Smart credit analysis and risk assessment"
+      },
+      "recent_title": "Recent AI Insights"
+    },
+    "tooltips": {
+      "ai_section": "AI-powered business intelligence tools for automated insights",
+      "quick_actions": "Essential pharmacy operations for daily workflow efficiency",
+      "revenue_tooltip": "Daily revenue shows your total sales for today with trend comparison.",
+      "orders_tooltip": "Total number of customer orders processed today",
+      "alerts_tooltip": "Inventory items that need attention - low stock, expiring, etc.",
+      "credit_tooltip": "Credit applications awaiting approval decisions"
+    },
+    "controls": {
+      "period_label": "Period",
+      "days_label": "Days",
+      "daily": "Daily",
+      "weekly": "Weekly", 
+      "monthly": "Monthly",
+      "days_7": "7d",
+      "days_30": "30d",
+      "days_90": "90d"
+    },
+    "skip_links": {
+      "quick_actions": "Skip to Quick Actions",
+      "kpis": "Skip to KPIs",
+      "analytics": "Skip to Analytics"
+    }
+  },
+  "navigation": {
+    "customers": { "label": "Customers", "tooltip": "View and manage all customers." },
+    "sales": { "label": "Sales", "tooltip": "Track sales and payments." },
+    "analytics": { "label": "Analytics", "tooltip": "View performance and metrics." },
+    "inventory": { "label": "Inventory", "tooltip": "Receive and adjust stock." },
+    "credits": { "label": "Credits & Debts", "tooltip": "Manage financing, limits, and payments." },
+    "settings": { "label": "Settings", "tooltip": "Manage your account and preferences." },
+    "knowledge_base": { "label": "Help", "tooltip": "Read articles and how-tos." }
+  },
+  "quick_access": {
+    "receive_inventory": "Receive Inventory",
+    "adjust_inventory": "Inventory Adjustment",
+    "checkout": "Customer Checkout / POS",
+    "credit_payment": "Credits / Debt Payment",
+    "titles": {
+      "receive_inventory": "Receive Inventory (Alt+R)",
+      "adjust_inventory": "Inventory Adjustment (Alt+A)", 
+      "checkout": "Customer Checkout / POS (Alt+C)",
+      "credit_payment": "Credits / Debt Payment (Alt+P)"
+    }
+  },
+  "statuses": {
+    "new": "New",
+    "active": "Active",
+    "past_due": "Past Due",
+    "closed": "Closed"
+  },
+  "credits": {
+    "limit": "Approved Credit Limit",
+    "balance": "Outstanding Balance",
+    "past_due_days": "Days Past Due",
+    "make_payment": "Record Payment",
+    "settle": "Settle Balance",
+    "risk_narrative": "Credit Risk Narrative (AI)"
+  },
+  "tooltips": {
+    "refresh": "Refresh data now.",
+    "collapse_sidebar": "Collapse or expand the sidebar.",
+    "export": "Download this report."
+  },
+  "skeletons": {
+    "table": "Loading table...",
+    "card": "Loading card...",
+    "chart": "Loading chart..."
+  },
+  "errors": {
+    "404": "Page not found.",
+    "500": "Server error. Please try again later.",
+    "kb_not_found": "This article could not be found."
+  },
+  "kb": {
+    "search_placeholder": "Search knowledge base...",
+    "related_articles": "Related articles",
+    "back_to_help": "Back to Help Center"
+  },
+  "charts": {
+    "revenue_trends": "Revenue Trends",
+    "orders_by_hour": "Orders by Hour",
+    "payment_methods": "Payment Methods",
+    "stock_by_category": "Stock by Category",
+    "loyalty_tiers": "Loyalty Tiers",
+    "loading_title": "Loading {title}...",
+    "error_retry": "Failed to load {title} data.",
+    "empty_message": "No {type} data available.",
+    "retry_button": "Retry"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "please_wait": "Please wait..."
+  }
+}

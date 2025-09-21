@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "getting-started",
+    "title": "Getting Started with DeelRxCRM",
+    "canonical_url": "https://dealrxcrm.com/kb/getting-started",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "managing-customers",
+    "title": "Managing Customers and Statuses",
+    "canonical_url": "https://dealrxcrm.com/kb/managing-customers",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "tracking-referrals",
+    "title": "Tracking Customer Referrals",
+    "canonical_url": "https://dealrxcrm.com/kb/tracking-referrals",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "credits-and-debts",
+    "title": "Managing Credits and Outstanding Debts",
+    "canonical_url": "https://dealrxcrm.com/kb/credits-and-debts",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "inventory-quick-actions",
+    "title": "Quick Actions: Inventory and Checkout / POS",
+    "canonical_url": "https://dealrxcrm.com/kb/inventory-quick-actions",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  }
+]

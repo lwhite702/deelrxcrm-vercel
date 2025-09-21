@@ -1,0 +1,257 @@
+ROLE
+You are the lead engineer and UX auditor for DeelRxCRM. The Replit version already integrates LLM modules:
+- Pricing Intelligence (smart pricing optimization with market analysis)
+- Credit Intelligence (advanced credit assessment and risk management)
+- Data Intelligence (AI-powered data entry, enrichment, and cleaning)
+- Training Intelligence (onboarding and compliance systems)
+
+Your mission: Upgrade the dashboard and supporting systems to production quality while correctly orchestrating the existing LLM modules. Deliver in phases, with verifiable acceptance criteria.
+
+CONTEXT: BUSINESS RULES
+- DeelRxCRM is Sales-only (no marketing pipeline).
+- Customer Statuses: New, Active, Past Due, Closed.
+- Referrals are tracked at the customer level (who referred, who was referred, any reward).
+- Credits = financing/fronts:
+  - Track per-customer approved credit limit.
+  - Track outstanding debts and past-due balances.
+  - Support credit/debt payment recording and settlements.
+- Dashboard requires quick-access buttons:
+  - Receive Inventory
+  - Inventory Adjustment
+  - Customer Checkout / POS
+  - Credits / Debt Payment
+
+LLM INTELLIGENCE SYSTEMS (LEVERAGE, DON’T REINVENT)
+- Pricing Intelligence
+  - Input: product catalog, historic sales, geos, date ranges, market notes.
+  - Output: recommended price bands + plain-language rationale.
+  - Guardrails: never leak PII; never override final human-set price without approval.
+- Credit Intelligence
+  - Input: transaction history, payment patterns, past due flags, notes sentiment.
+  - Output: creditworthiness score, risk narrative, suggested credit limit adjustments, dunning strategy templates.
+  - Guardrails: transparent explanations; no automated adverse decisions—human approval required.
+- Data Intelligence
+  - Input: free text/voice notes, email snippets, uploads.
+  - Output: normalized entities (customer, address, product SKUs), dedupe suggestions, data-cleaning actions with justification.
+  - Guardrails: never write directly without human review for destructive ops (merge/delete).
+- Training Intelligence
+  - Input: app schema, content map, KB index, action logs.
+  - Output: role-aware onboarding checklists, inline help, just-in-time guidance, compliance reminders.
+
+OBJECTIVES
+1) Fix dashboard readability (dark theme), charts visibility, navigation (collapsible sidebar with icons), tooltip readability, dead links, performance (preloaders/skeletons), and accessibility (WCAG 2.2 AA).
+2) Implement Sales-only logic in UI + backend: statuses, referrals, credits/fronts, outstanding/past-due debt handling.
+3) Add dashboard quick-access buttons (Receive Inventory, Inventory Adjustment, Checkout/POS, Credits/Debt Payment) with clear loading states and success/error feedback.
+4) Enforce a “No Placeholder Policy” via a central content map.
+5) Ensure all KB links resolve using a canonical KB index; ship fallbacks + telemetry.
+6) Orchestrate LLM modules safely: define inputs/outputs, approval flows, logging, and privacy constraints.
+7) Run a complete production audit (accessibility, performance, security, reliability) and apply fixes.
+
+PRINCIPLES
+- Tech-agnostic patterns; clean boundaries; adapter-based LLM providers (OpenAI/Anthropic/local).
+- Design tokens for theming; semantic HTML; ARIA; keyboard navigation.
+- Privacy first: PII minimization; redact before sending to LLMs; encrypt sensitive data at rest/in transit.
+- Human-in-the-loop for destructive or high-impact actions (pricing changes, merges, credit limit updates).
+- Small, reversible PRs with metrics and screenshots.
+
+PHASED EXECUTION PLAN
+
+Phase 1 — Theming, Typography, Accessibility Baseline
+- Add design tokens: --bg, --bg-grad-start, --bg-grad-end, --bg-elev-1..3, --text-primary/secondary/muted, --brand, --brand-contrast, --border, --focus, --success, --warning, --danger, --tooltip-bg.
+- Replace flat black with subtle gradient on shell; use elevated panels and clear borders for separation.
+- Enforce WCAG 2.2 AA contrast; visible focus rings; keyboard navigability.
+- Fix tooltips: solid background, readable, role="tooltip", proper triggers and Escape/blur to close.
+
+Phase 2 — Navigation & Dashboard Structure + Quick Access
+- Convert plain text links → icon-labeled buttons in a collapsible sidebar (ARIA roles, aria-expanded, aria-current).
+- Persist collapse state per user; show compact tooltips when collapsed.
+- Add quick-access buttons (Receive Inventory, Inventory Adjustment, Checkout/POS, Credits/Debt Payment) with pressed/disabled states and aria-busy on action containers.
+
+Phase 3 — Charts/Analytics & Loading UX
+- Resolve CSS/z-index/opacity issues hiding charts; add dark-mode tokens for axes/labels/grid/series.
+- Implement loading/empty/error states for all charts.
+- Add skeletons/shimmers for cards, tables, charts; preload critical assets; optimistic click feedback.
+
+Phase 4 — No Placeholder Policy + Content Map
+- Implement CI scanner that fails builds on placeholder strings (/(lorem|ipsum|tbd|placeholder|dummy|sample)/i).
+- Replace all inline copy with entries from a central content map (see TEMPLATE below).
+- Training Intelligence must use the content map for inline help and onboarding copy.
+
+Phase 5 — Knowledge Base Health + KB Index
+- Implement kb-index.json and a verifier that periodically checks canonical_url availability.
+- On 404/timeout: graceful fallback (cached content or summary) + telemetry (broken slug, referrer).
+- Add robust KB 404 route with search and related articles. All UI links to KB must resolve via kb-index.
+
+Phase 6 — Sales Logic (Statuses, Referrals, Credits/Fronts, Debt)
+- Add Customer Status transitions (New→Active; Active→Past Due on rules; Past Due→Active on payment; Closed terminal).
+- Add referral relationships (referrer, referred, timestamp, reward status) visible in customer profile and reports.
+- Credits/Fronts:
+  - Track approved credit limit, outstanding balance, days past due.
+  - Record credit payments, partials, settlements; recompute status.
+  - Credit Intelligence proposes limit adjustments and dunning sequences (templates), but human approval is required before changes go live.
+- Surfacing:
+  - Dashboard tiles: total outstanding debt, # past-due customers, today’s credit payments due, recent referrals.
+  - Customer detail: status badge, referral info, credit limit, current balance, payment history, LLM risk narrative.
+
+Phase 7 — LLM Orchestration, Safety & Observability
+- Define explicit contracts for each LLM module:
+  - Inputs (schemas), redaction rules, max tokens, temperature, deterministic mode where needed.
+  - Outputs (schemas), confidence scores, and an “explanations” field.
+- Add “dry-run” mode: show proposed changes and rationale; require user confirmation to apply.
+- Log prompts/outputs with PII redaction; store only hashes of sensitive values.
+- Add guardrail prompts: no speculation, no legal/financial advice beyond defined rubric, defer to human on uncertainty.
+- Add evaluation harness: golden test cases for Pricing/Credit/Data/Training modules with expected outputs; fail CI if drift.
+
+Phase 8 — Production Audit & Optimization
+- Dead-link crawler (non-KB and KB); fix or remove; robust 404 page.
+- Performance budgets: initial JS ≤ 200–300KB gzip, CSS ≤ 80KB, LCP ≤ 2.5s, TBT ≤ 200ms on mid devices; Lighthouse ≥ 90 across categories.
+- Security headers: CSP, HSTS, X-Content-Type-Options, X-Frame-Options/COEP where relevant.
+- Dependency audit: 0 high/critical vulns; lockfile integrity.
+- Real-user monitoring for Web Vitals; error boundaries with user-friendly fallback + “Copy details”.
+- Final Go-Live report with metrics deltas, known risks, and rollback steps.
+
+LLM INTEGRATION HOOKS (WIREFRAMES / CONTRACTS)
+- Pricing Intelligence
+  - Hook on product edit, bulk price review, and “Suggest Price” in checkout.
+  - Requires: product_id(s), region, historical sales window, competitive notes.
+  - Returns: recommended_min/max/target, rationale, confidence.
+  - UI: show banner “AI Suggestion” with explanation + Apply/Reject buttons.
+
+- Credit Intelligence
+  - Hook on customer credit review, invoice creation, and dunning run.
+  - Requires: payments history, lateness stats, outstanding amount, sentiment summary (from Data Intelligence).
+  - Returns: credit_score (0–100), risk_tier, recommended_limit_delta, dunning_template_id, rationale.
+  - UI: present as “Proposed” changes; human approval required.
+
+- Data Intelligence
+  - Hook on note save, file upload, CSV import, customer create/update.
+  - Returns: normalized entities, dedupe suggestions with evidence, compliance flags.
+  - UI: “Clean & Merge” review queue; never auto-merge without approval.
+
+- Training Intelligence
+  - Hook on first-run and context-sensitive help.
+  - Requires: routes map, content map keys, KB index.
+  - Returns: step-by-step guidance, links to verified KB articles, compliance tips.
+
+NO PLACEHOLDER POLICY + CONTENT MAP (TEMPLATE)
+Store at /content/content-map.json and reference everywhere. CI must fail if UI renders copy not in this map.
+
+{
+  "app": {
+    "name": "DeelRxCRM"
+  },
+  "dashboard": {
+    "title": "DeelRxCRM Dashboard",
+    "subtitle": "Manage sales, customers, inventory, and credits in real time.",
+    "loading": "Loading your dashboard...",
+    "empty_state": "No records yet. Add a customer to get started.",
+    "error_state": "Something went wrong. Please refresh or contact support."
+  },
+  "navigation": {
+    "customers": { "label": "Customers", "tooltip": "View and manage all customers." },
+    "sales": { "label": "Sales", "tooltip": "Track sales and payments." },
+    "analytics": { "label": "Analytics", "tooltip": "View performance and metrics." },
+    "inventory": { "label": "Inventory", "tooltip": "Receive and adjust stock." },
+    "credits": { "label": "Credits & Debts", "tooltip": "Manage financing, limits, and payments." },
+    "settings": { "label": "Settings", "tooltip": "Manage your account and preferences." },
+    "knowledge_base": { "label": "Help", "tooltip": "Read articles and how-tos." }
+  },
+  "quick_access": {
+    "receive_inventory": "Receive Inventory",
+    "adjust_inventory": "Inventory Adjustment",
+    "checkout": "Customer Checkout / POS",
+    "credit_payment": "Credits / Debt Payment"
+  },
+  "statuses": {
+    "new": "New",
+    "active": "Active",
+    "past_due": "Past Due",
+    "closed": "Closed"
+  },
+  "credits": {
+    "limit": "Approved Credit Limit",
+    "balance": "Outstanding Balance",
+    "past_due_days": "Days Past Due",
+    "make_payment": "Record Payment",
+    "settle": "Settle Balance",
+    "risk_narrative": "Credit Risk Narrative (AI)"
+  },
+  "tooltips": {
+    "refresh": "Refresh data now.",
+    "collapse_sidebar": "Collapse or expand the sidebar.",
+    "export": "Download this report."
+  },
+  "skeletons": {
+    "table": "Loading table...",
+    "card": "Loading card...",
+    "chart": "Loading chart..."
+  },
+  "errors": {
+    "404": "Page not found.",
+    "500": "Server error. Please try again later.",
+    "kb_not_found": "This article could not be found."
+  },
+  "kb": {
+    "search_placeholder": "Search knowledge base...",
+    "related_articles": "Related articles",
+    "back_to_help": "Back to Help Center"
+  }
+}
+
+KNOWLEDGE BASE INDEX (TEMPLATE)
+Store at /content/kb-index.json. All KB links must resolve via this index.
+
+[
+  {
+    "slug": "getting-started",
+    "title": "Getting Started with DeelRxCRM",
+    "canonical_url": "https://dealrxcrm.com/kb/getting-started",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "managing-customers",
+    "title": "Managing Customers and Statuses",
+    "canonical_url": "https://dealrxcrm.com/kb/managing-customers",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "tracking-referrals",
+    "title": "Tracking Customer Referrals",
+    "canonical_url": "https://dealrxcrm.com/kb/tracking-referrals",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "credits-and-debts",
+    "title": "Managing Credits and Outstanding Debts",
+    "canonical_url": "https://dealrxcrm.com/kb/credits-and-debts",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  },
+  {
+    "slug": "inventory-quick-actions",
+    "title": "Quick Actions: Inventory and Checkout / POS",
+    "canonical_url": "https://dealrxcrm.com/kb/inventory-quick-actions",
+    "last_verified_at": "2025-09-20T00:00:00Z"
+  }
+]
+
+TEST PLAN & ACCEPTANCE CRITERIA
+- Accessibility: WCAG 2.2 AA contrast; keyboard-only nav; visible focus; tooltips accessible.
+- Dashboard: gradient shell, elevated panels, clear section separation; collapsible sidebar with icons.
+- Quick Access: four primary actions present, responsive, with aria-busy feedback and error handling.
+- Charts: visible in dark mode; loading/empty/error states implemented.
+- Performance: initial JS ≤ 200–300KB gzip; CSS ≤ 80KB; LCP ≤ 2.5s; TBT ≤ 200ms; Lighthouse ≥ 90 (all categories).
+- No Placeholders: CI scanner passes; all copy sourced from content map.
+- KB Health: all links resolve via kb-index; CI verifier passes; graceful fallbacks with telemetry.
+- Sales Logic: statuses transition correctly; referrals stored and viewable; credits/fronts track limit, balance, past-due; payments/settlements adjust status.
+- LLM Modules: each has defined input/output schema, redaction rules, explanations, confidence score; destructive changes require human approval; evaluation harness passes golden tests.
+- Security: headers set; secrets not in client; RBAC enforced server-side; dependency audit 0 high/critical.
+- Observability: error boundaries; Web Vitals collection; UX event logs (privacy-aware).
+- Final Deliverable: Go-Live report with metrics, screenshots, known risks, rollback plan.
+
+BEGIN NOW
+1) Execute Phase 1 and Phase 2: tokens/contrast/tooltips + sidebar and quick-access actions.
+2) Wire LLM modules per “LLM Integration Hooks,” ensuring redaction and human approval gates.
+3) Add skeletons, fix charts, and implement content map + No Placeholder Policy (Phase 3–4).
+4) Add KB index, verifier, and fallbacks (Phase 5).
+5) Implement Sales logic (statuses/referrals/credits/debts) and surface in UI (Phase 6).
+6) Complete Phase 7–8 audits, optimizations, and deliver the Go-Live report.

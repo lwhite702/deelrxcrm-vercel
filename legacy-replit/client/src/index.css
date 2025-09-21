@@ -1,0 +1,319 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 216 30% 7%;
+  --foreground: 210 30% 96%;
+  --card: 213 14% 16%;
+  --card-foreground: 210 30% 96%;
+  --popover: 213 14% 16%;
+  --popover-foreground: 210 30% 96%;
+  --primary: 180 100% 50%;
+  --primary-foreground: 216 30% 7%;
+  --secondary: 15 100% 60%;
+  --secondary-foreground: 216 30% 7%;
+  --muted: 215 18% 12%;
+  --muted-foreground: 213 12% 59%;
+  --accent: 330 100% 54%;
+  --accent-foreground: 216 30% 7%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 30% 96%;
+  --border: 215 18% 20%;
+  --input: 215 18% 12%;
+  --ring: 180 100% 50%;
+  --chart-1: 180 100% 50%;
+  --chart-2: 108 100% 54%;
+  --chart-3: 15 100% 60%;
+  --chart-4: 330 100% 54%;
+  --chart-5: 60 100% 50%;
+  --sidebar: 213 14% 16%;
+  --sidebar-foreground: 210 30% 96%;
+  --sidebar-primary: 180 100% 50%;
+  --sidebar-primary-foreground: 216 30% 7%;
+  --sidebar-accent: 215 18% 12%;
+  --sidebar-accent-foreground: 210 30% 96%;
+  --sidebar-border: 215 18% 20%;
+  --sidebar-ring: 180 100% 50%;
+  
+  /* Surface tokens for better opacity control and contrast */
+  --surface-1: hsl(var(--background) / 0.92);
+  --surface-2: hsl(var(--card) / 0.88);
+  --surface-3: hsl(var(--muted) / 0.82);
+  --overlay-strong: hsl(var(--popover) / 0.96);
+  
+  /* Text hierarchy tokens for proper contrast levels */
+  --text-heading: hsl(var(--foreground));
+  --text-body: hsl(var(--muted-foreground));
+  --text-secondary: hsl(213 12% 65%);
+  --text-subtle: hsl(213 12% 55%);
+  
+  /* Additional design tokens for production upgrade */
+  --bg: hsl(var(--background));
+  --bg-grad-start: hsl(216 30% 7%);
+  --bg-grad-end: hsl(213 14% 16%);
+  --bg-elev-1: hsl(213 14% 16%);
+  --bg-elev-2: hsl(215 18% 12%);
+  --bg-elev-3: hsl(215 18% 20%);
+  --text-primary: hsl(var(--foreground));
+  --text-muted: hsl(var(--muted-foreground));
+  --brand: hsl(var(--primary));
+  --brand-contrast: hsl(var(--primary-foreground));
+  --focus: hsl(var(--ring));
+  --success: hsl(108 100% 54%);
+  --warning: hsl(60 100% 50%);
+  --danger: hsl(0 84.2% 60.2%);
+  --tooltip-bg: hsl(var(--popover));
+  
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.75rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 1px 2px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 1px 2px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 2px 4px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 4px 6px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 8px 10px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: 216 35% 4%;
+  --foreground: 210 30% 98%;
+  --card: 213 18% 10%;
+  --card-foreground: 210 30% 98%;
+  --popover: 213 18% 10%;
+  --popover-foreground: 210 30% 98%;
+  --primary: 180 100% 45%;
+  --primary-foreground: 216 35% 4%;
+  --secondary: 15 100% 55%;
+  --secondary-foreground: 216 35% 4%;
+  --muted: 215 20% 8%;
+  --muted-foreground: 213 12% 55%;
+  --accent: 330 100% 50%;
+  --accent-foreground: 216 35% 4%;
+  --destructive: 0 84.2% 55%;
+  --destructive-foreground: 210 30% 98%;
+  --border: 215 20% 15%;
+  --input: 215 20% 8%;
+  --ring: 180 100% 45%;
+  
+  /* Dark mode text hierarchy */
+  --text-heading: hsl(var(--foreground));
+  --text-body: hsl(var(--muted-foreground));
+  --text-secondary: hsl(213 12% 45%);
+  --text-subtle: hsl(213 12% 35%);
+  
+  /* Dark mode additional tokens */
+  --bg: hsl(var(--background));
+  --bg-grad-start: hsl(216 35% 4%);
+  --bg-grad-end: hsl(213 18% 10%);
+  --bg-elev-1: hsl(213 18% 10%);
+  --bg-elev-2: hsl(215 20% 8%);
+  --bg-elev-3: hsl(215 20% 15%);
+  --text-primary: hsl(var(--foreground));
+  --text-muted: hsl(var(--muted-foreground));
+  --brand: hsl(var(--primary));
+  --brand-contrast: hsl(var(--primary-foreground));
+  --focus: hsl(var(--ring));
+  --success: hsl(108 100% 50%);
+  --warning: hsl(60 100% 45%);
+  --danger: hsl(0 84.2% 55%);
+  --tooltip-bg: hsl(var(--popover));
+  --chart-1: 180 100% 45%;
+  --chart-2: 108 100% 50%;
+  --chart-3: 15 100% 55%;
+  --chart-4: 330 100% 50%;
+  --chart-5: 60 100% 45%;
+  --sidebar: 213 18% 10%;
+  --sidebar-foreground: 210 30% 98%;
+  --sidebar-primary: 180 100% 45%;
+  --sidebar-primary-foreground: 216 35% 4%;
+  --sidebar-accent: 215 20% 8%;
+  --sidebar-accent-foreground: 210 30% 98%;
+  --sidebar-border: 215 20% 15%;
+  --sidebar-ring: 180 100% 45%;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.75rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 1px 2px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 1px 2px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 2px 4px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 4px 6px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00), 0px 8px 10px -1px hsl(221.2 83.2% 53.3% / 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(221.2 83.2% 53.3% / 0.00);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Graffiti/Urban theme enhancements */
+@layer components {
+  .neon-glow {
+    box-shadow: 0 0 5px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3), 0 0 30px hsl(var(--primary) / 0.1);
+  }
+  
+  .neon-glow-accent {
+    box-shadow: 0 0 5px hsl(var(--accent) / 0.5), 0 0 20px hsl(var(--accent) / 0.3), 0 0 30px hsl(var(--accent) / 0.1);
+  }
+
+  /* Enhanced loading animations for Phase 3 */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  /* Optimistic click feedback */
+  .btn-optimistic {
+    transform: scale(1);
+    transition: transform 0.1s ease;
+  }
+  
+  .btn-optimistic:active {
+    transform: scale(0.98);
+  }
+
+  /* Chart container enhancements */
+  .chart-container {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .chart-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.05), transparent);
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .urban-text-glow {
+    text-shadow: 0 0 5px hsl(var(--primary) / 0.3), 0 0 10px hsl(var(--primary) / 0.2);
+  }
+  
+  .graffiti-border {
+    border: 1px solid hsl(var(--primary) / 0.3);
+    box-shadow: inset 0 0 20px hsl(var(--primary) / 0.1);
+  }
+  
+  /* Enhanced button hover effects for graffiti theme */
+  .btn-neon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.6), 0 0 30px hsl(var(--primary) / 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Urban card styling */
+  .urban-card {
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 8px 32px hsl(var(--background) / 0.8);
+  }
+  
+  /* Neon accent borders for interactive elements */
+  .neon-focus:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary)), 0 0 15px hsl(var(--primary) / 0.5);
+  }
+
+  /* Improved Glassmorphism Effects with better readability */
+  .glass {
+    background: var(--surface-2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 8px 32px hsl(var(--background) / 0.6), inset 0 1px 0 hsl(var(--foreground) / 0.06);
+  }
+
+  .glass-strong {
+    background: var(--overlay-strong);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: 0 12px 40px hsl(var(--background) / 0.7), inset 0 1px 0 hsl(var(--foreground) / 0.08);
+  }
+
+  .radial-grid {
+    background-image: 
+      radial-gradient(1200px 600px at 10% -10%, hsl(var(--primary) / 0.12), transparent),
+      radial-gradient(1000px 600px at 100% 10%, hsl(var(--accent) / 0.10), transparent);
+  }
+
+  /* Text hierarchy utility classes for better contrast */
+  .text-heading {
+    color: var(--text-heading);
+  }
+  
+  .text-body {
+    color: var(--text-body);
+  }
+  
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  
+  .text-subtle {
+    color: var(--text-subtle);
+  }
+
+  /* Additional utility classes for design tokens */
+  .bg-elev-1 {
+    background-color: var(--bg-elev-1);
+  }
+
+  .bg-elev-2 {
+    background-color: var(--bg-elev-2);
+  }
+
+  .bg-elev-3 {
+    background-color: var(--bg-elev-3);
+  }
+
+  .tooltip-bg {
+    background-color: var(--tooltip-bg);
+  }
+
+  /* Enhanced focus styles for accessibility */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--focus), 0 0 15px var(--focus)/0.5;
+  }
+
+  /* Collapsible sidebar animations */
+  .sidebar-transition {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-content-fade {
+    transition: opacity 0.2s ease-in-out;
+  }
+
+}

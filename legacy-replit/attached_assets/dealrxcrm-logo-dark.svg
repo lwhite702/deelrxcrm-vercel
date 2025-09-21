@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="80" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Glow effect for dark backgrounds -->
+    <filter id="darkGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- DealRxCRM Wordmark - White with subtle glow -->
+  <text x="20" y="50" font-family="Arial, sans-serif" font-size="32" font-weight="600" fill="#FFFFFF" letter-spacing="1px" filter="url(#darkGlow)">
+    Deal<tspan fill="#4F8EF7">R</tspan>xCRM
+  </text>
+  
+  <!-- Subtle underline accent -->
+  <rect x="20" y="60" width="260" height="2" fill="#4F8EF7" opacity="0.4"/>
+</svg>

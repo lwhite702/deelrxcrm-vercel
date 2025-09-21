@@ -1,0 +1,63 @@
+You are creating the full marketing website and landing page content for DealRxCRM.
+
+## Brand Identity
+- Name: DealRxCRM
+- Tagline: "High Business. High Quality CRM. Powered by Clouds."
+- Voice: Futurist, modern, minimal. Professional but sleek. Dashboard-like aesthetic.
+- Tone: Bold, confident, crisp. No filler language. Emphasize clarity and innovation.
+- Visual vibe: shadcn/ui modern dashboard.
+
+## Legal Positioning
+- DealRxCRM must not be associated with illegal activity. The platform is built for lawful customer management and organizational use only.
+- Always include legal disclaimers:
+  - Short Footer Disclaimer:  
+    © 2025 DealRxCRM by Wrelik Brands, LLC. DealRxCRM must not be used for any illegal drug or controlled substance activity. Users are responsible for operating in compliance with all applicable laws. Full terms: dealrxcrm.com/legal
+
+## Page Structure
+1. Hero Section  
+   - Headline: Position DealRxCRM as a next-generation, futurist CRM platform.  
+   - Subheadline: Highlight speed, security, encryption, and cloud-first modern architecture.  
+   - CTA: “Get Started” + “Request Demo”.
+
+2. Value Proposition  
+   - Encrypted customer data (AES-256).  
+   - Futuristic dashboard UI (clean, responsive, accessible).  
+   - AI-assisted workflow automation.  
+   - Seamless deployment on Vercel + Supabase.
+
+3. Features Grid  
+   - Secure by Design: AES-256 encryption.  
+   - Modern Interface: Futurist dashboard powered by shadcn/ui.  
+   - AI Workflow Assistant: Automates CRM tasks, reporting, insights.  
+   - Scalable Cloud: Vercel + Supabase backend.  
+   - Custom Modules: Tailored fields and pipelines.  
+   - Compliance Ready: HIPAA/GDPR-style frameworks.
+
+4. Product Screens / Dashboard Preview  
+   - Placeholder descriptions for dashboards, reports, workflows.
+
+5. Social Proof / Trust  
+   - Placeholder for testimonials and logos.  
+   - Headline: “Trusted by Forward-Thinking Teams.”
+
+6. Pricing Section  
+   - Starter Plan: Core CRM features.  
+   - Pro Plan: Full encryption, AI workflows, unlimited pipelines.  
+   - Enterprise Plan: Custom integrations, advanced compliance, dedicated support.  
+   - CTA: “Start Free” or “Contact Sales.”
+
+7. CTA Banner  
+   - Headline: “Experience the Future of CRM.”  
+   - CTA: “Get Your Future CRM.”
+
+8. Footer + Disclaimer  
+   - Links: /features, /pricing, /docs, /privacy, /legal.  
+   - Include short footer disclaimer.
+
+## Deliverables
+- Generate full landing page copy in clean HTML-like structured text blocks (no full React/Next.js code).  
+- Keep sections scannable with short sentences and bold key phrases.  
+- Add meta description (~150 characters).  
+- Include Open Graph/Twitter card title and description.  
+- End with the footer disclaimer.  
+- Maintain consistency with DealRxCRM brand and voice.
