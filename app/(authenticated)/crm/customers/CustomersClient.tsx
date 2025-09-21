@@ -19,6 +19,13 @@ interface Customer {
   createdAt: string;
 }
 
+/**
+ * A React component for managing and displaying customers.
+ *
+ * This component fetches team information and customer data from an API, handles form submissions for adding new customers, and manages loading and error states. It utilizes hooks for state management and side effects, including auto-search functionality based on user input. The component also formats customer names and addresses for display.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function CustomersClient() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -45,6 +52,14 @@ export default function CustomersClient() {
   // Get team ID from API
   const [teamId, setTeamId] = useState<string | null>(null);
 
+  /**
+   * Load the team information from the API.
+   *
+   * This function fetches team data from the "/api/team" endpoint. It checks the response for success and extracts the team ID if available. If the response is not successful or the team ID is missing, it throws an error. Any errors encountered during the fetch or processing are caught and set to the error state.
+   *
+   * @returns {Promise<void>} A promise that resolves when the team information is successfully loaded.
+   * @throws Error If the response is not ok or if no team is found for the user.
+   */
   const loadTeam = async () => {
     try {
       const response = await fetch("/api/team");
@@ -64,6 +79,19 @@ export default function CustomersClient() {
     }
   };
 
+  /**
+   * Load customers for a specific team based on the provided teamId and searchTerm.
+   *
+   * The function checks if teamId is defined before proceeding. It sets the loading state, constructs query parameters
+   * for the API request, and fetches customer data from the server. If the response is not ok, it throws an error.
+   * The fetched data is then processed to update the customers state. In case of an error, it sets an error message.
+   * Finally, it resets the loading state.
+   *
+   * @param {string} teamId - The ID of the team for which to load customers.
+   * @param {string} [searchTerm] - An optional search term to filter customers.
+   * @returns {Promise<void>} A promise that resolves when the loading process is complete.
+   * @throws Error If the fetch request fails or the response is not ok.
+   */
   const loadCustomers = async () => {
     if (!teamId) return;
 
@@ -85,6 +113,15 @@ export default function CustomersClient() {
     }
   };
 
+  /**
+   * Handles the submission of a form to create a new customer.
+   *
+   * The function prevents the default form submission behavior, checks for a valid teamId, and sends a POST request to the API with the form data.
+   * If the response is not OK, it throws an error. Upon successful creation, it resets the form data, hides the add form, and reloads the customer list.
+   * Any errors during the process are caught and set to the error state.
+   *
+   * @param e - The form event triggered by the submission.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamId) return;
