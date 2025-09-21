@@ -1,6 +1,14 @@
 import { db } from "../lib/db/drizzle";
 import { users, teams, teamMembers } from "../lib/db/schema";
 
+/**
+ * Logs user, team, and team member data to the console.
+ *
+ * The function retrieves data from the database for users, teams, and team members,
+ * logging each list in a formatted JSON structure. It handles any errors that may
+ * occur during the data retrieval process, logging the error message and exiting
+ * the process with a failure status.
+ */
 async function checkData() {
   try {
     console.log("=== Users ===");
