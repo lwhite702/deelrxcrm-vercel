@@ -42,10 +42,29 @@ export default function CustomersClient() {
     },
   });
 
-  // Get team ID from URL or context - for now using placeholder
-  const teamId = "1"; // TODO: Get from URL params or team context
+  // Get team ID from API
+  const [teamId, setTeamId] = useState<string | null>(null);
+
+  const loadTeam = async () => {
+    try {
+      const response = await fetch('/api/team');
+      if (!response.ok) {
+        throw new Error(`Failed to load team: ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (data.team && data.team.id) {
+        setTeamId(data.team.id.toString());
+      } else {
+        throw new Error('No team found for user');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load team information");
+    }
+  };
 
   const loadCustomers = async () => {
+    if (!teamId) return;
+    
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -66,6 +85,8 @@ export default function CustomersClient() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!teamId) return;
+    
     try {
       const response = await fetch(`/api/teams/${teamId}/customers`, {
         method: "POST",
@@ -118,16 +139,24 @@ export default function CustomersClient() {
   };
 
   useEffect(() => {
-    loadCustomers();
+    loadTeam();
   }, []);
+
+  useEffect(() => {
+    if (teamId) {
+      loadCustomers();
+    }
+  }, [teamId]);
 
   // Auto-search after 500ms delay
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadCustomers();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+    if (teamId) {
+      const timer = setTimeout(() => {
+        loadCustomers();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchTerm, teamId]);
 
   if (loading) {
     return (
@@ -150,12 +179,56 @@ export default function CustomersClient() {
         <div className="bg-red-900/20 border border-red-500 text-red-300 px-4 py-3 rounded neon-focus">
           <strong>Error:</strong> {error}
         </div>
-        <button
-          onClick={loadCustomers}
-          className="mt-4 btn-neon neon-glow hover:neon-glow-strong"
-        >
-          Retry
-        </button>
+        <div className="mt-4 space-y-2">
+          <p className="text-gray-400 text-sm">
+            This could be due to:
+          </p>
+          <ul className="text-gray-400 text-sm list-disc list-inside space-y-1">
+            <li>Database connection issues</li>
+            <li>Authentication/session expired</li>
+            <li>Team setup not completed</li>
+          </ul>
+        </div>
+        <div className="mt-4 space-x-3">
+          <button
+            onClick={() => {
+              setError(null);
+              loadTeam();
+            }}
+            className="btn-neon neon-glow hover:neon-glow-strong"
+          >
+            Retry
+          </button>
+          {!teamId && (
+            <button
+              onClick={() => {
+                setError(null);
+                setTeamId("demo");
+                setCustomers([
+                  {
+                    id: "demo-1",
+                    firstName: "John",
+                    lastName: "Doe",
+                    email: "john.doe@example.com",
+                    phone: "(555) 123-4567",
+                    address: {
+                      street: "123 Main St",
+                      city: "San Francisco",
+                      state: "CA",
+                      zipCode: "94102",
+                      country: "USA"
+                    },
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                  }
+                ]);
+              }}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 neon-focus"
+            >
+              View Demo Data
+            </button>
+          )}
+        </div>
       </div>
     );
   }
