@@ -1,6 +1,9 @@
 import { Suspense } from 'react';
 import CustomersClient from './CustomersClient';
 
+/**
+ * Renders the Customers page for managing customer information.
+ */
 export default function CustomersPage() {
   return (
     <div className="container mx-auto px-6 py-8">
