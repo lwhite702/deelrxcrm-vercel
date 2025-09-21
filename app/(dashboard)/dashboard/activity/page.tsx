@@ -27,6 +27,15 @@ const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.ACCEPT_INVITATION]: CheckCircle,
 };
 
+/**
+ * Returns a human-readable string representing the time elapsed since the given date.
+ *
+ * The function calculates the difference in seconds between the current date and the provided date.
+ * Based on the difference, it returns a string indicating whether the time elapsed is in seconds,
+ * minutes, hours, days, or if the date is far in the past, it returns the date in a localized string format.
+ *
+ * @param {Date} date - The date to compare against the current date.
+ */
 function getRelativeTime(date: Date) {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -41,6 +50,16 @@ function getRelativeTime(date: Date) {
   return date.toLocaleDateString();
 }
 
+/**
+ * Format a user action into a descriptive string.
+ *
+ * The function takes an ActivityType and returns a corresponding message based on the action performed.
+ * It handles various actions such as signing up, signing in, and managing team members,
+ * returning a default message for unknown actions.
+ *
+ * @param action - The type of activity performed by the user.
+ * @returns A string describing the user action.
+ */
 function formatAction(action: ActivityType): string {
   switch (action) {
     case ActivityType.SIGN_UP:
@@ -68,6 +87,13 @@ function formatAction(action: ActivityType): string {
   }
 }
 
+/**
+ * Renders the activity log page.
+ *
+ * This function fetches activity logs using the getActivityLogs function and displays them in a structured format.
+ * If there are logs available, it maps through them to create a list of activities, each with an associated icon and timestamp.
+ * If no logs are present, a message indicating that no activity has occurred is displayed instead.
+ */
 export default async function ActivityPage() {
   const logs = await getActivityLogs();
 
