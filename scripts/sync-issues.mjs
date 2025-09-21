@@ -233,7 +233,16 @@ async function main() {
           phaseField = Array.isArray(fields) ? fields.find((f) => f.name === phaseFieldName) : null;
           phaseOptions = phaseField?.options || [];
         } catch (e) {
-          console.warn('Could not create Phase field:', e?.message || e);
+          const msg = e?.stderr?.toString?.() || e?.message || '';
+          if (String(msg).includes('Name has already been taken')) {
+            // Field exists; reload to get IDs
+            fields = runJson(`gh project field-list ${projectNumber} --owner ${shellEscape(projectOwner)} --format json`);
+            phaseField = Array.isArray(fields) ? fields.find((f) => f.name === phaseFieldName) : null;
+            phaseFieldId = phaseField?.id || null;
+            phaseOptions = phaseField?.options || [];
+          } else {
+            console.warn('Could not create Phase field:', msg || e);
+          }
         }
       }
 
@@ -248,14 +257,21 @@ async function main() {
         }
       };
 
+      let addedCount = 0;
+      let phaseSetCount = 0;
       for (const { url, labels } of issueEntries) {
         let itemId = null;
         try {
           const added = runJson(`gh project item-add ${projectNumber} --owner ${shellEscape(projectOwner)} --url ${shellEscape(url)} --format json`);
           itemId = added?.id || null;
+          if (itemId) addedCount += 1;
         } catch (e) {
           // If adding failed (maybe already in project), try to find existing item id
           itemId = getItemIdForIssue(url);
+          if (!itemId) {
+            const msg = e?.stderr?.toString?.() || e?.message || 'unknown error';
+            console.warn(`Could not add to project: ${url} -> ${msg}`);
+          }
         }
 
         if (itemId && phaseFieldId && Array.isArray(labels)) {
@@ -267,11 +283,15 @@ async function main() {
               run(
                 `gh project item-edit --id ${shellEscape(itemId)} --project-id ${shellEscape(projectId)} --field-id ${shellEscape(phaseFieldId)} --single-select-option-id ${shellEscape(option.id)}`,
               );
-              console.log(` • Added ${url} → ${optionName}`);
+              console.log(` • Set ${optionName} for ${url}`);
+              phaseSetCount += 1;
+            } else {
+              console.warn(`Missing option '${optionName}' on field '${phaseFieldName}'.`);
             }
           }
         }
       }
+      console.log(`Project population summary: added ${addedCount} item(s), set Phase for ${phaseSetCount} item(s).`);
     } catch (e) {
       const msg = e?.stderr?.toString?.() || e?.message || e;
       console.warn(`Project population skipped due to error: ${msg}`);
