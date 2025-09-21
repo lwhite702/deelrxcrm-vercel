@@ -15,6 +15,13 @@ interface Product {
   createdAt: string;
 }
 
+/**
+ * InventoryClient component for managing product inventory.
+ *
+ * This component fetches and displays a list of products for a specific tenant. It allows users to add new products through a form, handles loading and error states, and updates the product list dynamically. The component also formats currency and determines stock status based on thresholds.
+ *
+ * @returns JSX.Element representing the inventory management interface.
+ */
 export default function InventoryClient() {
   const { user } = useUser();
   const [products, setProducts] = useState<Product[]>([]);
@@ -36,6 +43,13 @@ export default function InventoryClient() {
   // Get tenant ID (simplified - in real app this would come from context/params)
   const tenantId = "demo-tenant"; // TODO: Get from URL params or context
 
+  /**
+   * Loads products from the API and updates the application state.
+   *
+   * This function sets the loading state to true, fetches the products from the API endpoint using the tenantId,
+   * and checks if the response is successful. If successful, it updates the products state with the fetched data.
+   * In case of an error, it sets an error message. Finally, it ensures that the loading state is set to false.
+   */
   const loadProducts = async () => {
     try {
       setLoading(true);
@@ -52,6 +66,13 @@ export default function InventoryClient() {
     }
   };
 
+  /**
+   * Handles the submission of the product creation form.
+   *
+   * This function prevents the default form submission behavior, sends a POST request to create a new product using the provided form data, and handles the response. If the request is successful, it resets the form and reloads the product list. In case of an error, it sets an error message to be displayed.
+   *
+   * @param e - The event object from the form submission.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -84,10 +105,23 @@ export default function InventoryClient() {
     }
   };
 
+  /**
+   * Converts cents to a formatted currency string.
+   */
   const formatCurrency = (cents: number) => {
     return (cents / 100).toFixed(2);
   };
 
+  /**
+   * Determines the stock status based on the current stock level and a specified threshold.
+   *
+   * The function evaluates the stock quantity and returns an object containing a label and a color
+   * code. If the stock is zero, it indicates "Out of Stock". If the stock is less than or equal to
+   * the threshold, it indicates "Low Stock". Otherwise, it indicates "In Stock".
+   *
+   * @param {number} stock - The current stock level.
+   * @param {number} threshold - The threshold level for low stock.
+   */
   const getStockStatus = (stock: number, threshold: number) => {
     if (stock === 0) return { label: "Out of Stock", color: "text-red-600 bg-red-100" };
     if (stock <= threshold) return { label: "Low Stock", color: "text-yellow-600 bg-yellow-100" };
