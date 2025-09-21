@@ -19,6 +19,13 @@ interface Customer {
   createdAt: string;
 }
 
+/**
+ * Component for managing and displaying customers.
+ *
+ * This component fetches customer data based on the tenant ID and user context, handles customer creation, and provides a search functionality. It manages various states including loading, error, and form data for adding new customers. The component also formats customer names and addresses for display in a table.
+ *
+ * @returns JSX.Element - The rendered component for customer management.
+ */
 export default function CustomersClient() {
   const { user } = useUser();
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -45,6 +52,18 @@ export default function CustomersClient() {
   // Get tenant ID (simplified - in real app this would come from context/params)
   const tenantId = "demo-tenant"; // TODO: Get from URL params or context
 
+  /**
+   * Load customers from the API based on the provided search term.
+   *
+   * The function sets the loading state to true, constructs a query string with the search term if it exists,
+   * and fetches customer data from the API. If the response is not ok, it throws an error.
+   * The fetched customer data is then set to the state, and the loading state is reset in the finally block.
+   *
+   * @param searchTerm - The term to search for customers.
+   * @param tenantId - The ID of the tenant whose customers are being loaded.
+   * @returns Promise<void>
+   * @throws Error If the fetch request fails or the response is not ok.
+   */
   const loadCustomers = async () => {
     try {
       setLoading(true);
@@ -64,6 +83,13 @@ export default function CustomersClient() {
     }
   };
 
+  /**
+   * Handles the submission of a customer creation form.
+   *
+   * This function prevents the default form submission behavior, sends a POST request to create a new customer using the provided form data, and handles the response. If the request is successful, it resets the form data and reloads the list of customers. In case of an error, it sets an error message to be displayed.
+   *
+   * @param e - The event object from the form submission.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -100,15 +126,31 @@ export default function CustomersClient() {
     }
   };
 
+  /**
+   * Handles the search event by preventing the default action and loading customers.
+   */
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     loadCustomers();
   };
 
+  /**
+   * Formats the full name of a customer.
+   */
   const formatFullName = (customer: Customer) => {
     return [customer.firstName, customer.lastName].filter(Boolean).join(" ");
   };
 
+  /**
+   * Formats a customer's address into a string.
+   *
+   * The function takes an optional address object and constructs a formatted address string by
+   * joining the street, city, state, and zip code. If any of these components are missing,
+   * they are filtered out, ensuring that only valid parts are included in the final output.
+   * If the address is not provided, an empty string is returned.
+   *
+   * @param {Customer["address"]} [address] - The address object containing street, city, state, and zip code.
+   */
   const formatAddress = (address?: Customer["address"]) => {
     if (!address) return "";
     const parts = [address.street, address.city, address.state, address.zipCode].filter(Boolean);
