@@ -34,26 +34,29 @@ export async function GET(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role
     await requireTenantRole(user.id, tenantId, "member");
 
     const db = getDb();
-    
+
     // Get query parameters
     const url = new URL(request.url);
     const isActive = url.searchParams.get("active");
     const category = url.searchParams.get("category");
-    const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 100);
+    const limit = Math.min(
+      parseInt(url.searchParams.get("limit") || "50"),
+      100
+    );
     const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
 
     // Build query conditions
     const conditions = [eq(products.tenantId, tenantId)];
-    
+
     if (isActive !== null) {
       conditions.push(eq(products.isActive, isActive === "true"));
     }
-    
+
     if (category) {
       conditions.push(eq(products.category, category));
     }
@@ -84,7 +87,7 @@ export async function POST(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role (managers+ can create products)
     await requireTenantRole(user.id, tenantId, "manager");
 
@@ -92,7 +95,7 @@ export async function POST(
     const validatedData = createProductSchema.parse(body);
 
     const db = getDb();
-    
+
     const [newProduct] = await db
       .insert(products)
       .values({
@@ -105,7 +108,10 @@ export async function POST(
     return json({ product: newProduct }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return json({ error: "Validation error", details: error.errors }, { status: 400 });
+      return json(
+        { error: "Validation error", details: error.errors },
+        { status: 400 }
+      );
     }
     console.error("Products POST error:", error);
     return json({ error: "Internal server error" }, { status: 500 });

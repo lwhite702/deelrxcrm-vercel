@@ -3,7 +3,12 @@ import { currentUser } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { and, eq, desc } from "drizzle-orm";
 import { getDb } from "../../../../../server/db";
-import { orders, orderItems, customers, products } from "../../../../../server/db/schema";
+import {
+  orders,
+  orderItems,
+  customers,
+  products,
+} from "../../../../../server/db/schema";
 import { requireTenantRole } from "../../../../../server/rbac";
 import { parseJson, json } from "../../../../../server/http";
 
@@ -39,26 +44,29 @@ export async function GET(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role
     await requireTenantRole(user.id, tenantId, "member");
 
     const db = getDb();
-    
+
     // Get query parameters
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
     const customerId = url.searchParams.get("customerId");
-    const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 100);
+    const limit = Math.min(
+      parseInt(url.searchParams.get("limit") || "50"),
+      100
+    );
     const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
 
     // Build query conditions
     const conditions = [eq(orders.tenantId, tenantId)];
-    
+
     if (status) {
       conditions.push(eq(orders.status, status as any));
     }
-    
+
     if (customerId) {
       conditions.push(eq(orders.customerId, customerId));
     }
@@ -93,7 +101,7 @@ export async function POST(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role (members+ can create orders)
     await requireTenantRole(user.id, tenantId, "member");
 
@@ -101,23 +109,29 @@ export async function POST(
     const validatedData = createOrderSchema.parse(body);
 
     const db = getDb();
-    
+
     // Validate products exist and calculate totals
     let subtotalCents = 0;
     const orderItemsData = [];
-    
+
     for (const item of validatedData.items) {
       const product = await db.query.products.findFirst({
-        where: and(eq(products.id, item.productId), eq(products.tenantId, tenantId)),
+        where: and(
+          eq(products.id, item.productId),
+          eq(products.tenantId, tenantId)
+        ),
       });
-      
+
       if (!product) {
-        return json({ error: `Product ${item.productId} not found` }, { status: 400 });
+        return json(
+          { error: `Product ${item.productId} not found` },
+          { status: 400 }
+        );
       }
-      
+
       const totalPriceCents = item.quantity * item.unitPriceCents;
       subtotalCents += totalPriceCents;
-      
+
       orderItemsData.push({
         tenantId,
         productId: item.productId,
@@ -128,9 +142,10 @@ export async function POST(
         totalPriceCents,
       });
     }
-    
-    const totalCents = subtotalCents + validatedData.taxCents - validatedData.discountCents;
-    
+
+    const totalCents =
+      subtotalCents + validatedData.taxCents - validatedData.discountCents;
+
     // Create order
     const [newOrder] = await db
       .insert(orders)
@@ -152,20 +167,26 @@ export async function POST(
     const createdItems = await db
       .insert(orderItems)
       .values(
-        orderItemsData.map(item => ({
+        orderItemsData.map((item) => ({
           ...item,
           orderId: newOrder.id,
         }))
       )
       .returning();
 
-    return json({ 
-      order: newOrder,
-      items: createdItems,
-    }, { status: 201 });
+    return json(
+      {
+        order: newOrder,
+        items: createdItems,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return json({ error: "Validation error", details: error.errors }, { status: 400 });
+      return json(
+        { error: "Validation error", details: error.errors },
+        { status: 400 }
+      );
     }
     console.error("Orders POST error:", error);
     return json({ error: "Internal server error" }, { status: 500 });

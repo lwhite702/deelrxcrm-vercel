@@ -5,6 +5,7 @@ This document describes the Phase 1 Core CRM implementation, including database 
 ## Overview
 
 The Core CRM provides essential business functionality for managing:
+
 - **Products/Inventory**: Product catalog with stock management
 - **Customers**: Customer database with contact information
 - **Orders**: Order creation and management with line items
@@ -16,6 +17,7 @@ The Core CRM provides essential business functionality for managing:
 ### Core Tables
 
 #### Products
+
 ```sql
 CREATE TABLE products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -38,6 +40,7 @@ CREATE TABLE products (
 ```
 
 #### Customers
+
 ```sql
 CREATE TABLE customers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -58,6 +61,7 @@ CREATE TABLE customers (
 ```
 
 #### Orders
+
 ```sql
 CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -78,6 +82,7 @@ CREATE TABLE orders (
 ```
 
 #### Order Items
+
 ```sql
 CREATE TABLE order_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -92,6 +97,7 @@ CREATE TABLE order_items (
 ```
 
 #### Payments
+
 ```sql
 CREATE TABLE payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -112,12 +118,15 @@ CREATE TABLE payments (
 ```
 
 ### Enums
+
 - `order_status_enum`: draft, pending, confirmed, processing, shipped, delivered, completed, cancelled
 - `payment_status_enum`: pending, processing, succeeded, failed, canceled, refunded, partially_refunded
 - `payment_method_enum`: card, bank_transfer, cash, other
 
 ### Indexes and RLS
+
 All tables include:
+
 - Tenant-based Row Level Security (RLS) policies
 - Optimized indexes for common queries
 - Foreign key constraints for data integrity
@@ -127,6 +136,7 @@ All tables include:
 All API endpoints follow REST conventions with Zod validation and RBAC authorization.
 
 ### Products API
+
 - `GET /api/tenants/{tenantId}/products` - List products with pagination and search
 - `POST /api/tenants/{tenantId}/products` - Create new product
 - `GET /api/tenants/{tenantId}/products/{id}` - Get product details
@@ -134,6 +144,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - `DELETE /api/tenants/{tenantId}/products/{id}` - Delete product
 
 ### Customers API
+
 - `GET /api/tenants/{tenantId}/customers` - List customers with pagination and search
 - `POST /api/tenants/{tenantId}/customers` - Create new customer
 - `GET /api/tenants/{tenantId}/customers/{id}` - Get customer details
@@ -141,19 +152,23 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - `DELETE /api/tenants/{tenantId}/customers/{id}` - Delete customer
 
 ### Orders API
+
 - `GET /api/tenants/{tenantId}/orders` - List orders with pagination and filtering
 - `POST /api/tenants/{tenantId}/orders` - Create new order
 - `GET /api/tenants/{tenantId}/orders/{id}` - Get order details with items
 
 ### Payments API
+
 - `POST /api/tenants/{tenantId}/refund-payment` - Process payment refund via Stripe
 
 ### Dashboard API
+
 - `GET /api/tenants/{tenantId}/dashboard/kpis` - Get real-time business metrics
 
 ## Authorization & Security
 
 ### Role-Based Access Control (RBAC)
+
 - **Owner**: Full access to all features
 - **Admin**: Full access except tenant management
 - **Manager**: Create/read/update access (no delete)
@@ -161,6 +176,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - **Viewer**: Read-only access
 
 ### API Security
+
 - Clerk authentication required for all endpoints
 - Tenant membership validation for each request
 - Role-based permissions enforced per endpoint
@@ -170,12 +186,14 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 ## User Interface
 
 ### Dashboard (`/dashboard`)
+
 - Real-time KPIs: Total Sales, Total Customers, Total Orders, Total Products
 - Low stock alerts and notifications
 - Recent orders list with customer information
 - Quick action buttons for common tasks
 
 ### Inventory Management (`/inventory`)
+
 - Searchable product catalog with filters
 - Add/edit product forms with validation
 - Stock level indicators and warnings
@@ -183,6 +201,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - CSV import/export capabilities
 
 ### Customer Management (`/customers`)
+
 - Customer directory with search and filtering
 - Customer profile forms with contact details
 - Address management with JSON storage
@@ -190,6 +209,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - Customer segmentation and notes
 
 ### Sales POS (`/sales-pos`)
+
 - Product selection with real-time stock checking
 - Shopping cart with quantity adjustments
 - Customer selection (optional for walk-ins)
@@ -197,6 +217,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - Receipt generation and order confirmation
 
 ### Payment Management (`/payments`)
+
 - Payment history with status tracking
 - Stripe integration for card processing
 - Refund processing with reason tracking
@@ -206,6 +227,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 ## Integration Points
 
 ### Stripe Integration
+
 - Payment intent creation for orders
 - Webhook handling for payment updates
 - Refund processing with proper error handling
@@ -213,6 +235,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 - Subscription management (future)
 
 ### Stock Management
+
 - Automatic stock reduction on order creation
 - Low stock alerts and notifications
 - Inventory adjustment tracking
@@ -221,6 +244,7 @@ All API endpoints follow REST conventions with Zod validation and RBAC authoriza
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Database
 DATABASE_URL=postgresql://...
@@ -238,6 +262,7 @@ CORS_ORIGIN=https://yourdomain.com
 ```
 
 ### Database Migration
+
 ```bash
 # Apply Core CRM schema
 npm run db:push
@@ -249,6 +274,7 @@ psql $DATABASE_URL -f drizzle/0003_core_crm.sql
 ## Testing
 
 ### API Testing
+
 Use tools like Postman or curl to test endpoints:
 
 ```bash
@@ -265,6 +291,7 @@ curl -X POST \
 ```
 
 ### UI Testing
+
 1. Navigate to each page and verify loading
 2. Test CRUD operations for each entity
 3. Verify search and filtering functionality
@@ -274,12 +301,14 @@ curl -X POST \
 ## Performance Considerations
 
 ### Database Optimization
+
 - Proper indexing on frequently queried columns
 - Pagination for large result sets
 - Connection pooling for serverless environments
 - Query optimization using Drizzle ORM
 
 ### Frontend Optimization
+
 - Client-side caching for reference data
 - Debounced search inputs to reduce API calls
 - Optimistic UI updates for better UX
@@ -288,6 +317,7 @@ curl -X POST \
 ## Future Enhancements
 
 ### Phase 2 Features
+
 - Advanced reporting and analytics dashboard
 - Email notifications and marketing automation
 - Supplier management and purchase orders
@@ -295,6 +325,7 @@ curl -X POST \
 - Advanced pricing rules and discounts
 
 ### Technical Improvements
+
 - Real-time updates using WebSockets
 - Advanced search with full-text capabilities
 - Audit trail for all data changes
@@ -306,18 +337,22 @@ curl -X POST \
 ### Common Issues
 
 **Database Connection Errors**
+
 - Verify DATABASE_URL is correct and includes `?sslmode=require`
 - Check Neon database is active and accessible
 
 **Authentication Failures**
+
 - Confirm Clerk keys are properly set
 - Verify user has proper tenant membership
 
 **API Permission Errors**
+
 - Check user role assignments in tenant_members table
 - Verify RBAC policies are correctly implemented
 
 **Stripe Integration Issues**
+
 - Validate webhook endpoint configuration
 - Check Stripe secret keys and webhook secrets
 - Monitor Stripe dashboard for failed events

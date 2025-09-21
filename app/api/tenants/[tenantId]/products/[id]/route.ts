@@ -31,12 +31,12 @@ export async function GET(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role
     await requireTenantRole(user.id, tenantId, "member");
 
     const db = getDb();
-    
+
     const product = await db.query.products.findFirst({
       where: and(eq(products.id, id), eq(products.tenantId, tenantId)),
     });
@@ -63,7 +63,7 @@ export async function PATCH(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role (managers+ can update products)
     await requireTenantRole(user.id, tenantId, "manager");
 
@@ -71,7 +71,7 @@ export async function PATCH(
     const validatedData = updateProductSchema.parse(body);
 
     const db = getDb();
-    
+
     // Check if product exists and belongs to tenant
     const existingProduct = await db.query.products.findFirst({
       where: and(eq(products.id, id), eq(products.tenantId, tenantId)),
@@ -94,7 +94,10 @@ export async function PATCH(
     return json({ product: updatedProduct });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return json({ error: "Validation error", details: error.errors }, { status: 400 });
+      return json(
+        { error: "Validation error", details: error.errors },
+        { status: 400 }
+      );
     }
     console.error("Product PATCH error:", error);
     return json({ error: "Internal server error" }, { status: 500 });
@@ -112,12 +115,12 @@ export async function DELETE(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role (managers+ can delete products)
     await requireTenantRole(user.id, tenantId, "manager");
 
     const db = getDb();
-    
+
     // Check if product exists and belongs to tenant
     const existingProduct = await db.query.products.findFirst({
       where: and(eq(products.id, id), eq(products.tenantId, tenantId)),

@@ -8,13 +8,15 @@ import { requireTenantRole } from "../../../../../server/rbac";
 import { parseJson, json } from "../../../../../server/http";
 
 // Validation schemas
-const addressSchema = z.object({
-  street: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipCode: z.string().optional(),
-  country: z.string().optional(),
-}).optional();
+const addressSchema = z
+  .object({
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
+  })
+  .optional();
 
 const createCustomerSchema = z.object({
   firstName: z.string().min(1).max(255),
@@ -40,26 +42,29 @@ export async function GET(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role
     await requireTenantRole(user.id, tenantId, "member");
 
     const db = getDb();
-    
+
     // Get query parameters
     const url = new URL(request.url);
     const isActive = url.searchParams.get("active");
     const search = url.searchParams.get("search");
-    const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 100);
+    const limit = Math.min(
+      parseInt(url.searchParams.get("limit") || "50"),
+      100
+    );
     const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
 
     // Build query conditions
     const conditions = [eq(customers.tenantId, tenantId)];
-    
+
     if (isActive !== null) {
       conditions.push(eq(customers.isActive, isActive === "true"));
     }
-    
+
     if (search) {
       // Simple search on first name for now
       conditions.push(ilike(customers.firstName, `%${search}%`));
@@ -91,7 +96,7 @@ export async function POST(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role (members+ can create customers)
     await requireTenantRole(user.id, tenantId, "member");
 
@@ -99,21 +104,26 @@ export async function POST(
     const validatedData = createCustomerSchema.parse(body);
 
     const db = getDb();
-    
+
     const [newCustomer] = await db
       .insert(customers)
       .values({
         ...validatedData,
         tenantId,
         createdBy: user.id,
-        dateOfBirth: validatedData.dateOfBirth ? new Date(validatedData.dateOfBirth) : undefined,
+        dateOfBirth: validatedData.dateOfBirth
+          ? new Date(validatedData.dateOfBirth)
+          : undefined,
       })
       .returning();
 
     return json({ customer: newCustomer }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return json({ error: "Validation error", details: error.errors }, { status: 400 });
+      return json(
+        { error: "Validation error", details: error.errors },
+        { status: 400 }
+      );
     }
     console.error("Customers POST error:", error);
     return json({ error: "Internal server error" }, { status: 500 });

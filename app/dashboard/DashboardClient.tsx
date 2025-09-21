@@ -17,7 +17,11 @@ interface DashboardKPIs {
   }>;
 }
 
-export default function DashboardClient({ initialKPIs }: { initialKPIs?: DashboardKPIs }) {
+export default function DashboardClient({
+  initialKPIs,
+}: {
+  initialKPIs?: DashboardKPIs;
+}) {
   const { user } = useUser();
   const [kpis, setKpis] = useState<DashboardKPIs | null>(initialKPIs || null);
   const [loading, setLoading] = useState(!initialKPIs);
@@ -36,7 +40,9 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
       const data = await response.json();
       setKpis(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load dashboard data");
+      setError(
+        err instanceof Error ? err.message : "Failed to load dashboard data"
+      );
     } finally {
       setLoading(false);
     }
@@ -113,7 +119,9 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
               <span className="text-blue-600 text-xl">👥</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Customers</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Customers
+              </p>
               <p className="text-2xl font-bold text-gray-900">
                 {kpis?.totalCustomers || 0}
               </p>
@@ -141,7 +149,9 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
               <span className="text-orange-600 text-xl">📋</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Products</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Products
+              </p>
               <p className="text-2xl font-bold text-gray-900">
                 {kpis?.totalProducts || 0}
               </p>
@@ -163,8 +173,11 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
               </h3>
               <div className="mt-2 text-sm text-yellow-700">
                 <p>
-                  {kpis.lowStockProducts} products are running low on stock. 
-                  <a href="/inventory" className="font-medium underline hover:text-yellow-600 ml-1">
+                  {kpis.lowStockProducts} products are running low on stock.
+                  <a
+                    href="/inventory"
+                    className="font-medium underline hover:text-yellow-600 ml-1"
+                  >
                     View inventory →
                   </a>
                 </p>
@@ -182,24 +195,32 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
         <div className="divide-y divide-gray-200">
           {kpis?.recentOrders && kpis.recentOrders.length > 0 ? (
             kpis.recentOrders.map((order) => (
-              <div key={order.id} className="px-6 py-4 flex items-center justify-between">
+              <div
+                key={order.id}
+                className="px-6 py-4 flex items-center justify-between"
+              >
                 <div>
                   <p className="text-sm font-medium text-gray-900">
                     Order #{order.id.slice(0, 8)}...
                   </p>
                   <p className="text-sm text-gray-500">
-                    {order.customerName || "Walk-in customer"} • {new Date(order.createdAt).toLocaleDateString()}
+                    {order.customerName || "Walk-in customer"} •{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-gray-900">
                     {formatCurrency(order.total)}
                   </p>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    order.status === "completed" ? "text-green-600 bg-green-100" :
-                    order.status === "pending" ? "text-yellow-600 bg-yellow-100" :
-                    "text-gray-600 bg-gray-100"
-                  }`}>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      order.status === "completed"
+                        ? "text-green-600 bg-green-100"
+                        : order.status === "pending"
+                        ? "text-yellow-600 bg-yellow-100"
+                        : "text-gray-600 bg-gray-100"
+                    }`}
+                  >
                     {order.status}
                   </span>
                 </div>
@@ -225,28 +246,36 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
               className="flex flex-col items-center p-4 text-center bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <span className="text-2xl mb-2">🛒</span>
-              <span className="text-sm font-medium text-gray-700">New Sale</span>
+              <span className="text-sm font-medium text-gray-700">
+                New Sale
+              </span>
             </a>
             <a
               href="/inventory"
               className="flex flex-col items-center p-4 text-center bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
             >
               <span className="text-2xl mb-2">📦</span>
-              <span className="text-sm font-medium text-gray-700">Inventory</span>
+              <span className="text-sm font-medium text-gray-700">
+                Inventory
+              </span>
             </a>
             <a
               href="/customers"
               className="flex flex-col items-center p-4 text-center bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
             >
               <span className="text-2xl mb-2">👥</span>
-              <span className="text-sm font-medium text-gray-700">Customers</span>
+              <span className="text-sm font-medium text-gray-700">
+                Customers
+              </span>
             </a>
             <a
               href="/payments"
               className="flex flex-col items-center p-4 text-center bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
             >
               <span className="text-2xl mb-2">💳</span>
-              <span className="text-sm font-medium text-gray-700">Payments</span>
+              <span className="text-sm font-medium text-gray-700">
+                Payments
+              </span>
             </a>
           </div>
         </div>

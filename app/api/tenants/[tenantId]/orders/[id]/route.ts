@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../../../../../../server/db";
-import { orders, orderItems, customers, products } from "../../../../../../server/db/schema";
+import {
+  orders,
+  orderItems,
+  customers,
+  products,
+} from "../../../../../../server/db/schema";
 import { requireTenantRole } from "../../../../../../server/rbac";
 import { json } from "../../../../../../server/http";
 
@@ -17,12 +22,12 @@ export async function GET(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role
     await requireTenantRole(user.id, tenantId, "member");
 
     const db = getDb();
-    
+
     // Get order with customer info
     const orderWithCustomer = await db
       .select({
@@ -46,7 +51,9 @@ export async function GET(
       })
       .from(orderItems)
       .leftJoin(products, eq(orderItems.productId, products.id))
-      .where(and(eq(orderItems.orderId, id), eq(orderItems.tenantId, tenantId)));
+      .where(
+        and(eq(orderItems.orderId, id), eq(orderItems.tenantId, tenantId))
+      );
 
     return json({
       order: orderWithCustomer[0].order,

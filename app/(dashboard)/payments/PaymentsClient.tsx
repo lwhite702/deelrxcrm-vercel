@@ -7,7 +7,14 @@ interface Payment {
   orderId: string;
   stripePaymentIntentId: string;
   amount: number;
-  status: "pending" | "processing" | "succeeded" | "failed" | "canceled" | "refunded" | "partially_refunded";
+  status:
+    | "pending"
+    | "processing"
+    | "succeeded"
+    | "failed"
+    | "canceled"
+    | "refunded"
+    | "partially_refunded";
   method: "card" | "bank_transfer" | "cash" | "other";
   refundAmount?: number;
   createdAt: string;
@@ -27,7 +34,7 @@ export default function PaymentsClient() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
-  
+
   // Refund modal state
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
@@ -44,8 +51,10 @@ export default function PaymentsClient() {
       const params = new URLSearchParams();
       if (searchTerm) params.set("search", searchTerm);
       if (statusFilter) params.set("status", statusFilter);
-      
-      const response = await fetch(`/api/tenants/${tenantId}/payments?${params}`);
+
+      const response = await fetch(
+        `/api/tenants/${tenantId}/payments?${params}`
+      );
       if (!response.ok) {
         throw new Error(`Failed to load payments: ${response.statusText}`);
       }
@@ -79,13 +88,13 @@ export default function PaymentsClient() {
 
   const handleRefund = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedPayment || refundAmount <= 0) return;
-    
+
     try {
       setIsRefunding(true);
       setError(null);
-      
+
       const response = await fetch(`/api/tenants/${tenantId}/refund-payment`, {
         method: "POST",
         headers: {
@@ -100,17 +109,19 @@ export default function PaymentsClient() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to process refund: ${response.statusText}`);
+        throw new Error(
+          errorData.message ||
+            `Failed to process refund: ${response.statusText}`
+        );
       }
 
       const result = await response.json();
-      
+
       // Close modal and reload payments
       closeRefundModal();
       await loadPayments();
-      
+
       alert(`Refund processed successfully! Refund ID: ${result.refund.id}`);
-      
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to process refund");
     } finally {
@@ -138,8 +149,10 @@ export default function PaymentsClient() {
   };
 
   const canRefund = (payment: Payment) => {
-    return payment.status === "succeeded" && 
-           (payment.refundAmount || 0) < payment.amount;
+    return (
+      payment.status === "succeeded" &&
+      (payment.refundAmount || 0) < payment.amount
+    );
   };
 
   const getRefundableAmount = (payment: Payment) => {
@@ -212,7 +225,7 @@ export default function PaymentsClient() {
               Search
             </button>
           </form>
-          
+
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -262,7 +275,10 @@ export default function PaymentsClient() {
             <tbody className="bg-white divide-y divide-gray-200">
               {payments.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={7}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     No payments found.
                   </td>
                 </tr>
@@ -291,7 +307,11 @@ export default function PaymentsClient() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(payment.status)}`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                          payment.status
+                        )}`}
+                      >
                         {payment.status.replace("_", " ")}
                       </span>
                     </td>
@@ -324,12 +344,19 @@ export default function PaymentsClient() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
             <h3 className="text-lg font-medium mb-4">Process Refund</h3>
-            
+
             <div className="mb-4 p-3 bg-gray-50 rounded">
               <div className="text-sm text-gray-600">Payment Details:</div>
-              <div className="font-mono text-sm">ID: {selectedPayment.id.slice(0, 12)}...</div>
-              <div className="text-sm">Original Amount: {formatCurrency(selectedPayment.amount)}</div>
-              <div className="text-sm">Refundable: {formatCurrency(getRefundableAmount(selectedPayment))}</div>
+              <div className="font-mono text-sm">
+                ID: {selectedPayment.id.slice(0, 12)}...
+              </div>
+              <div className="text-sm">
+                Original Amount: {formatCurrency(selectedPayment.amount)}
+              </div>
+              <div className="text-sm">
+                Refundable:{" "}
+                {formatCurrency(getRefundableAmount(selectedPayment))}
+              </div>
             </div>
 
             <form onSubmit={handleRefund} className="space-y-4">
@@ -345,7 +372,11 @@ export default function PaymentsClient() {
                     max={getRefundableAmount(selectedPayment) / 100}
                     step="0.01"
                     value={refundAmount / 100}
-                    onChange={(e) => setRefundAmount(Math.round(parseFloat(e.target.value || "0") * 100))}
+                    onChange={(e) =>
+                      setRefundAmount(
+                        Math.round(parseFloat(e.target.value || "0") * 100)
+                      )
+                    }
                     className="pl-7 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />

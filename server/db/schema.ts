@@ -224,7 +224,7 @@ export type NewLoyaltyTransaction = typeof loyaltyTransactions.$inferInsert;
 // Phase 1: Core CRM
 export const orderStatusEnum = pgEnum("order_status", [
   "draft",
-  "pending", 
+  "pending",
   "confirmed",
   "shipped",
   "delivered",

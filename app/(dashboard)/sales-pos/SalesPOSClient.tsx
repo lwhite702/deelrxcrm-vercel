@@ -38,17 +38,17 @@ export default function SalesPOSClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Order form state
   const [orderData, setOrderData] = useState<OrderFormData>({
     items: [],
     notes: "",
   });
-  
+
   // Product selection
   const [selectedProduct, setSelectedProduct] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
-  
+
   // Search terms
   const [productSearch, setProductSearch] = useState("");
   const [customerSearch, setCustomerSearch] = useState("");
@@ -59,24 +59,32 @@ export default function SalesPOSClient() {
   const loadData = async () => {
     try {
       setLoading(true);
-      
+
       // Load products and customers in parallel
       const [productsResponse, customersResponse] = await Promise.all([
         fetch(`/api/tenants/${tenantId}/products?limit=100`),
-        fetch(`/api/tenants/${tenantId}/customers?limit=100`)
+        fetch(`/api/tenants/${tenantId}/customers?limit=100`),
       ]);
 
       if (!productsResponse.ok) {
-        throw new Error(`Failed to load products: ${productsResponse.statusText}`);
+        throw new Error(
+          `Failed to load products: ${productsResponse.statusText}`
+        );
       }
       if (!customersResponse.ok) {
-        throw new Error(`Failed to load customers: ${customersResponse.statusText}`);
+        throw new Error(
+          `Failed to load customers: ${customersResponse.statusText}`
+        );
       }
 
       const productsData = await productsResponse.json();
       const customersData = await customersResponse.json();
-      
-      setProducts(productsData.products?.filter((p: Product) => p.isActive && p.stockQuantity > 0) || []);
+
+      setProducts(
+        productsData.products?.filter(
+          (p: Product) => p.isActive && p.stockQuantity > 0
+        ) || []
+      );
       setCustomers(customersData.customers || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load data");
@@ -87,29 +95,35 @@ export default function SalesPOSClient() {
 
   const addItemToOrder = () => {
     if (!selectedProduct || quantity <= 0) return;
-    
-    const product = products.find(p => p.id === selectedProduct);
+
+    const product = products.find((p) => p.id === selectedProduct);
     if (!product) return;
-    
+
     if (quantity > product.stockQuantity) {
-      setError(`Only ${product.stockQuantity} units available for ${product.name}`);
+      setError(
+        `Only ${product.stockQuantity} units available for ${product.name}`
+      );
       return;
     }
-    
+
     // Check if product already in order
-    const existingItemIndex = orderData.items.findIndex(item => item.productId === selectedProduct);
-    
+    const existingItemIndex = orderData.items.findIndex(
+      (item) => item.productId === selectedProduct
+    );
+
     if (existingItemIndex >= 0) {
       // Update existing item
       const updatedItems = [...orderData.items];
       const existingItem = updatedItems[existingItemIndex];
       const newQuantity = existingItem.quantity + quantity;
-      
+
       if (newQuantity > product.stockQuantity) {
-        setError(`Only ${product.stockQuantity} units available for ${product.name}`);
+        setError(
+          `Only ${product.stockQuantity} units available for ${product.name}`
+        );
         return;
       }
-      
+
       updatedItems[existingItemIndex] = {
         ...existingItem,
         quantity: newQuantity,
@@ -127,7 +141,7 @@ export default function SalesPOSClient() {
       };
       setOrderData({ ...orderData, items: [...orderData.items, newItem] });
     }
-    
+
     // Reset selection
     setSelectedProduct("");
     setQuantity(1);
@@ -137,7 +151,7 @@ export default function SalesPOSClient() {
   const removeItemFromOrder = (productId: string) => {
     setOrderData({
       ...orderData,
-      items: orderData.items.filter(item => item.productId !== productId),
+      items: orderData.items.filter((item) => item.productId !== productId),
     });
   };
 
@@ -146,16 +160,18 @@ export default function SalesPOSClient() {
       removeItemFromOrder(productId);
       return;
     }
-    
-    const product = products.find(p => p.id === productId);
+
+    const product = products.find((p) => p.id === productId);
     if (!product) return;
-    
+
     if (newQuantity > product.stockQuantity) {
-      setError(`Only ${product.stockQuantity} units available for ${product.name}`);
+      setError(
+        `Only ${product.stockQuantity} units available for ${product.name}`
+      );
       return;
     }
-    
-    const updatedItems = orderData.items.map(item => {
+
+    const updatedItems = orderData.items.map((item) => {
       if (item.productId === productId) {
         return {
           ...item,
@@ -165,7 +181,7 @@ export default function SalesPOSClient() {
       }
       return item;
     });
-    
+
     setOrderData({ ...orderData, items: updatedItems });
     setError(null);
   };
@@ -176,16 +192,16 @@ export default function SalesPOSClient() {
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (orderData.items.length === 0) {
       setError("Please add at least one item to the order");
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
       setError(null);
-      
+
       const response = await fetch(`/api/tenants/${tenantId}/orders`, {
         method: "POST",
         headers: {
@@ -193,7 +209,7 @@ export default function SalesPOSClient() {
         },
         body: JSON.stringify({
           customerId: orderData.customerId || null,
-          items: orderData.items.map(item => ({
+          items: orderData.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
@@ -207,16 +223,15 @@ export default function SalesPOSClient() {
       }
 
       const result = await response.json();
-      
+
       // Reset form
       setOrderData({ items: [], notes: "" });
-      
+
       // Show success (in a real app, you might navigate to order details)
       alert(`Order created successfully! Order ID: ${result.order.id}`);
-      
+
       // Reload products to update stock quantities
       await loadData();
-      
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create order");
     } finally {
@@ -224,17 +239,23 @@ export default function SalesPOSClient() {
     }
   };
 
-  const filteredProducts = products.filter(product =>
+  const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(productSearch.toLowerCase())
   );
 
-  const filteredCustomers = customers.filter(customer =>
-    `${customer.firstName} ${customer.lastName || ""}`.toLowerCase().includes(customerSearch.toLowerCase()) ||
-    (customer.email && customer.email.toLowerCase().includes(customerSearch.toLowerCase()))
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      `${customer.firstName} ${customer.lastName || ""}`
+        .toLowerCase()
+        .includes(customerSearch.toLowerCase()) ||
+      (customer.email &&
+        customer.email.toLowerCase().includes(customerSearch.toLowerCase()))
   );
 
   const formatCustomerName = (customer: Customer) => {
-    const name = [customer.firstName, customer.lastName].filter(Boolean).join(" ");
+    const name = [customer.firstName, customer.lastName]
+      .filter(Boolean)
+      .join(" ");
     return customer.email ? `${name} (${customer.email})` : name;
   };
 
@@ -272,7 +293,7 @@ export default function SalesPOSClient() {
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <h2 className="text-lg font-medium mb-4">Add Products</h2>
-            
+
             {/* Product Search */}
             <div className="mb-4">
               <input
@@ -298,7 +319,8 @@ export default function SalesPOSClient() {
                   <option value="">Choose a product...</option>
                   {filteredProducts.map((product) => (
                     <option key={product.id} value={product.id}>
-                      {product.name} - ${product.price.toFixed(2)} (Stock: {product.stockQuantity})
+                      {product.name} - ${product.price.toFixed(2)} (Stock:{" "}
+                      {product.stockQuantity})
                     </option>
                   ))}
                 </select>
@@ -312,7 +334,9 @@ export default function SalesPOSClient() {
                   type="number"
                   min="1"
                   value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  onChange={(e) =>
+                    setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -330,7 +354,7 @@ export default function SalesPOSClient() {
           {/* Customer Selection */}
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <h2 className="text-lg font-medium mb-4">Customer (Optional)</h2>
-            
+
             <div className="mb-4">
               <input
                 type="text"
@@ -343,7 +367,12 @@ export default function SalesPOSClient() {
 
             <select
               value={orderData.customerId || ""}
-              onChange={(e) => setOrderData({ ...orderData, customerId: e.target.value || undefined })}
+              onChange={(e) =>
+                setOrderData({
+                  ...orderData,
+                  customerId: e.target.value || undefined,
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Walk-in customer (no account)</option>
@@ -360,7 +389,7 @@ export default function SalesPOSClient() {
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
             <h2 className="text-lg font-medium mb-4">Order Summary</h2>
-            
+
             {orderData.items.length === 0 ? (
               <p className="text-gray-500 text-center py-8">
                 No items added to order yet
@@ -368,7 +397,10 @@ export default function SalesPOSClient() {
             ) : (
               <div className="space-y-4">
                 {orderData.items.map((item) => (
-                  <div key={item.productId} className="flex items-center justify-between border-b pb-4">
+                  <div
+                    key={item.productId}
+                    className="flex items-center justify-between border-b pb-4"
+                  >
                     <div className="flex-1">
                       <h3 className="font-medium">{item.productName}</h3>
                       <p className="text-sm text-gray-600">
@@ -380,7 +412,12 @@ export default function SalesPOSClient() {
                         type="number"
                         min="1"
                         value={item.quantity}
-                        onChange={(e) => updateItemQuantity(item.productId, parseInt(e.target.value) || 1)}
+                        onChange={(e) =>
+                          updateItemQuantity(
+                            item.productId,
+                            parseInt(e.target.value) || 1
+                          )
+                        }
                         className="w-16 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <span className="font-medium w-20 text-right">
@@ -395,7 +432,7 @@ export default function SalesPOSClient() {
                     </div>
                   </div>
                 ))}
-                
+
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center text-lg font-bold">
                     <span>Total:</span>
@@ -407,14 +444,19 @@ export default function SalesPOSClient() {
           </div>
 
           {/* Order Notes and Submit */}
-          <form onSubmit={handleSubmitOrder} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+          <form
+            onSubmit={handleSubmitOrder}
+            className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
+          >
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Order Notes (Optional)
               </label>
               <textarea
                 value={orderData.notes}
-                onChange={(e) => setOrderData({ ...orderData, notes: e.target.value })}
+                onChange={(e) =>
+                  setOrderData({ ...orderData, notes: e.target.value })
+                }
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Special instructions, delivery notes, etc."
@@ -426,7 +468,9 @@ export default function SalesPOSClient() {
               disabled={orderData.items.length === 0 || isSubmitting}
               className="w-full px-4 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 font-medium"
             >
-              {isSubmitting ? "Creating Order..." : `Create Order (${orderData.items.length} items)`}
+              {isSubmitting
+                ? "Creating Order..."
+                : `Create Order (${orderData.items.length} items)`}
             </button>
           </form>
         </div>

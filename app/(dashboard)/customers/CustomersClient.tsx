@@ -26,7 +26,7 @@ export default function CustomersClient() {
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   // Form state
   const [formData, setFormData] = useState({
     firstName: "",
@@ -50,8 +50,10 @@ export default function CustomersClient() {
       setLoading(true);
       const params = new URLSearchParams();
       if (searchTerm) params.set("search", searchTerm);
-      
-      const response = await fetch(`/api/tenants/${tenantId}/customers?${params}`);
+
+      const response = await fetch(
+        `/api/tenants/${tenantId}/customers?${params}`
+      );
       if (!response.ok) {
         throw new Error(`Failed to load customers: ${response.statusText}`);
       }
@@ -96,7 +98,9 @@ export default function CustomersClient() {
       setShowAddForm(false);
       await loadCustomers();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create customer");
+      setError(
+        err instanceof Error ? err.message : "Failed to create customer"
+      );
     }
   };
 
@@ -111,7 +115,12 @@ export default function CustomersClient() {
 
   const formatAddress = (address?: Customer["address"]) => {
     if (!address) return "";
-    const parts = [address.street, address.city, address.state, address.zipCode].filter(Boolean);
+    const parts = [
+      address.street,
+      address.city,
+      address.state,
+      address.zipCode,
+    ].filter(Boolean);
     return parts.join(", ") || "";
   };
 
@@ -191,7 +200,10 @@ export default function CustomersClient() {
       {showAddForm && (
         <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-lg font-medium mb-4">Add New Customer</h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 First Name *
@@ -200,7 +212,9 @@ export default function CustomersClient() {
                 type="text"
                 required
                 value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -211,7 +225,9 @@ export default function CustomersClient() {
               <input
                 type="text"
                 value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, lastName: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -222,7 +238,9 @@ export default function CustomersClient() {
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -233,19 +251,31 @@ export default function CustomersClient() {
               <input
                 type="tel"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="md:col-span-2">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Address</h4>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">
+                Address
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <input
                     type="text"
                     placeholder="Street Address"
                     value={formData.address.street}
-                    onChange={(e) => setFormData({ ...formData, address: { ...formData.address, street: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: {
+                          ...formData.address,
+                          street: e.target.value,
+                        },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -254,7 +284,12 @@ export default function CustomersClient() {
                     type="text"
                     placeholder="City"
                     value={formData.address.city}
-                    onChange={(e) => setFormData({ ...formData, address: { ...formData.address, city: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: { ...formData.address, city: e.target.value },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -263,7 +298,12 @@ export default function CustomersClient() {
                     type="text"
                     placeholder="State"
                     value={formData.address.state}
-                    onChange={(e) => setFormData({ ...formData, address: { ...formData.address, state: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: { ...formData.address, state: e.target.value },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -272,7 +312,15 @@ export default function CustomersClient() {
                     type="text"
                     placeholder="ZIP Code"
                     value={formData.address.zipCode}
-                    onChange={(e) => setFormData({ ...formData, address: { ...formData.address, zipCode: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: {
+                          ...formData.address,
+                          zipCode: e.target.value,
+                        },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -281,7 +329,15 @@ export default function CustomersClient() {
                     type="text"
                     placeholder="Country"
                     value={formData.address.country}
-                    onChange={(e) => setFormData({ ...formData, address: { ...formData.address, country: e.target.value } })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: {
+                          ...formData.address,
+                          country: e.target.value,
+                        },
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -335,7 +391,10 @@ export default function CustomersClient() {
             <tbody className="bg-white divide-y divide-gray-200">
               {customers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     No customers found. Add your first customer to get started.
                   </td>
                 </tr>
@@ -359,9 +418,13 @@ export default function CustomersClient() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        customer.isActive ? "text-green-600 bg-green-100" : "text-red-600 bg-red-100"
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          customer.isActive
+                            ? "text-green-600 bg-green-100"
+                            : "text-red-600 bg-red-100"
+                        }`}
+                      >
                         {customer.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>

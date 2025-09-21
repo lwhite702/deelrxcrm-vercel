@@ -21,7 +21,7 @@ export default function InventoryClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: "",
@@ -89,8 +89,10 @@ export default function InventoryClient() {
   };
 
   const getStockStatus = (stock: number, threshold: number) => {
-    if (stock === 0) return { label: "Out of Stock", color: "text-red-600 bg-red-100" };
-    if (stock <= threshold) return { label: "Low Stock", color: "text-yellow-600 bg-yellow-100" };
+    if (stock === 0)
+      return { label: "Out of Stock", color: "text-red-600 bg-red-100" };
+    if (stock <= threshold)
+      return { label: "Low Stock", color: "text-yellow-600 bg-yellow-100" };
     return { label: "In Stock", color: "text-green-600 bg-green-100" };
   };
 
@@ -145,7 +147,10 @@ export default function InventoryClient() {
       {showAddForm && (
         <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <h3 className="text-lg font-medium mb-4">Add New Product</h3>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Product Name *
@@ -154,7 +159,9 @@ export default function InventoryClient() {
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -165,7 +172,9 @@ export default function InventoryClient() {
               <input
                 type="text"
                 value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, sku: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -178,7 +187,12 @@ export default function InventoryClient() {
                 required
                 min="0"
                 value={formData.priceCents}
-                onChange={(e) => setFormData({ ...formData, priceCents: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    priceCents: parseInt(e.target.value) || 0,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -191,7 +205,12 @@ export default function InventoryClient() {
                 required
                 min="0"
                 value={formData.stockQuantity}
-                onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    stockQuantity: parseInt(e.target.value) || 0,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -203,7 +222,12 @@ export default function InventoryClient() {
                 type="number"
                 min="0"
                 value={formData.lowStockThreshold}
-                onChange={(e) => setFormData({ ...formData, lowStockThreshold: parseInt(e.target.value) || 10 })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    lowStockThreshold: parseInt(e.target.value) || 10,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -214,7 +238,9 @@ export default function InventoryClient() {
               <input
                 type="text"
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -224,7 +250,9 @@ export default function InventoryClient() {
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -277,18 +305,26 @@ export default function InventoryClient() {
             <tbody className="bg-white divide-y divide-gray-200">
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
                     No products found. Add your first product to get started.
                   </td>
                 </tr>
               ) : (
                 products.map((product) => {
-                  const stockStatus = getStockStatus(product.stockQuantity, product.lowStockThreshold);
+                  const stockStatus = getStockStatus(
+                    product.stockQuantity,
+                    product.lowStockThreshold
+                  );
                   return (
                     <tr key={product.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {product.name}
+                          </div>
                           {product.description && (
                             <div className="text-sm text-gray-500 truncate max-w-xs">
                               {product.description}
@@ -306,7 +342,9 @@ export default function InventoryClient() {
                         {product.stockQuantity}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${stockStatus.color}`}>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${stockStatus.color}`}
+                        >
                           {stockStatus.label}
                         </span>
                       </td>

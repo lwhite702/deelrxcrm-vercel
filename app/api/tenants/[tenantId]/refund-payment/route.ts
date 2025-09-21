@@ -36,7 +36,7 @@ export async function POST(
     }
 
     const { tenantId } = params;
-    
+
     // Check tenant membership and role (managers+ can process refunds)
     await requireTenantRole(user.id, tenantId, "manager");
 
@@ -44,11 +44,11 @@ export async function POST(
     const validatedData = refundPaymentSchema.parse(body);
 
     const db = getDb();
-    
+
     // Find the payment
     const payment = await db.query.payments.findFirst({
       where: and(
-        eq(payments.id, validatedData.paymentId), 
+        eq(payments.id, validatedData.paymentId),
         eq(payments.tenantId, tenantId)
       ),
     });
@@ -58,27 +58,37 @@ export async function POST(
     }
 
     if (payment.status !== "succeeded") {
-      return json({ error: "Payment is not in a refundable state" }, { status: 400 });
+      return json(
+        { error: "Payment is not in a refundable state" },
+        { status: 400 }
+      );
     }
 
     if (!payment.stripePaymentIntentId) {
-      return json({ error: "Payment was not processed through Stripe" }, { status: 400 });
+      return json(
+        { error: "Payment was not processed through Stripe" },
+        { status: 400 }
+      );
     }
 
     // Calculate refund amount
     const refundAmountCents = validatedData.amountCents || payment.amountCents;
-    const maxRefundable = payment.amountCents - (payment.refundAmountCents || 0);
-    
+    const maxRefundable =
+      payment.amountCents - (payment.refundAmountCents || 0);
+
     if (refundAmountCents > maxRefundable) {
-      return json({ 
-        error: "Refund amount exceeds refundable amount",
-        maxRefundable 
-      }, { status: 400 });
+      return json(
+        {
+          error: "Refund amount exceeds refundable amount",
+          maxRefundable,
+        },
+        { status: 400 }
+      );
     }
 
     // Process refund with Stripe
     const stripe = getStripeClient();
-    
+
     const refund = await stripe.refunds.create({
       payment_intent: payment.stripePaymentIntentId,
       amount: refundAmountCents,
@@ -93,7 +103,8 @@ export async function POST(
 
     // Update payment record
     const newRefundTotal = (payment.refundAmountCents || 0) + refundAmountCents;
-    const newStatus = newRefundTotal >= payment.amountCents ? "refunded" : "succeeded";
+    const newStatus =
+      newRefundTotal >= payment.amountCents ? "refunded" : "succeeded";
 
     const [updatedPayment] = await db
       .update(payments)
@@ -103,7 +114,7 @@ export async function POST(
         refundedAt: newStatus === "refunded" ? new Date() : payment.refundedAt,
         updatedAt: new Date(),
         metadata: {
-          ...payment.metadata as any,
+          ...(payment.metadata as any),
           lastRefund: {
             refundId: refund.id,
             amount: refundAmountCents,
@@ -125,7 +136,9 @@ export async function POST(
           updatedAt: new Date(),
           updatedBy: user.id,
         })
-        .where(and(eq(orders.id, payment.orderId), eq(orders.tenantId, tenantId)));
+        .where(
+          and(eq(orders.id, payment.orderId), eq(orders.tenantId, tenantId))
+        );
     }
 
     return json({
@@ -139,18 +152,29 @@ export async function POST(
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return json({ error: "Validation error", details: error.errors }, { status: 400 });
+      return json(
+        { error: "Validation error", details: error.errors },
+        { status: 400 }
+      );
     }
-    
+
     // Handle Stripe errors
-    if (error && typeof error === 'object' && 'type' in error && error.type === 'StripeError') {
-      return json({ 
-        error: "Stripe error", 
-        message: (error as any).message,
-        code: (error as any).code,
-      }, { status: 400 });
+    if (
+      error &&
+      typeof error === "object" &&
+      "type" in error &&
+      error.type === "StripeError"
+    ) {
+      return json(
+        {
+          error: "Stripe error",
+          message: (error as any).message,
+          code: (error as any).code,
+        },
+        { status: 400 }
+      );
     }
-    
+
     console.error("Refund payment error:", error);
     return json({ error: "Internal server error" }, { status: 500 });
   }

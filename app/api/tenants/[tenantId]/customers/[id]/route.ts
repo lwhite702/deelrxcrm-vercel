@@ -7,13 +7,15 @@ import { customers } from "../../../../../../server/db/schema";
 import { requireTenantRole } from "../../../../../../server/rbac";
 import { parseJson, json } from "../../../../../../server/http";
 
-const addressSchema = z.object({
-  street: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipCode: z.string().optional(),
-  country: z.string().optional(),
-}).optional();
+const addressSchema = z
+  .object({
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
+  })
+  .optional();
 
 const updateCustomerSchema = z.object({
   firstName: z.string().min(1).max(255).optional(),
@@ -37,12 +39,12 @@ export async function GET(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role
     await requireTenantRole(user.id, tenantId, "member");
 
     const db = getDb();
-    
+
     const customer = await db.query.customers.findFirst({
       where: and(eq(customers.id, id), eq(customers.tenantId, tenantId)),
     });
@@ -69,7 +71,7 @@ export async function PATCH(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role (members+ can update customers)
     await requireTenantRole(user.id, tenantId, "member");
 
@@ -77,7 +79,7 @@ export async function PATCH(
     const validatedData = updateCustomerSchema.parse(body);
 
     const db = getDb();
-    
+
     // Check if customer exists and belongs to tenant
     const existingCustomer = await db.query.customers.findFirst({
       where: and(eq(customers.id, id), eq(customers.tenantId, tenantId)),
@@ -93,7 +95,9 @@ export async function PATCH(
         ...validatedData,
         updatedAt: new Date(),
         updatedBy: user.id,
-        dateOfBirth: validatedData.dateOfBirth ? new Date(validatedData.dateOfBirth) : undefined,
+        dateOfBirth: validatedData.dateOfBirth
+          ? new Date(validatedData.dateOfBirth)
+          : undefined,
       })
       .where(and(eq(customers.id, id), eq(customers.tenantId, tenantId)))
       .returning();
@@ -101,7 +105,10 @@ export async function PATCH(
     return json({ customer: updatedCustomer });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return json({ error: "Validation error", details: error.errors }, { status: 400 });
+      return json(
+        { error: "Validation error", details: error.errors },
+        { status: 400 }
+      );
     }
     console.error("Customer PATCH error:", error);
     return json({ error: "Internal server error" }, { status: 500 });
@@ -119,12 +126,12 @@ export async function DELETE(
     }
 
     const { tenantId, id } = params;
-    
+
     // Check tenant membership and role (managers+ can delete customers)
     await requireTenantRole(user.id, tenantId, "manager");
 
     const db = getDb();
-    
+
     // Check if customer exists and belongs to tenant
     const existingCustomer = await db.query.customers.findFirst({
       where: and(eq(customers.id, id), eq(customers.tenantId, tenantId)),
