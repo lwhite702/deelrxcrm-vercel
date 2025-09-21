@@ -33,6 +33,7 @@ Note: Vercel no longer accepts the runtime string `nodejs18.x` in function `conf
  - `npm run client:dev`: Starts the Vite dev server
  - `npm run build`: Builds client and server
  - `npm run issues:sync`: Reads `issues.yml`, ensures labels, creates issues if missing, and optionally populates a GitHub Project (v2) with a Phase field.
+ - `npm run issues:sync:project`: Convenience wrapper that unsets `GITHUB_TOKEN`, auto-detects the repo owner, and targets the project by title (defaults to `DeelRxCRM Roadmap`).
 
 ### Issues Sync and Project Population
 
@@ -40,9 +41,21 @@ Note: Vercel no longer accepts the runtime string `nodejs18.x` in function `conf
 	```bash
 	npm run issues:sync
 	```
+	 - Shortcut with sensible defaults:
+	  ```bash
+	  # Uses auto-detected owner and project title (creates if missing)
+	  npm run issues:sync:project
+	  ```
  - Add issues to a GitHub Project and set a Phase field (from `phase-*` labels):
 	```bash
-	# Recommended: specify owner and project number
+	# Option A (recommended): use the wrapper and project title
+	unset GITHUB_TOKEN
+	# Optional overrides
+	export GH_PROJECT_TITLE="DeelRxCRM Roadmap"
+	export GH_PROJECT_CREATE=1  # auto-create if missing
+	export GH_PROJECT_ENSURE_PHASE=1  # ensure Phase field/options exist
+	npm run issues:sync:project
+\n+\t# Option B: call the script directly with explicit owner/number
 	unset GITHUB_TOKEN
 	export GH_PROJECT_OWNER="<org_or_user>"
 	export GH_PROJECT_NUMBER="<project_number>"

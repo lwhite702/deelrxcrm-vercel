@@ -21,7 +21,8 @@
   "db:bootstrap-tenant": "tsx scripts/bootstrap-tenant.ts",
     "client:dev": "vite dev --host",
     "mcp:playwright": "mcp-server-playwright --port 3334",
-    "issues:sync": "node scripts/sync-issues.mjs"
+    "issues:sync": "node scripts/sync-issues.mjs",
+    "issues:sync:project": "bash scripts/issues-sync-project.sh"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.32.0",
