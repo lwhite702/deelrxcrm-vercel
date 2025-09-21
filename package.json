@@ -20,7 +20,8 @@
   "db:check": "tsx scripts/check-db.ts",
   "db:bootstrap-tenant": "tsx scripts/bootstrap-tenant.ts",
     "client:dev": "vite dev --host",
-    "mcp:playwright": "mcp-server-playwright --port 3334"
+    "mcp:playwright": "mcp-server-playwright --port 3334",
+    "issues:sync": "node scripts/sync-issues.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.32.0",
@@ -62,6 +63,7 @@
     "vite": "^5.2.11",
     "@playwright/test": "^1.48.2",
     "mcp-playwright": "^0.0.1",
-    "postgres": "^3.4.5"
+    "postgres": "^3.4.5",
+    "js-yaml": "^4.1.0"
   }
 }
