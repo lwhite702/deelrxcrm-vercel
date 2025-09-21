@@ -5,6 +5,15 @@ import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { isEmailSuperAdmin } from '@/lib/auth/super-admin';
 
+/**
+ * Handles the creation of a super admin user.
+ *
+ * This function processes a POST request to create a new super admin user. It first validates the presence of email and password, checks if the email is authorized for super admin access, and ensures that the user does not already exist in the database. If all checks pass, it hashes the password and inserts the new user into the database with the role of 'owner'. Finally, it returns a success message along with the new user's details.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @returns A JSON response indicating the success or failure of the user creation process.
+ * @throws Error If an internal server error occurs during the process.
+ */
 export async function POST(request: NextRequest) {
   try {
     const { email, password, name } = await request.json();
