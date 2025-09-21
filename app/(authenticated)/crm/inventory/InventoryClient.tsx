@@ -34,6 +34,13 @@ interface InventoryAdjustment {
   createdAt: string;
 }
 
+/**
+ * Manages the inventory client interface, including product display and stock adjustments.
+ *
+ * This component fetches products and adjustments from the API on mount, manages the state for products, adjustments, and the adjustment form, and handles the submission of stock adjustments. It also provides visual feedback for stock status and allows users to view recent adjustments.
+ *
+ * @returns {JSX.Element} The rendered inventory client component.
+ */
 export default function InventoryClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [adjustments, setAdjustments] = useState<InventoryAdjustment[]>([]);
@@ -89,6 +96,15 @@ export default function InventoryClient() {
     }
   };
 
+  /**
+   * Handles the submission of an adjustment form.
+   *
+   * This function prevents the default form submission behavior, checks if a product is selected, and then sends a POST request to create an adjustment.
+   * If the request is successful, it refreshes the product and adjustment data, resets the form, and updates the UI state.
+   * In case of an error, it alerts the user with the error message.
+   *
+   * @param e - The event object from the form submission.
+   */
   const handleAdjustmentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProduct) return;
@@ -145,6 +161,16 @@ export default function InventoryClient() {
     return "in-stock";
   };
 
+  /**
+   * Determines the CSS class for stock status color based on the provided status.
+   *
+   * The function evaluates the input `status` string and returns a corresponding CSS class
+   * for styling. It checks for "out-of-stock" and "low-stock" statuses, returning specific
+   * classes for each, while defaulting to a class indicating that the stock is available.
+   *
+   * @param {string} status - The stock status to evaluate, which can be "out-of-stock",
+   * "low-stock", or any other string indicating available stock.
+   */
   const getStockStatusColor = (status: string) => {
     switch (status) {
       case "out-of-stock":
