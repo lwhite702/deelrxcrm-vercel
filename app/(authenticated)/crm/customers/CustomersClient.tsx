@@ -19,6 +19,15 @@ interface Customer {
   createdAt: string;
 }
 
+/**
+ * A React component for managing and displaying a list of customers.
+ *
+ * This component fetches customer data from an API based on a team ID, handles loading and error states,
+ * and provides a form for adding new customers. It also includes functionality for searching customers
+ * with a debounce effect and displays customer details in a table format.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function CustomersClient() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -45,6 +54,17 @@ export default function CustomersClient() {
   // Get team ID from URL or context - for now using placeholder
   const teamId = "1"; // TODO: Get from URL params or team context
 
+  /**
+   * Load customers from the API based on the provided team ID and search term.
+   *
+   * The function sets a loading state, constructs query parameters for the API request, and fetches customer data.
+   * It handles errors by setting an error message and ensures the loading state is reset after the operation completes.
+   *
+   * @param searchTerm - The term to filter customers by.
+   * @param teamId - The ID of the team whose customers are to be loaded.
+   * @returns Promise<void> - A promise that resolves when the operation is complete.
+   * @throws Error If the response from the API is not ok.
+   */
   const loadCustomers = async () => {
     try {
       setLoading(true);
