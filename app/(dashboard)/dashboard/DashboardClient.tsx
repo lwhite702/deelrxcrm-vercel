@@ -17,6 +17,18 @@ interface DashboardKPIs {
   }>;
 }
 
+/**
+ * Renders the dashboard client component displaying key performance indicators (KPIs).
+ *
+ * This component fetches and displays various KPIs related to sales, customers, orders, and products.
+ * It handles loading states, errors, and provides quick action links. The KPIs are loaded from an API
+ * based on the tenant ID, and the component updates when the user state changes.
+ * If no user is signed in, a prompt to sign in is displayed.
+ *
+ * @param {Object} props - The component props.
+ * @param {DashboardKPIs} [props.initialKPIs] - Initial KPIs to display before fetching from the API.
+ * @returns {JSX.Element} The rendered dashboard component.
+ */
 export default function DashboardClient({ initialKPIs }: { initialKPIs?: DashboardKPIs }) {
   const { user } = useUser();
   const [kpis, setKpis] = useState<DashboardKPIs | null>(initialKPIs || null);
@@ -26,6 +38,14 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
   // Get tenant ID (simplified - in real app this would come from context/params)
   const tenantId = "demo-tenant"; // TODO: Get from URL params or context
 
+  /**
+   * Loads KPIs from the server and updates the state accordingly.
+   *
+   * This function initiates a loading state, fetches KPI data from the specified API endpoint,
+   * and handles both successful and error responses. If the response is successful, it updates
+   * the KPIs state with the fetched data. In case of an error, it sets an error message.
+   * Finally, it ensures that the loading state is reset regardless of the outcome.
+   */
   const loadKPIs = async () => {
     try {
       setLoading(true);
@@ -42,6 +62,9 @@ export default function DashboardClient({ initialKPIs }: { initialKPIs?: Dashboa
     }
   };
 
+  /**
+   * Formats a number as a currency string.
+   */
   const formatCurrency = (amount: number) => {
     return `$${(amount / 100).toFixed(2)}`;
   };
