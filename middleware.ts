@@ -1,53 +1,49 @@
-import { authMiddleware } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { signToken, verifyToken } from '@/lib/auth/session';
 
-// Public paths that do NOT require authentication
-const publicRoutes: RegExp[] = [
-  /^\/$/, // root landing
-  /^\/landing$/, // marketing landing
-  /^\/api\/clerk\/webhooks/, // clerk webhook endpoint
-  /^\/api\/webhooks\/stripe$/, // stripe webhook endpoint
-];
+const protectedRoutes = '/dashboard';
 
-// Helper to test if path is public
-function isPublicPath(pathname: string) {
-  return publicRoutes.some((r) => r.test(pathname));
-}
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const sessionCookie = request.cookies.get('session');
+  const isProtectedRoute = pathname.startsWith(protectedRoutes);
 
-export default authMiddleware({
-  publicRoutes: (req) => isPublicPath(req.nextUrl.pathname),
-  afterAuth(auth, req) {
-    // Allow public routes
-    if (isPublicPath(req.nextUrl.pathname)) return NextResponse.next();
+  if (isProtectedRoute && !sessionCookie) {
+    return NextResponse.redirect(new URL('/sign-in', request.url));
+  }
 
-    // If not signed in redirect to login (preserve redirect url)
-    if (!auth.userId) {
-      const login = new URL("/login", req.url);
-      login.searchParams.set(
-        "redirect_url",
-        req.nextUrl.pathname + req.nextUrl.search
-      );
-      return NextResponse.redirect(login);
-    }
+  let res = NextResponse.next();
 
-    // Super admin gate (optional short-circuit) — rely on page-level check too.
-    if (req.nextUrl.pathname.startsWith("/super-admin")) {
-      const allow = (process.env.NEXT_PUBLIC_SUPER_ADMIN_USER_IDS || "")
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-      if (!allow.includes(auth.userId)) {
-        return NextResponse.redirect(new URL("/", req.url));
+  if (sessionCookie && request.method === 'GET') {
+    try {
+      const parsed = await verifyToken(sessionCookie.value);
+      const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      res.cookies.set({
+        name: 'session',
+        value: await signToken({
+          ...parsed,
+          expires: expiresInOneDay.toISOString()
+        }),
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        expires: expiresInOneDay
+      });
+    } catch (error) {
+      console.error('Error updating session:', error);
+      res.cookies.delete('session');
+      if (isProtectedRoute) {
+        return NextResponse.redirect(new URL('/sign-in', request.url));
       }
     }
+  }
 
-    return NextResponse.next();
-  },
-});
+  return res;
+}
 
 export const config = {
-  matcher: [
-    // Exclude _next/static, _next/image, assets, and favicon
-    "/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)",
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  runtime: 'nodejs'
 };

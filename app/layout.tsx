@@ -1,31 +1,43 @@
-"use client";
+import './globals.css';
+import type { Metadata, Viewport } from 'next';
+import { Manrope } from 'next/font/google';
+import { getUser, getTeamForUser } from '@/lib/db/queries';
+import { SWRConfig } from 'swr';
 
-import "./globals.css";
-import ClerkClientWrapper from "./components/ClerkClientWrapper";
-import dyn from "next/dynamic";
-import { Providers } from "./providers";
+export const metadata: Metadata = {
+  title: 'DeelRx CRM - Street-Smart Business Management',
+  description: 'Run the Block. Run the Business. Professional CRM for street-pharmacy operators and urban entrepreneurs.'
+};
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const viewport: Viewport = {
+  maximumScale: 1
+};
 
-const GlobalHeader = dyn(() => import("./components/GlobalHeader"), {
-  ssr: false,
-});
+const manrope = Manrope({ subsets: ['latin'] });
 
 export default function RootLayout({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <Providers>
-          <ClerkClientWrapper>
-            <GlobalHeader />
-            {children}
-          </ClerkClientWrapper>
-        </Providers>
+    <html
+      lang="en"
+      className={`dark ${manrope.className}`}
+    >
+      <body className="min-h-[100dvh]">
+        <SWRConfig
+          value={{
+            fallback: {
+              // We do NOT await here
+              // Only components that read this data will suspend
+              '/api/user': getUser(),
+              '/api/team': getTeamForUser()
+            }
+          }}
+        >
+          {children}
+        </SWRConfig>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
   out: "./drizzle",
-  schema: "./server/db/schema.ts",
+  schema: "./lib/db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
     // Prefer unpooled Neon host for WebSocket driver compatibility
