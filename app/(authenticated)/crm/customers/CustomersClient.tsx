@@ -47,7 +47,7 @@ export default function CustomersClient() {
 
   const loadTeam = async () => {
     try {
-      const response = await fetch('/api/team');
+      const response = await fetch("/api/team");
       if (!response.ok) {
         throw new Error(`Failed to load team: ${response.statusText}`);
       }
@@ -55,16 +55,18 @@ export default function CustomersClient() {
       if (data.team && data.team.id) {
         setTeamId(data.team.id.toString());
       } else {
-        throw new Error('No team found for user');
+        throw new Error("No team found for user");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load team information");
+      setError(
+        err instanceof Error ? err.message : "Failed to load team information"
+      );
     }
   };
 
   const loadCustomers = async () => {
     if (!teamId) return;
-    
+
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -86,7 +88,7 @@ export default function CustomersClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!teamId) return;
-    
+
     try {
       const response = await fetch(`/api/teams/${teamId}/customers`, {
         method: "POST",
@@ -180,9 +182,7 @@ export default function CustomersClient() {
           <strong>Error:</strong> {error}
         </div>
         <div className="mt-4 space-y-2">
-          <p className="text-gray-400 text-sm">
-            This could be due to:
-          </p>
+          <p className="text-gray-400 text-sm">This could be due to:</p>
           <ul className="text-gray-400 text-sm list-disc list-inside space-y-1">
             <li>Database connection issues</li>
             <li>Authentication/session expired</li>
@@ -216,11 +216,11 @@ export default function CustomersClient() {
                       city: "San Francisco",
                       state: "CA",
                       zipCode: "94102",
-                      country: "USA"
+                      country: "USA",
                     },
                     isActive: true,
-                    createdAt: new Date().toISOString()
-                  }
+                    createdAt: new Date().toISOString(),
+                  },
                 ]);
               }}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 neon-focus"

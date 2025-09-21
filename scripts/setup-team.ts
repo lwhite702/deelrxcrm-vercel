@@ -1,6 +1,6 @@
-import { db } from '../lib/db/drizzle';
-import { users, teams, teamMembers } from '../lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { db } from "../lib/db/drizzle";
+import { users, teams, teamMembers } from "../lib/db/schema";
+import { eq } from "drizzle-orm";
 
 async function setupTeamForSuperAdmin() {
   try {
@@ -8,19 +8,19 @@ async function setupTeamForSuperAdmin() {
     const superAdmin = await db
       .select()
       .from(users)
-      .where(eq(users.email, 'lee@wrelik.com'))
+      .where(eq(users.email, "lee@wrelik.com"))
       .limit(1);
 
     if (superAdmin.length === 0) {
-      console.error('Super admin user not found');
+      console.error("Super admin user not found");
       process.exit(1);
     }
 
-    console.log('Found super admin:', superAdmin[0]);
+    console.log("Found super admin:", superAdmin[0]);
 
     // Check if there are any teams
     const existingTeams = await db.select().from(teams);
-    console.log('Existing teams:', existingTeams);
+    console.log("Existing teams:", existingTeams);
 
     let team;
     if (existingTeams.length === 0) {
@@ -28,19 +28,19 @@ async function setupTeamForSuperAdmin() {
       const [newTeam] = await db
         .insert(teams)
         .values({
-          name: 'DeelRx CRM',
-          planName: 'premium',
-          subscriptionStatus: 'active',
+          name: "DeelRx CRM",
+          planName: "premium",
+          subscriptionStatus: "active",
           createdAt: new Date(),
           updatedAt: new Date(),
         })
         .returning();
-      
-      console.log('Created new team:', newTeam);
+
+      console.log("Created new team:", newTeam);
       team = newTeam;
     } else {
       team = existingTeams[0];
-      console.log('Using existing team:', team);
+      console.log("Using existing team:", team);
     }
 
     // Check if user is already a team member
@@ -57,20 +57,20 @@ async function setupTeamForSuperAdmin() {
         .values({
           userId: superAdmin[0].id,
           teamId: team.id,
-          role: 'owner',
+          role: "owner",
           joinedAt: new Date(),
         })
         .returning();
 
-      console.log('Created team membership:', membership);
+      console.log("Created team membership:", membership);
     } else {
-      console.log('User already has team membership:', existingMembership[0]);
+      console.log("User already has team membership:", existingMembership[0]);
     }
 
-    console.log('✅ Team setup complete!');
+    console.log("✅ Team setup complete!");
     process.exit(0);
   } catch (error) {
-    console.error('Error setting up team:', error);
+    console.error("Error setting up team:", error);
     process.exit(1);
   }
 }
