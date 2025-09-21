@@ -10,6 +10,13 @@ import { db } from "../lib/db/drizzle.js";
 import { users } from "../lib/db/schema.js";
 import { eq } from "drizzle-orm";
 
+/**
+ * Sets up a super admin user in the database.
+ *
+ * This function checks if a super admin user already exists by querying the database with a predefined email.
+ * If the user does not exist, it hashes a default password and creates a new super admin user with the role of "owner".
+ * It also logs relevant information throughout the process and handles any errors that may occur during execution.
+ */
 async function setupSuperAdmin() {
   const email = "lee@wrelik.com";
   const password = "admin123"; // Default password - should be changed after first login
