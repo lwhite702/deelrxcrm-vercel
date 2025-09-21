@@ -25,6 +25,14 @@ import Help from "@/pages/help";
 import NotFound from "@/pages/not-found";
 import MainLayout from "@/components/layout/main-layout";
 
+/**
+ * Renders the appropriate layout based on the user's authentication status and tenant selection.
+ *
+ * The function first checks if the authentication process is still loading, displaying a loading spinner if so.
+ * If the user is not authenticated, it shows a marketing landing page with a redirect to the login page.
+ * If the user is authenticated but no tenant is selected, it presents a tenant selector.
+ * Finally, for authenticated users with a selected tenant, it renders the main application layout with various routes.
+ */
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   const { currentTenant } = useTenant();
@@ -82,6 +90,9 @@ function Router() {
   );
 }
 
+/**
+ * Renders the main application component with various providers.
+ */
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
