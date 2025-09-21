@@ -46,6 +46,34 @@ Run this checklist after deployment to verify all critical systems are working.
 - [ ] Check Vercel function logs for successful DB queries
 - [ ] No database timeout or SSL errors
 
+### 5.1. Core CRM UI Tests (Phase 1)
+
+- [ ] **Dashboard Page** (`/dashboard`)
+  - KPI cards show real data (sales, customers, orders, products)
+  - Low stock alerts display when products below threshold
+  - Recent orders list shows with customer names
+  - Quick action buttons navigate to correct pages
+- [ ] **Inventory Management** (`/inventory`)
+  - Product list loads with search and pagination
+  - Add new product form validates required fields
+  - Edit product updates stock levels correctly
+  - Stock status indicators show low/out of stock warnings
+- [ ] **Customer Management** (`/customers`)
+  - Customer list displays with search functionality
+  - Add customer form accepts contact details and addresses
+  - Customer records update successfully
+  - Email and phone validation works
+- [ ] **Sales POS** (`/sales-pos`)
+  - Product selection shows available inventory
+  - Shopping cart calculates totals correctly
+  - Customer selection works (optional for walk-ins)
+  - Order creation reduces stock automatically
+- [ ] **Payment Management** (`/payments`)
+  - Payment history loads with status indicators
+  - Search and filter by payment status works
+  - Refund modal opens and processes test refunds
+  - Payment method display shows correctly
+
 ### 6. File Upload (if implemented)
 
 - [ ] Upload small test file (< 1MB)
@@ -59,6 +87,29 @@ Run this checklist after deployment to verify all critical systems are working.
 - [ ] Authenticated API routes require valid session
 - [ ] API responses include proper headers and status codes
 - [ ] Rate limiting works if implemented
+
+### 7.1. Core CRM API Tests (Phase 1)
+
+- [ ] **Dashboard KPIs**: GET `/api/tenants/{tenantId}/dashboard/kpis`
+  - Returns total sales, customers, orders, products
+  - Low stock alerts shown when applicable
+  - Recent orders list populated
+- [ ] **Products API**: GET/POST `/api/tenants/{tenantId}/products`
+  - List products with search and pagination
+  - Create new product with validation
+  - Update existing product stock levels
+- [ ] **Customers API**: GET/POST `/api/tenants/{tenantId}/customers`
+  - List customers with search functionality
+  - Create new customer with address data
+  - Update customer contact information
+- [ ] **Orders API**: GET/POST `/api/tenants/{tenantId}/orders`
+  - Create order with multiple line items
+  - Stock levels automatically reduced
+  - Order total calculated correctly
+- [ ] **Refund API**: POST `/api/tenants/{tenantId}/refund-payment`
+  - Process refund via Stripe (test mode)
+  - Payment status updated correctly
+  - Refund amount tracked properly
 
 ### 8. Stripe Integration
 

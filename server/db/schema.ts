@@ -220,3 +220,171 @@ export type LoyaltyEvent = typeof loyaltyEvents.$inferSelect;
 export type NewLoyaltyEvent = typeof loyaltyEvents.$inferInsert;
 export type LoyaltyTransaction = typeof loyaltyTransactions.$inferSelect;
 export type NewLoyaltyTransaction = typeof loyaltyTransactions.$inferInsert;
+
+// Phase 1: Core CRM
+export const orderStatusEnum = pgEnum("order_status", [
+  "draft",
+  "pending", 
+  "confirmed",
+  "shipped",
+  "delivered",
+  "cancelled",
+  "refunded",
+]);
+
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "pending",
+  "succeeded",
+  "failed",
+  "cancelled",
+  "refunded",
+]);
+
+export const paymentMethodEnum = pgEnum("payment_method", [
+  "card",
+  "cash",
+  "check",
+  "bank_transfer",
+  "other",
+]);
+
+export const products = pgTable("products", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .references(() => tenants.id, { onDelete: "cascade" })
+    .notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  sku: text("sku"),
+  priceCents: integer("price_cents").notNull().default(0),
+  costCents: integer("cost_cents").default(0),
+  stockQuantity: integer("stock_quantity").notNull().default(0),
+  lowStockThreshold: integer("low_stock_threshold").default(10),
+  isActive: boolean("is_active").notNull().default(true),
+  category: text("category"),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+  createdBy: text("created_by"),
+  updatedBy: text("updated_by"),
+});
+
+export const customers = pgTable("customers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .references(() => tenants.id, { onDelete: "cascade" })
+    .notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name"),
+  email: text("email"),
+  phone: text("phone"),
+  address: jsonb("address"),
+  dateOfBirth: timestamp("date_of_birth", { mode: "date" }),
+  notes: text("notes"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+  createdBy: text("created_by"),
+  updatedBy: text("updated_by"),
+});
+
+export const orders = pgTable("orders", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .references(() => tenants.id, { onDelete: "cascade" })
+    .notNull(),
+  customerId: uuid("customer_id").references(() => customers.id, {
+    onDelete: "set null",
+  }),
+  orderNumber: text("order_number").notNull(),
+  status: orderStatusEnum("status").notNull().default("draft"),
+  subtotalCents: integer("subtotal_cents").notNull().default(0),
+  taxCents: integer("tax_cents").notNull().default(0),
+  discountCents: integer("discount_cents").notNull().default(0),
+  totalCents: integer("total_cents").notNull().default(0),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+  createdBy: text("created_by"),
+  updatedBy: text("updated_by"),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .references(() => tenants.id, { onDelete: "cascade" })
+    .notNull(),
+  orderId: uuid("order_id")
+    .references(() => orders.id, { onDelete: "cascade" })
+    .notNull(),
+  productId: uuid("product_id").references(() => products.id, {
+    onDelete: "set null",
+  }),
+  productName: text("product_name").notNull(),
+  productSku: text("product_sku"),
+  quantity: integer("quantity").notNull().default(1),
+  unitPriceCents: integer("unit_price_cents").notNull().default(0),
+  totalPriceCents: integer("total_price_cents").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const payments = pgTable("payments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .references(() => tenants.id, { onDelete: "cascade" })
+    .notNull(),
+  orderId: uuid("order_id").references(() => orders.id, {
+    onDelete: "set null",
+  }),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  amountCents: integer("amount_cents").notNull().default(0),
+  currency: text("currency").notNull().default("usd"),
+  status: paymentStatusEnum("status").notNull().default("pending"),
+  method: paymentMethodEnum("method").notNull().default("card"),
+  processedAt: timestamp("processed_at", { withTimezone: true }),
+  refundedAt: timestamp("refunded_at", { withTimezone: true }),
+  refundAmountCents: integer("refund_amount_cents").default(0),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }),
+});
+
+export const webhookEvents = pgTable("webhook_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, {
+    onDelete: "set null",
+  }),
+  provider: text("provider").notNull(),
+  eventType: text("event_type").notNull(),
+  eventId: text("event_id").notNull(),
+  payload: jsonb("payload").notNull(),
+  processed: boolean("processed").notNull().default(false),
+  processedAt: timestamp("processed_at", { withTimezone: true }),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export type Product = typeof products.$inferSelect;
+export type NewProduct = typeof products.$inferInsert;
+export type Customer = typeof customers.$inferSelect;
+export type NewCustomer = typeof customers.$inferInsert;
+export type Order = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
+export type OrderItem = typeof orderItems.$inferSelect;
+export type NewOrderItem = typeof orderItems.$inferInsert;
+export type Payment = typeof payments.$inferSelect;
+export type NewPayment = typeof payments.$inferInsert;
+export type WebhookEvent = typeof webhookEvents.$inferSelect;
+export type NewWebhookEvent = typeof webhookEvents.$inferInsert;
