@@ -62,6 +62,18 @@ const categoryOptions = [
   { value: "other", label: "Other", color: "bg-slate-100 text-slate-800" }
 ];
 
+/**
+ * Renders a form for creating or editing an article.
+ *
+ * This component manages the state and validation of the article form, including title, slug, content, category, and tags. It handles auto-generating the slug from the title, validates the slug for uniqueness, and manages the submission of the form to create or update an article. The component also provides feedback to the user through toasts and manages tenant-specific articles for super admins.
+ *
+ * @param {ArticleFormProps} props - The properties for the ArticleForm component.
+ * @param {Article} [props.article] - The article to edit, if in edit mode.
+ * @param {function} [props.onSuccess] - Callback function to be called on successful article creation or update.
+ * @param {function} [props.onCancel] - Callback function to be called when the cancel button is clicked.
+ * @param {string} [props.className] - Additional class names for styling the component.
+ * @returns {JSX.Element} The rendered ArticleForm component.
+ */
 export function ArticleForm({ article, onSuccess, onCancel, className }: ArticleFormProps) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -95,6 +107,9 @@ export function ArticleForm({ article, onSuccess, onCancel, className }: Article
   const watchedSlug = form.watch("slug");
 
   // Auto-generate slug from title
+  /**
+   * Generates a URL-friendly slug from a given title.
+   */
   const generateSlug = (title: string): string => {
     return title
       .toLowerCase()
@@ -180,6 +195,9 @@ export function ArticleForm({ article, onSuccess, onCancel, className }: Article
     },
   });
 
+  /**
+   * Handles form submission by validating the slug and mutating the data.
+   */
   const onSubmit = (data: ArticleFormData) => {
     if (slugError) {
       toast({
@@ -192,6 +210,9 @@ export function ArticleForm({ article, onSuccess, onCancel, className }: Article
     mutation.mutate(data);
   };
 
+  /**
+   * Handles adding a new tag to the form if it's not empty and not already included.
+   */
   const handleAddTag = () => {
     const tag = newTag.trim();
     if (!tag || form.getValues("tags").includes(tag)) return;
@@ -201,11 +222,17 @@ export function ArticleForm({ article, onSuccess, onCancel, className }: Article
     setNewTag("");
   };
 
+  /**
+   * Removes a specified tag from the form's tag list.
+   */
   const handleRemoveTag = (tagToRemove: string) => {
     const currentTags = form.getValues("tags");
     form.setValue("tags", currentTags.filter(tag => tag !== tagToRemove), { shouldValidate: true });
   };
 
+  /**
+   * Handles the key down event for adding a tag when the Enter key is pressed.
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
