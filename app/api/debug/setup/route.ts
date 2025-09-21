@@ -3,6 +3,16 @@ import { users, teams, teamMembers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+/**
+ * Handles the GET request to perform database operations and return user and team information.
+ *
+ * This function tests the database connection, retrieves users, teams, and team members, and checks for the existence of a super admin.
+ * If the super admin does not exist, it returns a 404 error. It also creates a default team if none exists and assigns the super admin as a member if needed.
+ * Finally, it returns a JSON response containing user, team, membership, and statistics about users, teams, and members.
+ *
+ * @returns A JSON response containing success status and relevant data.
+ * @throws Error If a database error occurs during the operations.
+ */
 export async function GET() {
   try {
     console.log("=== Database Debug Info ===");
