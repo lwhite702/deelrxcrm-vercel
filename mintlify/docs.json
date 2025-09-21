@@ -1,0 +1,12 @@
+{
+  "name": "DeelRxCRM Docs",
+  "logo": "/public/logo.png",
+  "navigation": [
+    { "group": "Getting Started", "pages": ["getting-started"] },
+    { "group": "Core CRM", "pages": ["core-crm"] },
+    { "group": "Extended Ops", "pages": ["extended-ops"] },
+    { "group": "Credit & KB Overview", "pages": ["credit-kb-overview"] },
+    { "group": "Account & Admin", "pages": ["account-admin"] },
+    { "group": "Changelog", "pages": ["changelog"] }
+  ]
+}
