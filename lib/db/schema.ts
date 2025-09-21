@@ -237,7 +237,7 @@ export type NewAuditLogEntry = typeof auditLog.$inferInsert;
 export const orderStatusEnum = pgEnum("order_status", [
   "draft",
   "pending",
-  "confirmed", 
+  "confirmed",
   "shipped",
   "delivered",
   "cancelled",
@@ -396,4 +396,5 @@ export type NewCrmOrderItem = typeof orderItems.$inferInsert;
 export type CrmPayment = typeof payments.$inferSelect;
 export type NewCrmPayment = typeof payments.$inferInsert;
 export type CrmInventoryAdjustment = typeof inventoryAdjustments.$inferSelect;
-export type NewCrmInventoryAdjustment = typeof inventoryAdjustments.$inferInsert;
+export type NewCrmInventoryAdjustment =
+  typeof inventoryAdjustments.$inferInsert;

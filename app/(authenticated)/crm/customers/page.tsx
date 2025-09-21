@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import CustomersClient from './CustomersClient';
+import { Suspense } from "react";
+import CustomersClient from "./CustomersClient";
 
 export default function CustomersPage() {
   return (
@@ -12,7 +12,7 @@ export default function CustomersPage() {
           Manage your customer database and information
         </p>
       </div>
-      <Suspense 
+      <Suspense
         fallback={
           <div className="urban-card animate-pulse">
             <div className="h-64 bg-gray-800 rounded"></div>

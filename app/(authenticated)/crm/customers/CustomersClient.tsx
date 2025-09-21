@@ -51,9 +51,7 @@ export default function CustomersClient() {
       const params = new URLSearchParams();
       if (searchTerm) params.set("search", searchTerm);
 
-      const response = await fetch(
-        `/api/teams/${teamId}/customers?${params}`
-      );
+      const response = await fetch(`/api/teams/${teamId}/customers?${params}`);
       if (!response.ok) {
         throw new Error(`Failed to load customers: ${response.statusText}`);
       }
@@ -201,7 +199,9 @@ export default function CustomersClient() {
       {/* Add Customer Form */}
       {showAddForm && (
         <div className="urban-card neon-focus">
-          <h3 className="text-xl font-semibold mb-6 text-white neon-glow">Add New Customer</h3>
+          <h3 className="text-xl font-semibold mb-6 text-white neon-glow">
+            Add New Customer
+          </h3>
           <form
             onSubmit={handleSubmit}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -402,7 +402,10 @@ export default function CustomersClient() {
                 </tr>
               ) : (
                 customers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-gray-800/50 transition-colors">
+                  <tr
+                    key={customer.id}
+                    className="hover:bg-gray-800/50 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-white neon-glow">
                         {formatFullName(customer)}

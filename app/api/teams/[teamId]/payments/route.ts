@@ -11,8 +11,12 @@ const createPaymentSchema = z.object({
   stripePaymentIntentId: z.string().optional(),
   amountCents: z.number().int().min(0),
   currency: z.string().default("usd"),
-  status: z.enum(["pending", "succeeded", "failed", "cancelled", "refunded"]).default("pending"),
-  method: z.enum(["card", "cash", "check", "bank_transfer", "other"]).default("card"),
+  status: z
+    .enum(["pending", "succeeded", "failed", "cancelled", "refunded"])
+    .default("pending"),
+  method: z
+    .enum(["card", "cash", "check", "bank_transfer", "other"])
+    .default("card"),
   metadata: z.record(z.any()).optional(),
 });
 
@@ -62,7 +66,10 @@ export async function GET(
     return NextResponse.json({ payments: paymentList });
   } catch (error) {
     console.error("Payments GET error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -100,6 +107,9 @@ export async function POST(
       );
     }
     console.error("Payments POST error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

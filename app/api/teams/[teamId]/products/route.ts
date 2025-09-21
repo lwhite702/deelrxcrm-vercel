@@ -72,7 +72,10 @@ export async function GET(
     return NextResponse.json({ products: productList });
   } catch (error) {
     console.error("Products GET error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -111,6 +114,9 @@ export async function POST(
       );
     }
     console.error("Products POST error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

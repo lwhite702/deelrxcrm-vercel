@@ -178,7 +178,9 @@
   --primary: hsl(79 84% 56%); /* #A3E635 - Neon lime primary */
   --primary-foreground: hsl(208 32% 8%); /* #0B0F14 - Primary text on neon */
   --secondary: hsl(186 82% 60%); /* #22D3EE - Neon cyan secondary */
-  --secondary-foreground: hsl(208 32% 8%); /* #0B0F14 - Secondary text on neon */
+  --secondary-foreground: hsl(
+    208 32% 8%
+  ); /* #0B0F14 - Secondary text on neon */
   --muted: hsl(215 28% 23%); /* #1E293B - Muted background */
   --muted-foreground: hsl(215 20% 35%); /* #334155 - Muted text */
   --accent: hsl(320 67% 55%); /* #EC4899 - Hot pink accent */
@@ -211,7 +213,9 @@
   --primary: hsl(79 84% 56%); /* #A3E635 - Neon lime primary */
   --primary-foreground: hsl(208 32% 8%); /* #0B0F14 - Primary text on neon */
   --secondary: hsl(186 82% 60%); /* #22D3EE - Neon cyan secondary */
-  --secondary-foreground: hsl(208 32% 8%); /* #0B0F14 - Secondary text on neon */
+  --secondary-foreground: hsl(
+    208 32% 8%
+  ); /* #0B0F14 - Secondary text on neon */
   --muted: hsl(215 28% 23%); /* #1E293B - Muted background */
   --muted-foreground: hsl(215 20% 35%); /* #334155 - Muted text */
   --accent: hsl(320 67% 55%); /* #EC4899 - Hot pink accent */
@@ -293,25 +297,33 @@
     line-height: 1.25rem; /* 20px for legibility */
     z-index: 50;
   }
-  
+
   /* Street Pharmacy Theme Components */
   .neon-glow {
     box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
   }
-  
+
   .neon-glow-cyan {
     box-shadow: 0 0 20px hsl(var(--secondary) / 0.3);
   }
-  
+
   .neon-glow-pink {
     box-shadow: 0 0 20px hsl(var(--accent) / 0.3);
   }
-  
-  .text-neon-lime { color: hsl(var(--primary)); }
-  .text-neon-cyan { color: hsl(var(--secondary)); }
-  .text-neon-pink { color: hsl(var(--accent)); }
-  .text-neon-yellow { color: hsl(var(--chart-4)); }
-  
+
+  .text-neon-lime {
+    color: hsl(var(--primary));
+  }
+  .text-neon-cyan {
+    color: hsl(var(--secondary));
+  }
+  .text-neon-pink {
+    color: hsl(var(--accent));
+  }
+  .text-neon-yellow {
+    color: hsl(var(--chart-4));
+  }
+
   .street-card {
     background-color: hsl(var(--card));
     border: 1px solid hsl(var(--border));
@@ -319,7 +331,7 @@
     padding: 1.5rem;
     box-shadow: 0 4px 12px hsl(0 0% 0% / 0.2);
   }
-  
+
   .street-button {
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
@@ -329,12 +341,12 @@
     box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
     transition: all 0.3s ease;
   }
-  
+
   .street-button:hover {
     background-color: hsl(var(--primary) / 0.9);
     transform: scale(1.05);
   }
-  
+
   .street-button-secondary {
     background-color: transparent;
     border: 2px solid hsl(var(--secondary));
@@ -344,12 +356,12 @@
     border-radius: var(--radius-lg);
     transition: all 0.3s ease;
   }
-  
+
   .street-button-secondary:hover {
     background-color: hsl(var(--secondary) / 0.1);
     box-shadow: 0 0 20px hsl(var(--secondary) / 0.3);
   }
-  
+
   .legal-disclaimer {
     background-color: hsl(var(--muted) / 0.5);
     border: 1px solid hsl(var(--chart-4) / 0.3);
@@ -358,7 +370,7 @@
     font-size: 0.875rem;
     color: hsl(var(--muted-foreground));
   }
-  
+
   .legal-disclaimer strong {
     color: hsl(var(--chart-4));
   }

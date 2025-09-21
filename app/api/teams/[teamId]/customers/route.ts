@@ -61,9 +61,7 @@ export async function GET(
     }
 
     if (search) {
-      conditions.push(
-        ilike(customers.firstName, `%${search}%`)
-      );
+      conditions.push(ilike(customers.firstName, `%${search}%`));
     }
 
     const customerList = await db
@@ -77,7 +75,10 @@ export async function GET(
     return NextResponse.json({ customers: customerList });
   } catch (error) {
     console.error("Customers GET error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -119,6 +120,9 @@ export async function POST(
       );
     }
     console.error("Customers POST error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

@@ -102,10 +102,12 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <CircleIcon className="h-6 w-6 text-neon-lime" />
-          <span className="ml-2 text-xl font-semibold text-neon-lime">DeelRx</span>
+          <span className="ml-2 text-xl font-semibold text-neon-lime">
+            DeelRx
+          </span>
         </Link>
         <div className="flex items-center space-x-4">
-          <Link 
+          <Link
             href="/crm/customers"
             className="text-sm font-medium text-neon-cyan hover:text-neon-lime transition-colors neon-glow"
           >

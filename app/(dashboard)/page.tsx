@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database } from 'lucide-react';
-import { Terminal } from './terminal';
+import { Button } from "@/components/ui/button";
+import { ArrowRight, CreditCard, Database } from "lucide-react";
+import { Terminal } from "./terminal";
 
 export default function HomePage() {
   return (
@@ -11,11 +11,14 @@ export default function HomePage() {
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl font-bold text-foreground tracking-tight sm:text-5xl md:text-6xl">
                 Run the Block.
-                <span className="block text-neon-lime neon-glow">Run the Business.</span>
+                <span className="block text-neon-lime neon-glow">
+                  Run the Business.
+                </span>
               </h1>
               <p className="mt-3 text-base text-muted-foreground sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                Street-smart CRM for pharmacy operators who understand both compliance and hustle. 
-                Manage inventory, customers, and operations with tools built by those who know the game.
+                Street-smart CRM for pharmacy operators who understand both
+                compliance and hustle. Manage inventory, customers, and
+                operations with tools built by those who know the game.
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                 <Button
@@ -51,8 +54,9 @@ export default function HomePage() {
                   Inventory Management
                 </h2>
                 <p className="mt-2 text-base text-muted-foreground">
-                  Track your product, manage stock levels, and automate reordering 
-                  with real-time inventory visibility across all locations.
+                  Track your product, manage stock levels, and automate
+                  reordering with real-time inventory visibility across all
+                  locations.
                 </p>
               </div>
             </div>
@@ -66,8 +70,9 @@ export default function HomePage() {
                   Customer Intelligence
                 </h2>
                 <p className="mt-2 text-base text-muted-foreground">
-                  Know your customers better than they know themselves. Track preferences, 
-                  purchase history, and deliver personalized experiences that build loyalty.
+                  Know your customers better than they know themselves. Track
+                  preferences, purchase history, and deliver personalized
+                  experiences that build loyalty.
                 </p>
               </div>
             </div>
@@ -81,8 +86,9 @@ export default function HomePage() {
                   Payment Processing
                 </h2>
                 <p className="mt-2 text-base text-muted-foreground">
-                  Accept payments however your customers want to pay. Cash, cards, 
-                  digital wallets - all tracked and reconciled automatically.
+                  Accept payments however your customers want to pay. Cash,
+                  cards, digital wallets - all tracked and reconciled
+                  automatically.
                 </p>
               </div>
             </div>
@@ -98,17 +104,20 @@ export default function HomePage() {
                 Ready to dominate your market?
               </h2>
               <p className="mt-3 max-w-3xl text-lg text-muted-foreground">
-                Built for operators who understand both the street and the spreadsheet. 
-                Manage your business with tools that respect the hustle and ensure compliance.
+                Built for operators who understand both the street and the
+                spreadsheet. Manage your business with tools that respect the
+                hustle and ensure compliance.
               </p>
-              
+
               {/* Legal Disclaimer */}
               <div className="legal-disclaimer mt-6">
                 <p>
-                  <strong>IMPORTANT LEGAL NOTICE:</strong> DeelRx CRM is designed exclusively for 
-                  licensed pharmaceutical operations and legal dispensaries. This software is intended 
-                  for lawful business use only and must comply with all applicable federal, state, and 
-                  local regulations. Users are responsible for ensuring full legal compliance in their jurisdiction.
+                  <strong>IMPORTANT LEGAL NOTICE:</strong> DeelRx CRM is
+                  designed exclusively for licensed pharmaceutical operations
+                  and legal dispensaries. This software is intended for lawful
+                  business use only and must comply with all applicable federal,
+                  state, and local regulations. Users are responsible for
+                  ensuring full legal compliance in their jurisdiction.
                 </p>
               </div>
             </div>

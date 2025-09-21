@@ -18,25 +18,39 @@ const orderItemSchema = z.object({
 const createOrderSchema = z.object({
   customerId: z.string().uuid().optional(),
   orderNumber: z.string().min(1),
-  status: z.enum(["draft", "pending", "confirmed", "shipped", "delivered", "cancelled", "refunded"]).default("draft"),
+  status: z
+    .enum([
+      "draft",
+      "pending",
+      "confirmed",
+      "shipped",
+      "delivered",
+      "cancelled",
+      "refunded",
+    ])
+    .default("draft"),
   subtotalCents: z.number().int().min(0),
   taxCents: z.number().int().min(0).default(0),
   totalCents: z.number().int().min(0),
   notes: z.string().optional(),
-  shippingAddress: z.object({
-    street: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-  }).optional(),
-  billingAddress: z.object({
-    street: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    zipCode: z.string().optional(),
-    country: z.string().optional(),
-  }).optional(),
+  shippingAddress: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      zipCode: z.string().optional(),
+      country: z.string().optional(),
+    })
+    .optional(),
+  billingAddress: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      zipCode: z.string().optional(),
+      country: z.string().optional(),
+    })
+    .optional(),
   items: z.array(orderItemSchema),
 });
 
@@ -86,7 +100,10 @@ export async function GET(
     return NextResponse.json({ orders: orderList });
   } catch (error) {
     console.error("Orders GET error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -129,7 +146,7 @@ export async function POST(
 
       // Create order items
       if (validatedData.items && validatedData.items.length > 0) {
-        const orderItemsData = validatedData.items.map(item => ({
+        const orderItemsData = validatedData.items.map((item) => ({
           tenantId: teamId,
           orderId: newOrder.id,
           productId: item.productId,
@@ -155,6 +172,9 @@ export async function POST(
       );
     }
     console.error("Orders POST error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
