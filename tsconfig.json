@@ -15,7 +15,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["DeelrzCRM/client/src/*"],
-      "@shared/*": ["DeelrzCRM/shared/*"]
+      "@shared/*": ["DeelrzCRM/shared/*"],
+      "server/*": ["server/*"],
+      "lib/*": ["lib/*"]
     },
     "jsx": "preserve",
     "allowJs": true,
@@ -29,6 +31,7 @@
     ]
   },
   "include": [
+    "app",
     "src",
     "server",
     "api",

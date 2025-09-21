@@ -37,14 +37,20 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invalid signature";
-    return NextResponse.json({ error: `Webhook Error: ${message}` }, { status: 400 });
+    return NextResponse.json(
+      { error: `Webhook Error: ${message}` },
+      { status: 400 }
+    );
   }
 
   try {
     await handleStripeEvent(event);
   } catch (err) {
     console.error("Stripe webhook handler failed", err);
-    return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook handler failed" },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ ok: true });
