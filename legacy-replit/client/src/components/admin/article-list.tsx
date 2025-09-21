@@ -92,6 +92,16 @@ const categoryOptions = [
   { value: "other", label: "Other", color: "bg-slate-100 text-slate-800" }
 ];
 
+/**
+ * Render a list of articles with filtering, pagination, and bulk actions.
+ *
+ * This component manages the state for article filters, pagination, and selected articles. It fetches articles and tenants from the API, applies local filtering based on the selected filters, and handles article deletion and bulk updates. The component also provides user feedback through toast notifications and manages the display of articles in a table format with pagination controls.
+ *
+ * @param {Object} props - The properties for the ArticleList component.
+ * @param {Function} props.onEdit - Callback function to handle editing an article.
+ * @param {Function} props.onView - Callback function to handle viewing an article.
+ * @param {string} props.className - Additional class names for styling the component.
+ */
 export function ArticleList({ onEdit, onView, className }: ArticleListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -212,19 +222,29 @@ export function ArticleList({ onEdit, onView, className }: ArticleListProps) {
   });
 
   // Event handlers
+  /**
+   * Updates filters and resets pagination to the first page.
+   */
   const handleFilterChange = (key: keyof ArticleFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page when filtering
   };
 
+  /** Handles the page change for pagination. */
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, page: Math.max(1, Math.min(newPage, totalPages)) }));
   };
 
+  /**
+   * Updates the pagination settings based on the new page size.
+   */
   const handlePageSizeChange = (newPageSize: string) => {
     setPagination({ page: 1, pageSize: parseInt(newPageSize) });
   };
 
+  /**
+   * Toggles the selection of all articles based on the checked state.
+   */
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedArticles(new Set(paginatedArticles.map(article => article.id)));
@@ -233,6 +253,9 @@ export function ArticleList({ onEdit, onView, className }: ArticleListProps) {
     }
   };
 
+  /**
+   * Updates the selection of articles based on the provided articleId and checked status.
+   */
   const handleSelectArticle = (articleId: string, checked: boolean) => {
     setSelectedArticles(prev => {
       const updated = new Set(prev);
@@ -245,10 +268,16 @@ export function ArticleList({ onEdit, onView, className }: ArticleListProps) {
     });
   };
 
+  /**
+   * Opens the delete dialog for the specified article.
+   */
   const handleDeleteArticle = (article: KbArticle) => {
     setDeleteDialog({ open: true, article });
   };
 
+  /**
+   * Confirms the deletion of an article and triggers the delete mutation.
+   */
   const confirmDelete = () => {
     if (deleteDialog.article) {
       deleteArticleMutation.mutate(deleteDialog.article.id);
@@ -256,10 +285,16 @@ export function ArticleList({ onEdit, onView, className }: ArticleListProps) {
     }
   };
 
+  /**
+   * Handles bulk actions by setting the action type and opening the bulk action modal.
+   */
   const handleBulkAction = (type: 'activate' | 'deactivate') => {
     setBulkAction({ type, open: true });
   };
 
+  /**
+   * Confirms and executes a bulk action on selected articles.
+   */
   const confirmBulkAction = () => {
     bulkUpdateMutation.mutate({
       articleIds: Array.from(selectedArticles),
@@ -268,16 +303,25 @@ export function ArticleList({ onEdit, onView, className }: ArticleListProps) {
     setBulkAction({ type: 'activate', open: false });
   };
 
+  /**
+   * Retrieves the label for a given category from categoryOptions.
+   */
   const getCategoryLabel = (category: string) => {
     const option = categoryOptions.find(opt => opt.value === category);
     return option?.label || category;
   };
 
+  /**
+   * Retrieves the color associated with a given category.
+   */
   const getCategoryColor = (category: string) => {
     const option = categoryOptions.find(opt => opt.value === category);
     return option?.color || "bg-gray-100 text-gray-800";
   };
 
+  /**
+   * Formats a date string into a localized date format or returns 'N/A' if the input is null.
+   */
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
