@@ -5,7 +5,8 @@ import { NextResponse } from "next/server";
 const publicRoutes: RegExp[] = [
   /^\/$/, // root landing
   /^\/landing$/, // marketing landing
-  /^\/api\/clerk\/webhooks/, // webhook endpoint
+  /^\/api\/clerk\/webhooks/, // clerk webhook endpoint
+  /^\/api\/webhooks\/stripe$/, // stripe webhook endpoint
 ];
 
 // Helper to test if path is public
