@@ -1,6 +1,9 @@
 import React from "react";
 import CustomersClient from "./CustomersClient";
 
+/**
+ * Renders the Customers page for managing customer information.
+ */
 export default function CustomersPage() {
   return (
     <div className="container mx-auto p-6">
