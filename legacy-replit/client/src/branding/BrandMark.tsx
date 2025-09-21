@@ -24,6 +24,21 @@ const iconSizeMap = {
   xl: 56
 };
 
+/**
+ * Renders a brand mark component, either as a logo or an icon.
+ *
+ * The function determines the current theme (dark or light) and renders the appropriate brand assets based on the variant specified.
+ * It also handles image loading errors gracefully and optionally displays a tagline. The component is interactive if an onClick handler is provided.
+ *
+ * @param {Object} props - The properties for the BrandMark component.
+ * @param {string} [props.variant="logo"] - The variant of the brand mark, either "logo" or "icon".
+ * @param {string} [props.size="md"] - The size of the brand mark.
+ * @param {boolean} [props.showTagline=false] - Whether to display the tagline.
+ * @param {string} [props.className] - Additional class names for styling.
+ * @param {string} [props.theme="auto"] - The theme for the brand mark, can be "dark", "light", or "auto".
+ * @param {function} [props.onClick] - Optional click handler for the component.
+ * @returns {JSX.Element} The rendered brand mark component.
+ */
 export function BrandMark({ 
   variant = "logo", 
   size = "md", 
@@ -33,6 +48,13 @@ export function BrandMark({
   onClick 
 }: BrandMarkProps) {
   // Safe dark mode detection that works during SSR and CSR
+  /**
+   * Determines if dark mode is enabled.
+   *
+   * This function checks if the code is running in a browser environment by verifying the type of `window`.
+   * It then evaluates the current theme, returning true for "dark", false for "light",
+   * and checks the document's class list for "dark" if the theme is not explicitly set.
+   */
   const getDarkMode = () => {
     if (typeof window === "undefined") return false;
     if (theme === "dark") return true;
