@@ -96,6 +96,9 @@ function UserMenu() {
   );
 }
 
+/**
+ * Renders the header component with navigation links and user menu.
+ */
 function Header() {
   return (
     <header className="border-b border-border bg-card">
