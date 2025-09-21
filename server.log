@@ -1,0 +1,62 @@
+nohup: ignoring input
+
+> deelrxcrm-saas-starter@1.0.0 dev /workspaces/deelrxcrm-vercel
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use, using available port 3001 instead.
+   ▲ Next.js 15.4.0-canary.47 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://10.0.0.172:3001
+   - Environments: .env.development.local, .env.local, .env
+   - Experiments (use with caution):
+     ✓ ppr
+     ✓ nodeMiddleware
+     ✓ clientSegmentCache
+
+ ✓ Starting...
+ ✓ Compiled middleware in 421ms
+ ✓ Ready in 1450ms
+ ○ Compiling /api/debug/setup ...
+ ✓ Compiled /api/debug/setup in 1426ms
+=== Database Debug Info ===
+DATABASE_URL: postgresql://neondb_owner:npg_2RusgNYhr0xy@ep-damp...
+Testing database connection...
+Users found: 2
+Super admin found: true
+Teams found: 1
+Team members found: 1
+Super admin has team membership: false
+Creating team membership...
+Created membership: 2
+ GET /api/debug/setup 200 in 1804ms
+ ○ Compiling /api/team ...
+ ✓ Compiled /api/team in 720ms
+ GET /api/team 404 in 772ms
+ ○ Compiling /api/teams/[teamId]/customers ...
+ ✓ Compiled /api/teams/[teamId]/customers in 681ms
+ GET /api/teams/1/customers 401 in 1198ms
+ ○ Compiling /api/tenant/list ...
+ GET /api/tenant/list 401 in 1354ms
+ ✓ Compiled /api/tenant/list in 1372ms
+ GET /api/user 200 in 1405ms
+ GET /api/tenant/list 401 in 65ms
+ GET /api/user 200 in 77ms
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to /tmp/next-panic-5c8ba9824e131b8fce20e6fa503ffebc.log.
+
+To help make Turbopack better, report this error by ]8;;https://github.com/vercel/next.js/discussions/new?category=turbopack-error-report&title=Turbopack%20Error%3A%20Next.js%20package%20not%20found&body=Turbopack%20version%3A%20%60e680bee9%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0ANext.js%20package%20not%20found%0A%0ADebug%20info%3A%0A-%20Execution%20of%20get_entrypoints_with_issues_operation%20failed%0A-%20Execution%20of%20EntrypointsOperation%3A%3Anew%20failed%0A-%20Execution%20of%20Project%3A%3Aentrypoints%20failed%0A-%20Execution%20of%20AppProject%3A%3Aroutes%20failed%0A-%20Execution%20of%20directory_tree_to_entrypoints_internal%20failed%0A-%20Execution%20of%20%2AFileSystemPath%3A%3Ajoin%20failed%0A-%20Execution%20of%20get_next_package%20failed%0A-%20Next.js%20package%20not%20found%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace\clicking here.]8;;\
+-----
+
+[Error [TurbopackInternalError]: Next.js package not found
+
+Debug info:
+- Execution of get_entrypoints_with_issues_operation failed
+- Execution of EntrypointsOperation::new failed
+- Execution of Project::entrypoints failed
+- Execution of AppProject::routes failed
+- Execution of directory_tree_to_entrypoints_internal failed
+- Execution of *FileSystemPath::join failed
+- Execution of get_next_package failed
+- Next.js package not found]
+[?25h

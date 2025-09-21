@@ -367,7 +367,18 @@ export const payments = pgTable("payments", {
   updatedAt: timestamp("updated_at"),
 });
 
-// Inventory Adjustments table
+// Inventory Adjustments table (PHASE 2)
+export const adjustmentReasonEnum = pgEnum("adjustment_reason", [
+  "waste",
+  "sample", 
+  "personal",
+  "recount",
+  "damage",
+  "theft",
+  "expired",
+  "other"
+]);
+
 export const inventoryAdjustments = pgTable("inventory_adjustments", {
   id: uuid("id").primaryKey().defaultRandom(),
   tenantId: uuid("tenant_id")
@@ -378,10 +389,162 @@ export const inventoryAdjustments = pgTable("inventory_adjustments", {
     .references(() => products.id, { onDelete: "cascade" }),
   adjustmentType: text("adjustment_type").notNull(), // "increase", "decrease", "correction"
   quantity: integer("quantity").notNull(),
-  reason: text("reason"),
+  reason: adjustmentReasonEnum("reason").notNull().default("other"),
   notes: text("notes"),
+  previousQuantity: integer("previous_quantity").notNull(),
+  newQuantity: integer("new_quantity").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   createdBy: integer("created_by").references(() => users.id),
+});
+
+// Customer Referrals table (PHASE 2)
+export const customerReferrals = pgTable("customer_referrals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  referrerCustomerId: uuid("referrer_customer_id")
+    .notNull()
+    .references(() => customers.id, { onDelete: "cascade" }),
+  referredCustomerId: uuid("referred_customer_id")
+    .references(() => customers.id, { onDelete: "set null" }),
+  referredEmail: text("referred_email"),
+  referredPhone: text("referred_phone"),
+  status: text("status").notNull().default("pending"), // pending, converted, expired
+  rewardAmount: integer("reward_amount_cents").default(0),
+  rewardPaid: boolean("reward_paid").notNull().default(false),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  convertedAt: timestamp("converted_at"),
+  expiresAt: timestamp("expires_at"),
+});
+
+// Deliveries table (PHASE 2)
+export const deliveryStatusEnum = pgEnum("delivery_status", [
+  "pending",
+  "assigned",
+  "in_transit", 
+  "delivered",
+  "failed",
+  "returned"
+]);
+
+export const deliveryMethodEnum = pgEnum("delivery_method", [
+  "pickup",
+  "standard_delivery",
+  "express_delivery",
+  "overnight",
+  "courier",
+  "postal"
+]);
+
+export const deliveries = pgTable("deliveries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  customerId: uuid("customer_id")
+    .references(() => customers.id, { onDelete: "set null" }),
+  method: deliveryMethodEnum("method").notNull().default("standard_delivery"),
+  status: deliveryStatusEnum("status").notNull().default("pending"),
+  costCents: integer("cost_cents").notNull().default(0),
+  deliveryAddress: jsonb("delivery_address").notNull(),
+  instructions: text("instructions"),
+  trackingNumber: text("tracking_number"),
+  estimatedDeliveryAt: timestamp("estimated_delivery_at"),
+  actualDeliveryAt: timestamp("actual_delivery_at"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+  createdBy: integer("created_by").references(() => users.id),
+  updatedBy: integer("updated_by").references(() => users.id),
+});
+
+// Loyalty Programs table (PHASE 2)
+export const loyaltyPrograms = pgTable("loyalty_programs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  isActive: boolean("is_active").notNull().default(true),
+  pointsPerDollar: integer("points_per_dollar").notNull().default(1), // Points earned per dollar spent
+  dollarsPerPoint: integer("dollars_per_point").notNull().default(100), // Cents value of 1 point (100 = 1 cent)
+  minimumRedemption: integer("minimum_redemption").notNull().default(100), // Minimum points to redeem
+  expirationMonths: integer("expiration_months"), // null = no expiration
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+  createdBy: integer("created_by").references(() => users.id),
+});
+
+// Loyalty Accounts table (PHASE 2)
+export const loyaltyAccounts = pgTable("loyalty_accounts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  customerId: uuid("customer_id")
+    .notNull()
+    .references(() => customers.id, { onDelete: "cascade" }),
+  programId: uuid("program_id")
+    .notNull()
+    .references(() => loyaltyPrograms.id, { onDelete: "cascade" }),
+  currentPoints: integer("current_points").notNull().default(0),
+  lifetimePoints: integer("lifetime_points").notNull().default(0),
+  lifetimeRedeemed: integer("lifetime_redeemed").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at"),
+});
+
+// Loyalty Events table (PHASE 2)
+export const loyaltyEventTypeEnum = pgEnum("loyalty_event_type", [
+  "earned",
+  "redeemed",
+  "expired",
+  "adjusted",
+  "bonus"
+]);
+
+export const loyaltyEvents = pgTable("loyalty_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  accountId: uuid("account_id")
+    .notNull()
+    .references(() => loyaltyAccounts.id, { onDelete: "cascade" }),
+  orderId: uuid("order_id")
+    .references(() => orders.id, { onDelete: "set null" }),
+  type: loyaltyEventTypeEnum("type").notNull(),
+  points: integer("points").notNull(),
+  description: text("description"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+});
+
+// Loyalty Transactions table (PHASE 2)
+export const loyaltyTransactions = pgTable("loyalty_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+  accountId: uuid("account_id")
+    .notNull()
+    .references(() => loyaltyAccounts.id, { onDelete: "cascade" }),
+  eventId: uuid("event_id")
+    .notNull()
+    .references(() => loyaltyEvents.id, { onDelete: "cascade" }),
+  pointsChange: integer("points_change").notNull(), // positive for earn, negative for redeem
+  balanceBefore: integer("balance_before").notNull(),
+  balanceAfter: integer("balance_after").notNull(),
+  expiresAt: timestamp("expires_at"), // for earned points
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 // CRM Type exports
@@ -398,3 +561,17 @@ export type NewCrmPayment = typeof payments.$inferInsert;
 export type CrmInventoryAdjustment = typeof inventoryAdjustments.$inferSelect;
 export type NewCrmInventoryAdjustment =
   typeof inventoryAdjustments.$inferInsert;
+
+// PHASE 2 Type exports
+export type CustomerReferral = typeof customerReferrals.$inferSelect;
+export type NewCustomerReferral = typeof customerReferrals.$inferInsert;
+export type Delivery = typeof deliveries.$inferSelect;
+export type NewDelivery = typeof deliveries.$inferInsert;
+export type LoyaltyProgram = typeof loyaltyPrograms.$inferSelect;
+export type NewLoyaltyProgram = typeof loyaltyPrograms.$inferInsert;
+export type LoyaltyAccount = typeof loyaltyAccounts.$inferSelect;
+export type NewLoyaltyAccount = typeof loyaltyAccounts.$inferInsert;
+export type LoyaltyEvent = typeof loyaltyEvents.$inferSelect;
+export type NewLoyaltyEvent = typeof loyaltyEvents.$inferInsert;
+export type LoyaltyTransaction = typeof loyaltyTransactions.$inferSelect;
+export type NewLoyaltyTransaction = typeof loyaltyTransactions.$inferInsert;

@@ -1,0 +1,41 @@
+nohup: ignoring input
+
+> deelrxcrm-saas-starter@1.0.0 dev /workspaces/deelrxcrm-vercel
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use, using available port 3001 instead.
+   ▲ Next.js 15.4.0-canary.47 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://10.0.0.172:3001
+   - Environments: .env.development.local, .env.local, .env
+   - Experiments (use with caution):
+     ✓ ppr
+     ✓ nodeMiddleware
+     ✓ clientSegmentCache
+
+ ✓ Starting...
+ ✓ Compiled middleware in 438ms
+ ✓ Ready in 1515ms
+ ○ Compiling /api/debug/setup ...
+ ✓ Compiled /api/debug/setup in 1413ms
+=== Database Debug Info ===
+Testing database connection...
+Database debug error: [Error [PostgresError]: password authentication failed for user 'neondb_owner'] {
+  severity_local: 'ERROR',
+  code: 'XX000'
+}
+ GET /api/debug/setup 500 in 1764ms
+ ○ Compiling /api/user ...
+ GET /api/user 200 in 1415ms
+ ✓ Compiled /api/user in 1423ms
+ GET /api/tenant/list 401 in 1328ms
+=== Database Debug Info ===
+DATABASE_URL: postgresql://neondb_owner:npg_2RusgNYhr0xy@ep-damp...
+Testing database connection...
+Database debug error: [Error [PostgresError]: password authentication failed for user 'neondb_owner'] {
+  severity_local: 'ERROR',
+  code: 'XX000'
+}
+ GET /api/debug/setup 500 in 220ms
+ ELIFECYCLE  Command failed.
+[?25h

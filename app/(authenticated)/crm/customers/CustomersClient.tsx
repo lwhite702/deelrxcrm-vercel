@@ -25,7 +25,11 @@ export default function CustomersClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showReferralsPanel, setShowReferralsPanel] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [referrals, setReferrals] = useState<any[]>([]);
+  const [showReferralForm, setShowReferralForm] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -40,6 +44,15 @@ export default function CustomersClient() {
       zipCode: "",
       country: "",
     },
+  });
+
+  // Referral form state
+  const [referralForm, setReferralForm] = useState({
+    referredEmail: "",
+    referredPhone: "",
+    rewardAmount: "0",
+    notes: "",
+    expiresAt: "",
   });
 
   // Get team ID from API
@@ -82,6 +95,64 @@ export default function CustomersClient() {
       setError(err instanceof Error ? err.message : "Failed to load customers");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReferrals = async () => {
+    if (!teamId) return;
+
+    try {
+      const response = await fetch(`/api/teams/${teamId}/referrals`);
+      if (!response.ok) {
+        throw new Error(`Failed to load referrals: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setReferrals(data.referrals || []);
+    } catch (err) {
+      console.error("Error loading referrals:", err);
+    }
+  };
+
+  const handleReferralSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teamId || !selectedCustomer) return;
+
+    try {
+      const response = await fetch(`/api/teams/${teamId}/referrals`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          referrerCustomerId: selectedCustomer.id,
+          referredEmail: referralForm.referredEmail,
+          referredPhone: referralForm.referredPhone,
+          rewardAmount: parseInt(referralForm.rewardAmount),
+          notes: referralForm.notes,
+          expiresAt: referralForm.expiresAt || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create referral: ${response.statusText}`);
+      }
+
+      // Reset form and close modal
+      setReferralForm({
+        referredEmail: "",
+        referredPhone: "",
+        rewardAmount: "0",
+        notes: "",
+        expiresAt: "",
+      });
+      setShowReferralForm(false);
+      setSelectedCustomer(null);
+
+      // Reload referrals
+      await loadReferrals();
+    } catch (err) {
+      console.error("Error creating referral:", err);
+      alert(err instanceof Error ? err.message : "Failed to create referral");
     }
   };
 
@@ -147,6 +218,7 @@ export default function CustomersClient() {
   useEffect(() => {
     if (teamId) {
       loadCustomers();
+      loadReferrals();
     }
   }, [teamId]);
 
@@ -458,9 +530,12 @@ export default function CustomersClient() {
                 <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                  Created
-                </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Created
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -509,6 +584,28 @@ export default function CustomersClient() {
                     <td className="px-6 py-4 text-sm text-gray-400">
                       {new Date(customer.createdAt).toLocaleDateString()}
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedCustomer(customer);
+                            setShowReferralsPanel(true);
+                          }}
+                          className="px-3 py-1 text-xs bg-purple-600 text-white rounded-lg hover:bg-purple-700 neon-focus"
+                        >
+                          Referrals
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedCustomer(customer);
+                            setShowReferralForm(true);
+                          }}
+                          className="px-3 py-1 text-xs bg-neon-cyan text-gray-900 rounded-lg hover:bg-cyan-400 neon-focus"
+                        >
+                          + Refer
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
@@ -516,6 +613,206 @@ export default function CustomersClient() {
           </table>
         </div>
       </div>
+
+      {/* Referrals Panel */}
+      {showReferralsPanel && selectedCustomer && (
+        <div className="urban-card neon-focus">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-white neon-glow">
+              Referrals for {formatFullName(selectedCustomer)}
+            </h3>
+            <button
+              onClick={() => {
+                setShowReferralsPanel(false);
+                setSelectedCustomer(null);
+              }}
+              className="text-gray-400 hover:text-white"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {referrals
+              .filter(r => r.referrerCustomerId === selectedCustomer.id)
+              .length === 0 ? (
+              <p className="text-gray-400 text-center py-8">
+                No referrals found for this customer.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Referred Email/Phone
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Reward
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Created
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {referrals
+                      .filter(r => r.referrerCustomerId === selectedCustomer.id)
+                      .map((referral) => (
+                        <tr key={referral.id} className="hover:bg-gray-800/50">
+                          <td className="px-4 py-3 text-sm text-white">
+                            {referral.referredEmail || referral.referredPhone || "N/A"}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                referral.status === "converted"
+                                  ? "text-green-300 bg-green-900/30 border border-green-500/30"
+                                  : referral.status === "expired"
+                                  ? "text-red-300 bg-red-900/30 border border-red-500/30"
+                                  : "text-yellow-300 bg-yellow-900/30 border border-yellow-500/30"
+                              }`}
+                            >
+                              {referral.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-300">
+                            ${referral.rewardAmount}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-400">
+                            {new Date(referral.createdAt).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Referral Form Modal */}
+      {showReferralForm && selectedCustomer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="urban-card max-w-md w-full neon-focus">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold text-white neon-glow">
+                Create Referral for {formatFullName(selectedCustomer)}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowReferralForm(false);
+                  setSelectedCustomer(null);
+                }}
+                className="text-gray-400 hover:text-white text-xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleReferralSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Referred Email
+                </label>
+                <input
+                  type="email"
+                  value={referralForm.referredEmail}
+                  onChange={(e) =>
+                    setReferralForm({ ...referralForm, referredEmail: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
+                  placeholder="Enter referred person's email"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Referred Phone (Optional)
+                </label>
+                <input
+                  type="tel"
+                  value={referralForm.referredPhone}
+                  onChange={(e) =>
+                    setReferralForm({ ...referralForm, referredPhone: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
+                  placeholder="Enter referred person's phone"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Reward Amount ($)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={referralForm.rewardAmount}
+                  onChange={(e) =>
+                    setReferralForm({ ...referralForm, rewardAmount: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
+                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Notes (Optional)
+                </label>
+                <textarea
+                  value={referralForm.notes}
+                  onChange={(e) =>
+                    setReferralForm({ ...referralForm, notes: e.target.value })
+                  }
+                  rows={3}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
+                  placeholder="Any additional notes about this referral"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Expires At (Optional)
+                </label>
+                <input
+                  type="datetime-local"
+                  value={referralForm.expiresAt}
+                  onChange={(e) =>
+                    setReferralForm({ ...referralForm, expiresAt: e.target.value })
+                  }
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 neon-focus focus:border-neon-cyan"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReferralForm(false);
+                    setSelectedCustomer(null);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 neon-focus border border-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 btn-neon neon-glow hover:neon-glow-strong"
+                >
+                  Create Referral
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
