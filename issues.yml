@@ -1,0 +1,143 @@
+- title: "PHASE 0: Configure Neon + Drizzle"
+  body: "Create Neon Postgres DB. Add drizzle.config.ts, Drizzle client, and migrations. Document in /docs/DB_SETUP.md."
+  labels: ["phase-0"]
+
+- title: "PHASE 0: .env example + ENV docs"
+  body: "Create .env.example and /docs/ENV_VARS.md for DATABASE_URL, STRIPE (if present), SITE_URL, JWT secrets, etc."
+  labels: ["phase-0"]
+
+- title: "PHASE 0: Stripe test wiring"
+  body: "Ensure client checkout renders a test plan. Add /docs/PAYMENTS.md with test card instructions."
+  labels: ["phase-0"]
+
+- title: "PHASE 0: Stripe webhook handler"
+  body: "Add app/api/stripe/webhook/route.ts with raw body verification + idempotency; persist webhookEvents."
+  labels: ["phase-0"]
+
+- title: "PHASE 0: Vercel deployment"
+  body: "Connect repo to Vercel, set env vars, deploy. Write /docs/VERCEL_DEPLOY.md."
+  labels: ["phase-0"]
+
+- title: "PHASE 0: Smoke test doc"
+  body: "Write /docs/SMOKE_TEST.md (signup, login, create tenant, checkout, logout/login)."
+  labels: ["phase-0"]
+
+- title: "PHASE 0: Remove/disable non-Next runtimes"
+  body: "Delete/ignore any Express/Vite servers; ensure single Next.js runtime."
+  labels: ["phase-0"]
+
+- title: "PHASE 1: Schema core (products/customers/orders/payments)"
+  body: "Add Drizzle tables + migrations for products, customers, orders, orderItems, payments, webhookEvents, auditLogs."
+  labels: ["phase-1"]
+
+- title: "PHASE 1: Inventory API + UI"
+  body: "CRUD: /api/tenants/[id]/products. inventory/page.tsx table + form."
+  labels: ["phase-1"]
+
+- title: "PHASE 1: Customers API + UI"
+  body: "CRUD: /api/tenants/[id]/customers. customers/page.tsx table + form."
+  labels: ["phase-1"]
+
+- title: "PHASE 1: Orders + POS UI"
+  body: "/api/tenants/[id]/orders create/list; sales-pos/page.tsx with line items, totals, Stripe intent start."
+  labels: ["phase-1"]
+
+- title: "PHASE 1: Refund endpoint"
+  body: "/api/tenants/[id]/refund-payment (POST) and payments/page.tsx listing."
+  labels: ["phase-1"]
+
+- title: "PHASE 1: Dashboard KPIs"
+  body: "dashboard/page.tsx: total sales, total customers. Prefer RSC for reads."
+  labels: ["phase-1"]
+
+- title: "PHASE 1: RBAC + tenant guards"
+  body: "Enforce role (owner/manager/staff) + tenant membership server-side. Zod validate all payloads."
+  labels: ["phase-1"]
+
+- title: "PHASE 2: Inventory adjustments"
+  body: "Schema (adjustments) + API + UI panel on inventory page. Reasons: waste, sample, personal, recount."
+  labels: ["phase-2"]
+
+- title: "PHASE 2: Customer referrals"
+  body: "Schema (customerReferrals) + API + UI in customers page."
+  labels: ["phase-2"]
+
+- title: "PHASE 2: Deliveries basic"
+  body: "Schema (deliveries) + CRUD; method, cost, address. deliveries/page.tsx."
+  labels: ["phase-2"]
+
+- title: "PHASE 2: Loyalty basics"
+  body: "Schema (loyaltyPrograms/Accounts/Events/Transactions). Accrue/redeem endpoints + UI page."
+  labels: ["phase-2"]
+
+- title: "PHASE 2: Data model doc"
+  body: "Update /docs/DATA_MODEL.md with Phase 1–2 entities."
+  labels: ["phase-2"]
+
+- title: "PHASE 3: Credit/fronts schema + limits"
+  body: "Schema for credits/creditTransactions (limits, due dates, statuses, fees). /docs/CREDIT_SYSTEM.md."
+  labels: ["phase-3"]
+
+- title: "PHASE 3: Credit schedules + dunning"
+  body: "Endpoints to create schedules, compute next due, and queue reminders."
+  labels: ["phase-3"]
+
+- title: "PHASE 3: SetupIntents for post-dated charges"
+  body: "Use Stripe SetupIntents to capture on due date; map to ledger."
+  labels: ["phase-3"]
+
+- title: "PHASE 3: KB Articles/Uploads/Feedback"
+  body: "/help/articles CRUD, /help/uploads signed URLs (Supabase Storage), /help/feedback."
+  labels: ["phase-3"]
+
+- title: "PHASE 3: Admin purge lifecycle"
+  body: "/admin/purge request→schedule→export-ack→execute; audit logs + runbook."
+  labels: ["phase-3"]
+
+- title: "PHASE 3: Inactivity policies"
+  body: "/admin/inactivity policies CRUD + monitor + force-run."
+  labels: ["phase-3"]
+
+- title: "PHASE 4: LLM schemas + logging"
+  body: "Schema llmProviders/llmRequests + per-task tables (pricingSuggestions, creditAnalyses, dataEnrichments, dataCleaningOperations, trainingContent, trainingSessions)."
+  labels: ["phase-4"]
+
+- title: "PHASE 4: Pricing Intelligence endpoint/UI"
+  body: "/llm/pricing with Zod-validated JSON; panel on inventory page; Langfuse tracing."
+  labels: ["phase-4"]
+
+- title: "PHASE 4: Credit Intelligence endpoint/UI"
+  body: "/llm/credit returns risk hints; shown on credit page; never auto-approve."
+  labels: ["phase-4"]
+
+- title: "PHASE 4: Data Intelligence endpoint/UI"
+  body: "/llm/data for clean/enrich; strict schemas; results on customers page."
+  labels: ["phase-4"]
+
+- title: "PHASE 4: Training Intelligence endpoint/UI"
+  body: "/llm/training to generate onboarding/compliance content; help/admin surfaces."
+  labels: ["phase-4"]
+
+- title: "PHASE 4: /docs/INTELLIGENCE.md"
+  body: "Document prompts, schemas, guardrails, and cost tracking via Langfuse."
+  labels: ["phase-4"]
+
+- title: "PHASE 5: Feature flags"
+  body: "Integrate GrowthBook; /lib/vendors/flags.ts; gate modules; /docs/FEATURE_FLAGS.md."
+  labels: ["phase-5"]
+
+- title: "PHASE 5: Search indexing"
+  body: "Meilisearch adapter; index products/customers/kb; tenant-scoped queries; /docs/SEARCH.md."
+  labels: ["phase-5"]
+
+- title: "PHASE 5: Analytics"
+  body: "PostHog events for key funnels; /docs/ANALYTICS.md."
+  labels: ["phase-5"]
+
+- title: "PHASE 5: Security hardening"
+  body: "CSP nonces, rate-limit sensitive routes, encryption hooks tested; /docs/SECURITY.md."
+  labels: ["phase-5"]
+
+- title: "PHASE 5: Release notes + checklist"
+  body: "/docs/RELEASE_NOTES.md and /docs/GO_LIVE_CHECKLIST.md; Postman/Bruno collection."
+  labels: ["phase-5"]
