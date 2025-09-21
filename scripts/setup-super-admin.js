@@ -13,7 +13,7 @@ import { eq } from "drizzle-orm";
 async function setupSuperAdmin() {
   const email = "lee@wrelik.com";
   const password = "admin123"; // Default password - should be changed after first login
-  const name = "Lee Wright";
+  const name = "Lee White";
 
   try {
     console.log("🔧 Setting up super admin user...");
