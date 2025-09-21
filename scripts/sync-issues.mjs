@@ -250,12 +250,12 @@ async function main() {
 
       let fields = [];
       try {
-          const fieldsResp = runJson(
-            `gh project field-list ${projectNumber} --owner ${shellEscape(
-              projectOwner
-            )} --format json`
-          );
-          fields = getArrayFrom(fieldsResp, 'fields');
+        const fieldsResp = runJson(
+          `gh project field-list ${projectNumber} --owner ${shellEscape(
+            projectOwner
+          )} --format json`
+        );
+        fields = getArrayFrom(fieldsResp, "fields");
       } catch {
         fields = [];
       }
@@ -266,13 +266,19 @@ async function main() {
       let phaseFieldType = phaseField?.dataType || null;
       // gh field-list returns 'type' like 'ProjectV2SingleSelectField' or 'ProjectV2Field'
       if (!phaseFieldType && phaseField?.type) {
-        if (String(phaseField.type).includes('SingleSelect')) phaseFieldType = 'SINGLE_SELECT';
-        else if (String(phaseField.type).includes('Text')) phaseFieldType = 'TEXT';
+        if (String(phaseField.type).includes("SingleSelect"))
+          phaseFieldType = "SINGLE_SELECT";
+        else if (String(phaseField.type).includes("Text"))
+          phaseFieldType = "TEXT";
       }
       let phaseOptions = phaseField?.options || [];
 
       console.log(
-        `Project field: ${phaseFieldName} -> ${phaseFieldId ? 'found' : 'missing'}, type=${phaseFieldType || 'unknown'}, options=${Array.isArray(phaseOptions) ? phaseOptions.length : 0}`
+        `Project field: ${phaseFieldName} -> ${
+          phaseFieldId ? "found" : "missing"
+        }, type=${phaseFieldType || "unknown"}, options=${
+          Array.isArray(phaseOptions) ? phaseOptions.length : 0
+        }`
       );
 
       // If Phase field missing and allowed to create, create it with options Phase 0..5
@@ -307,8 +313,10 @@ async function main() {
             : null;
           phaseFieldType = phaseField?.dataType || null;
           if (!phaseFieldType && phaseField?.type) {
-            if (String(phaseField.type).includes('SingleSelect')) phaseFieldType = 'SINGLE_SELECT';
-            else if (String(phaseField.type).includes('Text')) phaseFieldType = 'TEXT';
+            if (String(phaseField.type).includes("SingleSelect"))
+              phaseFieldType = "SINGLE_SELECT";
+            else if (String(phaseField.type).includes("Text"))
+              phaseFieldType = "TEXT";
           }
           phaseOptions = phaseField?.options || [];
         } catch (e) {
@@ -326,8 +334,10 @@ async function main() {
             phaseFieldId = phaseField?.id || null;
             phaseFieldType = phaseField?.dataType || null;
             if (!phaseFieldType && phaseField?.type) {
-              if (String(phaseField.type).includes('SingleSelect')) phaseFieldType = 'SINGLE_SELECT';
-              else if (String(phaseField.type).includes('Text')) phaseFieldType = 'TEXT';
+              if (String(phaseField.type).includes("SingleSelect"))
+                phaseFieldType = "SINGLE_SELECT";
+              else if (String(phaseField.type).includes("Text"))
+                phaseFieldType = "TEXT";
             }
             phaseOptions = phaseField?.options || [];
           } else {
@@ -379,13 +389,13 @@ async function main() {
       // Helper to get item id for an issue URL if already present
       const getItemIdForIssue = (issueUrl) => {
         try {
-            const itemsResp = runJson(
+          const itemsResp = runJson(
             `gh project item-list ${projectNumber} --owner ${shellEscape(
               projectOwner
             )} --format json`
           );
-            const items = getArrayFrom(itemsResp, 'items');
-            const found = items.find((it) => it?.content?.url === issueUrl);
+          const items = getArrayFrom(itemsResp, "items");
+          const found = items.find((it) => it?.content?.url === issueUrl);
           return found?.id || null;
         } catch {
           return null;
@@ -420,7 +430,9 @@ async function main() {
             const optionName = `Phase ${phaseLabel.split("-")[1]}`;
             // Debug: show per-item matching
             // eslint-disable-next-line no-console
-            console.log(` • Candidate ${url}: label=${phaseLabel}, target=${optionName}`);
+            console.log(
+              ` • Candidate ${url}: label=${phaseLabel}, target=${optionName}`
+            );
             if (phaseFieldType === "SINGLE_SELECT") {
               const option = phaseOptions.find((o) => o.name === optionName);
               if (option) {
@@ -446,9 +458,9 @@ async function main() {
                   itemId
                 )} --project-id ${shellEscape(
                   projectId
-                )} --field-id ${shellEscape(
-                  phaseFieldId
-                )} --text ${shellEscape(optionName)}`
+                )} --field-id ${shellEscape(phaseFieldId)} --text ${shellEscape(
+                  optionName
+                )}`
               );
               console.log(` • Set ${optionName} (text) for ${url}`);
               phaseSetCount += 1;
