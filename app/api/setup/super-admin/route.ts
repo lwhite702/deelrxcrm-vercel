@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { hash } from 'bcryptjs';
-import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { isEmailSuperAdmin } from '@/lib/auth/super-admin';
+import { NextRequest, NextResponse } from "next/server";
+import { hash } from "bcryptjs";
+import { db } from "@/lib/db/drizzle";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { isEmailSuperAdmin } from "@/lib/auth/super-admin";
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password, name } = await request.json();
-    
+
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: "Email and password are required" },
         { status: 400 }
       );
     }
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Check if email is in super admin list
     if (!isEmailSuperAdmin(email)) {
       return NextResponse.json(
-        { error: 'Email not authorized for super admin access' },
+        { error: "Email not authorized for super admin access" },
         { status: 403 }
       );
     }
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser.length > 0) {
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: "User already exists" },
         { status: 409 }
       );
     }
@@ -46,28 +46,28 @@ export async function POST(request: NextRequest) {
       .insert(users)
       .values({
         email,
-        name: name || 'Super Admin',
+        name: name || "Super Admin",
         passwordHash,
-        role: 'owner', // Set as owner role for maximum permissions
+        role: "owner", // Set as owner role for maximum permissions
       })
       .returning();
 
     return NextResponse.json(
-      { 
-        message: 'Super admin user created successfully',
+      {
+        message: "Super admin user created successfully",
         user: {
           id: newUser.id,
           email: newUser.email,
           name: newUser.name,
-          role: newUser.role
-        }
+          role: newUser.role,
+        },
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Super admin creation error:', error);
+    console.error("Super admin creation error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

@@ -1,4 +1,4 @@
-import { getUser } from '../db/queries';
+import { getUser } from "../db/queries";
 
 /**
  * Check if the current user is a super admin
@@ -9,10 +9,12 @@ export async function isSuperAdmin(): Promise<boolean> {
     const user = await getUser();
     if (!user?.email) return false;
 
-    const superAdminEmails = (process.env.SUPER_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+    const superAdminEmails = (process.env.SUPER_ADMIN_EMAILS || "")
+      .split(",")
+      .map((email) => email.trim());
     return superAdminEmails.includes(user.email);
   } catch (error) {
-    console.error('Error checking super admin status:', error);
+    console.error("Error checking super admin status:", error);
     return false;
   }
 }
@@ -21,7 +23,9 @@ export async function isSuperAdmin(): Promise<boolean> {
  * Check if a specific email is a super admin
  */
 export function isEmailSuperAdmin(email: string): boolean {
-  const superAdminEmails = (process.env.SUPER_ADMIN_EMAILS || '').split(',').map(e => e.trim());
+  const superAdminEmails = (process.env.SUPER_ADMIN_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim());
   return superAdminEmails.includes(email);
 }
 
@@ -31,6 +35,6 @@ export function isEmailSuperAdmin(email: string): boolean {
 export async function requireSuperAdmin(): Promise<void> {
   const isAdmin = await isSuperAdmin();
   if (!isAdmin) {
-    throw new Error('Super admin access required');
+    throw new Error("Super admin access required");
   }
 }
