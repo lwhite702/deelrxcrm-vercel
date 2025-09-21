@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CreditCard, Database } from "lucide-react";
 import { Terminal } from "./terminal";
 
+/**
+ * Renders the HomePage component with various sections for a CRM application.
+ */
 export default function HomePage() {
   return (
     <main>
