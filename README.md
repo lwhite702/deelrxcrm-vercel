@@ -4,6 +4,7 @@ This branch converts the DeelRx CRM stack into a Vercel-friendly deployment:
 
 
 See [`README-VERCEL.md`](./README-VERCEL.md) for the step-by-step redeploy guide, environment variables, and cron job wiring.
+For database setup and scripts, see [`DB-SETUP.md`](./DB-SETUP.md).
 ```markdown
 # DeelRx CRM
 
