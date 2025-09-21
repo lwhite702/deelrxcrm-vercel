@@ -1,5 +1,12 @@
 import postgres from 'postgres';
 
+/**
+ * Main function to connect to the database and retrieve schema information.
+ *
+ * This function checks for the presence of a database URL, establishes a connection using the postgres library,
+ * and executes SQL queries to check for the existence of specific tables and their column types.
+ * It logs the results to the console and ensures the database connection is closed properly in a finally block.
+ */
 async function main() {
   const url = process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED;
   if (!url) {
