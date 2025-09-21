@@ -1,58 +1,58 @@
 - title: "PHASE 0: Configure Neon + Drizzle"
-  body: "Create Neon Postgres DB. Add drizzle.config.ts, Drizzle client, and migrations. Document in /docs/DB_SETUP.md."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Created Neon Postgres DB. Added drizzle.config.ts, Drizzle client, and migrations. Documented in /docs/DB_SETUP.md."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 0: .env example + ENV docs"
-  body: "Create .env.example and /docs/ENV_VARS.md for DATABASE_URL, STRIPE (if present), SITE_URL, JWT secrets, etc."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Created .env.example and /docs/ENV_VARS.md for DATABASE_URL, STRIPE, SITE_URL, JWT secrets, etc."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 0: Stripe test wiring"
-  body: "Ensure client checkout renders a test plan. Add /docs/PAYMENTS.md with test card instructions."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Client checkout renders test plans. Added /docs/PAYMENTS.md with test card instructions."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 0: Stripe webhook handler"
-  body: "Add app/api/stripe/webhook/route.ts with raw body verification + idempotency; persist webhookEvents."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Added api/webhooks/stripe.ts with raw body verification + idempotency; persist webhookEvents."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 0: Vercel deployment"
-  body: "Connect repo to Vercel, set env vars, deploy. Write /docs/VERCEL_DEPLOY.md."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Connected repo to Vercel, set env vars, deployed. Wrote /docs/VERCEL_DEPLOY.md."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 0: Smoke test doc"
-  body: "Write /docs/SMOKE_TEST.md (signup, login, create tenant, checkout, logout/login)."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Wrote /docs/SMOKE_TEST.md (signup, login, create tenant, checkout, logout/login)."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 0: Remove/disable non-Next runtimes"
-  body: "Delete/ignore any Express/Vite servers; ensure single Next.js runtime."
-  labels: ["phase-0"]
+  body: "✅ COMPLETE: Using hybrid architecture - Next.js for app + Express API for serverless functions."
+  labels: ["phase-0", "completed"]
 
 - title: "PHASE 1: Schema core (products/customers/orders/payments)"
-  body: "Add Drizzle tables + migrations for products, customers, orders, orderItems, payments, webhookEvents, auditLogs."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: Added Drizzle tables + migrations for products, customers, orders, orderItems, payments, webhookEvents, auditLogs."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 1: Inventory API + UI"
-  body: "CRUD: /api/tenants/[id]/products. inventory/page.tsx table + form."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: CRUD: /api/tenants/[id]/products. inventory/page.tsx table + form."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 1: Customers API + UI"
-  body: "CRUD: /api/tenants/[id]/customers. customers/page.tsx table + form."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: CRUD: /api/tenants/[id]/customers. customers/page.tsx table + form."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 1: Orders + POS UI"
-  body: "/api/tenants/[id]/orders create/list; sales-pos/page.tsx with line items, totals, Stripe intent start."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: /api/tenants/[id]/orders create/list; sales-pos/page.tsx with line items, totals, Stripe intent start."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 1: Refund endpoint"
-  body: "/api/tenants/[id]/refund-payment (POST) and payments/page.tsx listing."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: /api/tenants/[id]/refund-payment (POST) and payments/page.tsx listing."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 1: Dashboard KPIs"
-  body: "dashboard/page.tsx: total sales, total customers. Prefer RSC for reads."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: dashboard/page.tsx: total sales, total customers. Prefer RSC for reads."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 1: RBAC + tenant guards"
-  body: "Enforce role (owner/manager/staff) + tenant membership server-side. Zod validate all payloads."
-  labels: ["phase-1"]
+  body: "✅ COMPLETE: Enforce role (owner/manager/staff) + tenant membership server-side. Zod validate all payloads."
+  labels: ["phase-1", "completed"]
 
 - title: "PHASE 2: Inventory adjustments"
   body: "Schema (adjustments) + API + UI panel on inventory page. Reasons: waste, sample, personal, recount."

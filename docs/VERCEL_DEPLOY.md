@@ -1,6 +1,6 @@
-# Vercel Deployment Guide
+# Vercel Deployment Guide - DeelRx CRM
 
-Deploy DeelRxCRM as a Next.js App Router application on Vercel with Neon Postgres.
+Deploy DeelRxCRM with the new "Asphalt + Neon" theme and street-pharmacy marketing copy as a Next.js App Router application on Vercel.
 
 ## Prerequisites
 
@@ -9,6 +9,7 @@ Deploy DeelRxCRM as a Next.js App Router application on Vercel with Neon Postgre
 - Neon Postgres database
 - Clerk authentication setup
 - Stripe account (for payments)
+- **New**: Street-pharmacy themed landing page with legal disclaimers
 
 ## Deployment Steps
 

@@ -1,7 +1,6 @@
 "use client";
 
 import "./globals.css";
-import "../DeelrzCRM/client/src/index.css";
 import ClerkClientWrapper from "./components/ClerkClientWrapper";
 import dyn from "next/dynamic";
 import { Providers } from "./providers";
