@@ -19,6 +19,15 @@ interface Customer {
   createdAt: string;
 }
 
+/**
+ * A React component for managing and displaying a list of customers.
+ *
+ * This component fetches customer data from an API based on a team ID, handles loading and error states,
+ * and provides a form for adding new customers. It also includes functionality for searching customers
+ * with a debounce effect and displays customer details in a table format.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function CustomersClient() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -45,6 +54,18 @@ export default function CustomersClient() {
   // Get team ID from URL or context - for now using placeholder
   const teamId = "1"; // TODO: Get from URL params or team context
 
+  /**
+   * Load customers from the API based on the provided search term.
+   *
+   * The function sets a loading state, constructs query parameters if a search term is provided,
+   * and fetches customer data from the API. It handles errors by setting an error message and
+   * ensures the loading state is reset after the operation completes.
+   *
+   * @param searchTerm - The term to filter customers by.
+   * @param teamId - The ID of the team whose customers are being loaded.
+   * @returns Promise<void> - A promise that resolves when the operation is complete.
+   * @throws Error If the response from the API is not ok.
+   */
   const loadCustomers = async () => {
     try {
       setLoading(true);
@@ -66,6 +87,15 @@ export default function CustomersClient() {
     }
   };
 
+  /**
+   * Handles the submission of the customer form.
+   *
+   * This function prevents the default form submission behavior, sends a POST request to create a new customer,
+   * and handles the response. If the request is successful, it resets the form data and hides the add form,
+   * then reloads the list of customers. In case of an error, it sets an error message for the user.
+   *
+   * @param e - The event object from the form submission.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -104,10 +134,23 @@ export default function CustomersClient() {
     }
   };
 
+  /**
+   * Formats the full name of a customer.
+   */
   const formatFullName = (customer: Customer) => {
     return [customer.firstName, customer.lastName].filter(Boolean).join(" ");
   };
 
+  /**
+   * Formats a customer's address into a string.
+   *
+   * This function takes an optional address object and constructs a formatted address string by
+   * concatenating the street, city, state, and zip code. If any of these components are missing,
+   * they are filtered out, ensuring that only valid parts are included in the final output.
+   * If no address is provided, an empty string is returned.
+   *
+   * @param {Customer["address"]} [address] - The address object containing street, city, state, and zip code.
+   */
   const formatAddress = (address?: Customer["address"]) => {
     if (!address) return "";
     const parts = [
