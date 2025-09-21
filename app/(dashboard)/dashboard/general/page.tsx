@@ -11,6 +11,9 @@ import { User } from '@/lib/db/schema';
 import useSWR from 'swr';
 import { Suspense } from 'react';
 
+/**
+ * Fetches JSON data from the specified URL.
+ */
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 type ActionState = {
@@ -25,6 +28,9 @@ type AccountFormProps = {
   emailValue?: string;
 };
 
+/**
+ * Renders a form for user account information including name and email.
+ */
 function AccountForm({
   state,
   nameValue = '',
@@ -61,6 +67,16 @@ function AccountForm({
   );
 }
 
+/**
+ * Renders the AccountForm component with user data fetched from an API.
+ *
+ * This function utilizes the useSWR hook to fetch user data from the '/api/user' endpoint.
+ * It then passes the retrieved user name and email, or empty strings if the data is not available,
+ * to the AccountForm component along with the provided state.
+ *
+ * @param {Object} param0 - The parameters object.
+ * @param {ActionState} param0.state - The state to be passed to the AccountForm.
+ */
 function AccountFormWithData({ state }: { state: ActionState }) {
   const { data: user } = useSWR<User>('/api/user', fetcher);
   return (
@@ -72,6 +88,9 @@ function AccountFormWithData({ state }: { state: ActionState }) {
   );
 }
 
+/**
+ * Renders the General Settings page with account information and a form.
+ */
 export default function GeneralPage() {
   const [state, formAction, isPending] = useActionState<ActionState, FormData>(
     updateAccount,
