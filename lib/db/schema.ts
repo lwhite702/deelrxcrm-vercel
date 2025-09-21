@@ -578,4 +578,237 @@ export type NewLoyaltyAccount = typeof loyaltyAccounts.$inferInsert;
 export type LoyaltyEvent = typeof loyaltyEvents.$inferSelect;
 export type NewLoyaltyEvent = typeof loyaltyEvents.$inferInsert;
 export type LoyaltyTransaction = typeof loyaltyTransactions.$inferSelect;
+
+// Phase 3: Credit System Enums
+export const creditStatusEnum = pgEnum("credit_status", [
+  "active",
+  "suspended", 
+  "closed",
+  "defaulted"
+]);
+
+export const creditTransactionStatusEnum = pgEnum("credit_transaction_status", [
+  "pending",
+  "processing",
+  "completed", 
+  "failed",
+  "cancelled",
+  "refunded"
+]);
+
+export const purgeStatusEnum = pgEnum("purge_status", [
+  "requested",
+  "scheduled",
+  "export_ready", 
+  "acknowledged",
+  "executing",
+  "completed",
+  "cancelled"
+]);
+
+export const kbArticleStatusEnum = pgEnum("kb_article_status", [
+  "draft",
+  "published",
+  "archived"
+]);
+
+// Phase 3: Credit System Tables
+export const credits = pgTable("credits", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  customerId: uuid("customer_id")
+    .notNull()
+    .references(() => customers.id, { onDelete: "cascade" }),
+  creditLimit: integer("credit_limit").notNull().default(0),
+  currentBalance: integer("current_balance").notNull().default(0),
+  availableCredit: integer("available_credit").notNull().default(0),
+  status: creditStatusEnum("status").notNull().default("active"),
+  setupIntentId: text("setup_intent_id"),
+  paymentMethodId: text("payment_method_id"),
+  interestRate: integer("interest_rate").default(0), // basis points
+  gracePeriodDays: integer("grace_period_days").default(30),
+  lastPaymentAt: timestamp("last_payment_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const creditTransactions = pgTable("credit_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  creditId: uuid("credit_id")
+    .notNull()
+    .references(() => credits.id, { onDelete: "cascade" }),
+  orderId: uuid("order_id").references(() => orders.id),
+  transactionType: text("transaction_type")
+    .notNull()
+    .$type<"charge" | "payment" | "fee" | "adjustment">(),
+  amount: integer("amount").notNull(), // cents
+  description: text("description"),
+  status: creditTransactionStatusEnum("status").notNull().default("pending"),
+  scheduleId: text("schedule_id"), // for scheduled charges
+  dueDate: timestamp("due_date"),
+  processingFees: integer("processing_fees").default(0),
+  attemptCount: integer("attempt_count").default(0),
+  lastAttemptAt: timestamp("last_attempt_at"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  idempotencyKey: text("idempotency_key").unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Phase 3: Knowledge Base Tables
+export const kbArticles = pgTable("kb_articles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt"),
+  status: kbArticleStatusEnum("status").notNull().default("draft"),
+  category: text("category"),
+  tags: jsonb("tags").$type<string[]>().default([]),
+  authorId: uuid("author_id").references(() => users.id),
+  viewCount: integer("view_count").default(0),
+  isPublic: boolean("is_public").default(false),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const kbUploads = pgTable("kb_uploads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  articleId: uuid("article_id")
+    .references(() => kbArticles.id, { onDelete: "cascade" }),
+  filename: text("filename").notNull(),
+  originalName: text("original_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  storageUrl: text("storage_url").notNull(),
+  uploadedBy: uuid("uploaded_by").references(() => users.id),
+  isPublic: boolean("is_public").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const kbFeedback = pgTable("kb_feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  articleId: uuid("article_id")
+    .notNull()
+    .references(() => kbArticles.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => users.id),
+  rating: integer("rating"), // 1-5 stars
+  feedback: text("feedback"),
+  isHelpful: boolean("is_helpful"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Phase 3: Admin Operations Tables
+export const purgeOperations = pgTable("purge_operations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  requestedBy: uuid("requested_by")
+    .notNull()
+    .references(() => users.id),
+  status: purgeStatusEnum("status").notNull().default("requested"),
+  purgeScope: jsonb("purge_scope").$type<{
+    entities: string[];
+    dateRange?: { from: string; to: string };
+    criteria?: Record<string, any>;
+  }>().notNull(),
+  scheduledFor: timestamp("scheduled_for"),
+  exportUrl: text("export_url"),
+  exportExpiresAt: timestamp("export_expires_at"),
+  acknowledgedBy: uuid("acknowledged_by").references(() => users.id),
+  acknowledgedAt: timestamp("acknowledged_at"),
+  executedAt: timestamp("executed_at"),
+  completedAt: timestamp("completed_at"),
+  recordsAffected: integer("records_affected"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const inactivityPolicies = pgTable("inactivity_policies", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  description: text("description"),
+  thresholdDays: integer("threshold_days").notNull(),
+  actions: jsonb("actions").$type<{
+    warnings: number[];
+    suspend: boolean;
+    purge: boolean;
+  }>().notNull(),
+  isActive: boolean("is_active").default(true),
+  lastRunAt: timestamp("last_run_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const inactivityTrackers = pgTable("inactivity_trackers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  policyId: uuid("policy_id")
+    .notNull()
+    .references(() => inactivityPolicies.id, { onDelete: "cascade" }),
+  lastActivityAt: timestamp("last_activity_at").notNull(),
+  daysSinceActivity: integer("days_since_activity").notNull(),
+  warningsSent: integer("warnings_sent").default(0),
+  isSuspended: boolean("is_suspended").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const activityEvents = pgTable("activity_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: uuid("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  eventType: text("event_type").notNull(), // login, order_created, etc
+  eventData: jsonb("event_data"),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Phase 3: Type exports
+export type Credit = typeof credits.$inferSelect;
+export type NewCredit = typeof credits.$inferInsert;
+export type CreditTransaction = typeof creditTransactions.$inferSelect;
+export type NewCreditTransaction = typeof creditTransactions.$inferInsert;
+export type KbArticle = typeof kbArticles.$inferSelect;
+export type NewKbArticle = typeof kbArticles.$inferInsert;
+export type KbUpload = typeof kbUploads.$inferSelect;
+export type NewKbUpload = typeof kbUploads.$inferInsert;
+export type KbFeedback = typeof kbFeedback.$inferSelect;
+export type NewKbFeedback = typeof kbFeedback.$inferInsert;
+export type PurgeOperation = typeof purgeOperations.$inferSelect;
+export type NewPurgeOperation = typeof purgeOperations.$inferInsert;
+export type InactivityPolicy = typeof inactivityPolicies.$inferSelect;
+export type NewInactivityPolicy = typeof inactivityPolicies.$inferInsert;
+export type ActivityEvent = typeof activityEvents.$inferSelect;
+export type NewActivityEvent = typeof activityEvents.$inferInsert;
 export type NewLoyaltyTransaction = typeof loyaltyTransactions.$inferInsert;
