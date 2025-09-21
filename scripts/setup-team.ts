@@ -2,6 +2,14 @@ import { db } from "../lib/db/drizzle";
 import { users, teams, teamMembers } from "../lib/db/schema";
 import { eq } from "drizzle-orm";
 
+/**
+ * Set up the team for the super admin user.
+ *
+ * This function retrieves the super admin user by their email, checks for existing teams, and either creates a new team or uses an existing one. It then verifies if the super admin is already a member of the team and adds them if not. The process is logged at each step, and any errors encountered will terminate the process.
+ *
+ * @returns {Promise<void>} A promise that resolves when the team setup is complete.
+ * @throws Error If the super admin user is not found or if an error occurs during the setup process.
+ */
 async function setupTeamForSuperAdmin() {
   try {
     // Find the super admin user
