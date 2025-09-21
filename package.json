@@ -15,6 +15,10 @@
     "start:next": "next start",
     "check": "tsc --noEmit",
     "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+  "db:migrate:root-sql": "tsx scripts/apply-sql-migration.ts",
+  "db:check": "tsx scripts/check-db.ts",
+  "db:bootstrap-tenant": "tsx scripts/bootstrap-tenant.ts",
     "client:dev": "vite dev --host",
     "mcp:playwright": "mcp-server-playwright --port 3334"
   },
@@ -57,6 +61,7 @@
     "typescript": "^5.5.3",
     "vite": "^5.2.11",
     "@playwright/test": "^1.48.2",
-    "mcp-playwright": "^0.0.1"
+    "mcp-playwright": "^0.0.1",
+    "postgres": "^3.4.5"
   }
 }
