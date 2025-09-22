@@ -1,7 +1,8 @@
 import { inngest } from "../client";
 import { db } from "@/lib/db/drizzle";
 import { kbArticles, kbUploads } from "@/lib/db/schema";
-import { eq, and, isNotNull } from "drizzle-orm";
+import { eq, and, isNotNull, isNull } from "drizzle-orm";
+import { deleteFileFromBlob, type BlobStoreType } from "@/lib/blob-utils";
 
 export const kbLinksVerify = inngest.createFunction(
   { id: "kb-links-verify" },
@@ -24,43 +25,52 @@ export const kbLinksVerify = inngest.createFunction(
 
     // Check links in each article
     for (const article of articles) {
-      const articleResult = await step.run(`verify-links-${article.id}`, async () => {
-        // Extract URLs from markdown content
-        const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
-        const urls = article.content.match(urlRegex) || [];
-        
-        const brokenLinks = [];
-        const workingLinks = [];
+      const articleResult = await step.run(
+        `verify-links-${article.id}`,
+        async () => {
+          // Extract URLs from markdown content
+          const urlRegex =
+            /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
+          const urls = article.content.match(urlRegex) || [];
 
-        for (const url of urls) {
-          try {
-            const response = await fetch(url, { 
-              method: 'HEAD',
-              timeout: 10000 // 10 second timeout
-            });
-            
-            if (response.ok) {
-              workingLinks.push(url);
-            } else {
-              brokenLinks.push({ url, status: response.status });
+          const brokenLinks = [];
+          const workingLinks = [];
+
+          for (const url of urls) {
+            try {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 10000);
+              
+              const response = await fetch(url, {
+                method: "HEAD",
+                signal: controller.signal,
+              });
+              
+              clearTimeout(timeoutId);
+
+              if (response.ok) {
+                workingLinks.push(url);
+              } else {
+                brokenLinks.push({ url, status: response.status });
+              }
+            } catch (error) {
+              brokenLinks.push({
+                url,
+                error: error instanceof Error ? error.message : "Unknown error",
+              });
             }
-          } catch (error) {
-            brokenLinks.push({ 
-              url, 
-              error: error instanceof Error ? error.message : 'Unknown error' 
-            });
           }
-        }
 
-        return {
-          articleId: article.id,
-          articleTitle: article.title,
-          totalLinks: urls.length,
-          workingLinks: workingLinks.length,
-          brokenLinks: brokenLinks.length,
-          brokenLinkDetails: brokenLinks,
-        };
-      });
+          return {
+            articleId: article.id,
+            articleTitle: article.title,
+            totalLinks: urls.length,
+            workingLinks: workingLinks.length,
+            brokenLinks: brokenLinks.length,
+            brokenLinkDetails: brokenLinks,
+          };
+        }
+      );
 
       results.push(articleResult);
 
@@ -68,7 +78,8 @@ export const kbLinksVerify = inngest.createFunction(
       if (articleResult.brokenLinks > 0) {
         await step.run(`notify-broken-links-${article.id}`, async () => {
           // TODO: Send notification to article author or team admins
-          console.log(`Broken links found in article "${article.title}":`, 
+          console.log(
+            `Broken links found in article "${article.title}":`,
             articleResult.brokenLinkDetails
           );
         });
@@ -77,7 +88,7 @@ export const kbLinksVerify = inngest.createFunction(
 
     return {
       totalArticles: articles.length,
-      articlesWithBrokenLinks: results.filter(r => r.brokenLinks > 0).length,
+      articlesWithBrokenLinks: results.filter((r) => r.brokenLinks > 0).length,
       results,
     };
   }
@@ -92,7 +103,9 @@ export const kbArticlePublished = inngest.createFunction(
     // Send notification to team members
     await step.run("notify-team-members", async () => {
       // TODO: Implement team notification system
-      console.log(`New knowledge base article published: "${title}" by ${authorId}`);
+      console.log(
+        `New knowledge base article published: "${title}" by ${authorId}`
+      );
     });
 
     // Index article for search (if using search service)
@@ -121,10 +134,14 @@ export const kbCleanupUnusedUploads = inngest.createFunction(
       return await db
         .select()
         .from(kbUploads)
-        .where(eq(kbUploads.articleId, null));
+        .where(isNull(kbUploads.articleId));
     });
 
-    const cleanupResults = [];
+    const cleanupResults: Array<{
+      uploadId: string;
+      filename: string;
+      status: string;
+    }> = [];
 
     // Clean up old unused uploads (older than 30 days)
     for (const upload of unusedUploads) {
@@ -133,23 +150,30 @@ export const kbCleanupUnusedUploads = inngest.createFunction(
 
       if (uploadAge > thirtyDaysInMs) {
         await step.run(`cleanup-upload-${upload.id}`, async () => {
-          // TODO: Delete from Supabase Storage
-          // const { error } = await supabase.storage
-          //   .from('kb-files')
-          //   .remove([upload.filename]);
+          try {
+            // Determine store type from file path
+            const storeType: BlobStoreType = upload.filename?.startsWith('private/') ? 'private' : 'public';
+            // Delete from Vercel Blob using the utility function
+            await deleteFileFromBlob(upload.storageUrl, storeType);
+            
+            // Delete from database
+            await db.delete(kbUploads).where(eq(kbUploads.id, upload.id));
 
-          // Delete from database
-          await db
-            .delete(kbUploads)
-            .where(eq(kbUploads.id, upload.id));
+            cleanupResults.push({
+              uploadId: upload.id,
+              filename: upload.filename,
+              status: "cleaned",
+            });
 
-          cleanupResults.push({
-            uploadId: upload.id,
-            filename: upload.filename,
-            status: 'cleaned',
-          });
-
-          console.log(`Cleaned up unused upload: ${upload.filename}`);
+            console.log(`Cleaned up unused upload: ${upload.filename}`);
+          } catch (error) {
+            console.error(`Failed to cleanup upload ${upload.filename}:`, error);
+            cleanupResults.push({
+              uploadId: upload.id,
+              filename: upload.filename,
+              status: "failed",
+            });
+          }
         });
       }
     }

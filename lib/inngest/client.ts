@@ -1,9 +1,9 @@
 import { Inngest } from "inngest";
 
 // Create a client to send and receive events
-export const inngest = new Inngest({ 
+export const inngest = new Inngest({
   id: "deelrx-crm",
-  name: "DeelRx CRM Background Jobs"
+  name: "DeelRx CRM Background Jobs",
 });
 
 // Event types for Phase 3 operations

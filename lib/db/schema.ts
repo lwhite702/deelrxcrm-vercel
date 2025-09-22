@@ -582,34 +582,34 @@ export type LoyaltyTransaction = typeof loyaltyTransactions.$inferSelect;
 // Phase 3: Credit System Enums
 export const creditStatusEnum = pgEnum("credit_status", [
   "active",
-  "suspended", 
+  "suspended",
   "closed",
-  "defaulted"
+  "defaulted",
 ]);
 
 export const creditTransactionStatusEnum = pgEnum("credit_transaction_status", [
   "pending",
   "processing",
-  "completed", 
+  "completed",
   "failed",
   "cancelled",
-  "refunded"
+  "refunded",
 ]);
 
 export const purgeStatusEnum = pgEnum("purge_status", [
   "requested",
   "scheduled",
-  "export_ready", 
+  "export_ready",
   "acknowledged",
   "executing",
   "completed",
-  "cancelled"
+  "cancelled",
 ]);
 
 export const kbArticleStatusEnum = pgEnum("kb_article_status", [
   "draft",
   "published",
-  "archived"
+  "archived",
 ]);
 
 // Phase 3: Credit System Tables
@@ -686,8 +686,9 @@ export const kbUploads = pgTable("kb_uploads", {
   teamId: uuid("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  articleId: uuid("article_id")
-    .references(() => kbArticles.id, { onDelete: "cascade" }),
+  articleId: uuid("article_id").references(() => kbArticles.id, {
+    onDelete: "cascade",
+  }),
   filename: text("filename").notNull(),
   originalName: text("original_name").notNull(),
   mimeType: text("mime_type").notNull(),
@@ -723,11 +724,13 @@ export const purgeOperations = pgTable("purge_operations", {
     .notNull()
     .references(() => users.id),
   status: purgeStatusEnum("status").notNull().default("requested"),
-  purgeScope: jsonb("purge_scope").$type<{
-    entities: string[];
-    dateRange?: { from: string; to: string };
-    criteria?: Record<string, any>;
-  }>().notNull(),
+  purgeScope: jsonb("purge_scope")
+    .$type<{
+      entities: string[];
+      dateRange?: { from: string; to: string };
+      criteria?: Record<string, any>;
+    }>()
+    .notNull(),
   scheduledFor: timestamp("scheduled_for"),
   exportUrl: text("export_url"),
   exportExpiresAt: timestamp("export_expires_at"),
@@ -749,11 +752,13 @@ export const inactivityPolicies = pgTable("inactivity_policies", {
   name: text("name").notNull(),
   description: text("description"),
   thresholdDays: integer("threshold_days").notNull(),
-  actions: jsonb("actions").$type<{
-    warnings: number[];
-    suspend: boolean;
-    purge: boolean;
-  }>().notNull(),
+  actions: jsonb("actions")
+    .$type<{
+      warnings: number[];
+      suspend: boolean;
+      purge: boolean;
+    }>()
+    .notNull(),
   isActive: boolean("is_active").default(true),
   lastRunAt: timestamp("last_run_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -781,10 +786,10 @@ export const inactivityTrackers = pgTable("inactivity_trackers", {
 
 export const activityEvents = pgTable("activity_events", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: serial("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: serial("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   eventType: text("event_type").notNull(), // login, order_created, etc

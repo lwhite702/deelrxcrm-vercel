@@ -1,0 +1,227 @@
+---
+title: Quick Start Guide
+description: 'Get up and running with DeelRx CRM in minutes'
+---
+
+## Overview
+
+This guide will help you get started with DeelRx CRM quickly. Follow these steps to set up your account and begin managing your customer relationships.
+
+## Step 1: Account Setup
+
+### Sign Up
+1. Visit [deelrxcrm.app](https://deelrxcrm.app)
+2. Click "Sign Up" and enter your email address
+3. Check your email for a verification link
+4. Complete your profile information
+
+### Team Configuration
+<Steps>
+  <Step title="Create Your Team">
+    After signing up, you'll be prompted to create your first team. This represents your organization or business unit.
+  </Step>
+  <Step title="Invite Team Members">
+    Add team members by email and assign appropriate roles (Admin, Manager, or Member)
+  </Step>
+  <Step title="Configure Settings">
+    Set up your team's timezone, currency, and notification preferences
+  </Step>
+</Steps>
+
+## Step 2: Initial Configuration
+
+### Payment Setup
+Configure your payment processing to start accepting payments:
+
+```json
+{
+  "provider": "stripe",
+  "mode": "live", // or "test" for development
+  "currency": "USD",
+  "auto_capture": true
+}
+```
+
+### Product Catalog
+Set up your initial product catalog:
+
+<CodeGroup>
+```javascript Create Product
+const product = await fetch('/api/teams/[teamId]/products', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'Sample Product',
+    description: 'Product description',
+    price: 2999, // Price in cents
+    sku: 'SAMPLE-001',
+    category: 'general'
+  })
+});
+```
+
+```curl cURL
+curl -X POST https://deelrxcrm.app/api/teams/[teamId]/products \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "name": "Sample Product",
+    "description": "Product description",
+    "price": 2999,
+    "sku": "SAMPLE-001",
+    "category": "general"
+  }'
+```
+</CodeGroup>
+
+## Step 3: Customer Management
+
+### Adding Customers
+Start by adding your first customers:
+
+<Tabs>
+  <Tab title="Web Interface">
+    1. Navigate to **Customers** in the main menu
+    2. Click **Add Customer**
+    3. Fill in customer details (name, email, phone, address)
+    4. Save to create the customer record
+  </Tab>
+  <Tab title="API">
+    ```javascript
+    const customer = await fetch('/api/teams/[teamId]/customers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '+1234567890',
+        address: {
+          street: '123 Main St',
+          city: 'Anytown',
+          state: 'CA',
+          zip: '12345',
+          country: 'US'
+        }
+      })
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### Customer Import
+For bulk customer import, use our CSV import feature:
+
+<Steps>
+  <Step title="Prepare CSV File">
+    Download our CSV template with the required columns: name, email, phone, address
+  </Step>
+  <Step title="Upload File">
+    Go to Customers → Import and upload your CSV file
+  </Step>
+  <Step title="Map Fields">
+    Map your CSV columns to DeelRx CRM fields
+  </Step>
+  <Step title="Review & Import">
+    Review the preview and click Import to add all customers
+  </Step>
+</Steps>
+
+## Step 4: Processing Your First Order
+
+### Create an Order
+<CodeGroup>
+```javascript Web Interface
+// Navigate to Orders → New Order
+{
+  "customerId": "customer-uuid",
+  "items": [
+    {
+      "productId": "product-uuid",
+      "quantity": 2,
+      "unitPrice": 2999
+    }
+  ],
+  "shippingAddress": { /* address object */ },
+  "notes": "Special instructions"
+}
+```
+
+```curl API
+curl -X POST https://deelrxcrm.app/api/teams/[teamId]/orders \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "customerId": "customer-uuid",
+    "items": [{
+      "productId": "product-uuid", 
+      "quantity": 2,
+      "unitPrice": 2999
+    }]
+  }'
+```
+</CodeGroup>
+
+### Payment Processing
+Process payment for the order:
+
+1. **Card Payment**: Use our integrated Stripe payment form
+2. **Cash Payment**: Mark as cash payment for in-person transactions  
+3. **Credit**: Apply to customer credit account (if enabled)
+
+## Step 5: Enable Advanced Features
+
+### Credit System
+Enable credit accounts for trusted customers:
+
+<Accordion title="Credit Setup">
+  <Steps>
+    <Step title="Enable Credit Module">
+      Go to Settings → Features and enable the Credit System
+    </Step>
+    <Step title="Set Credit Limits">
+      Configure default and per-customer credit limits
+    </Step>
+    <Step title="Payment Terms">
+      Set up payment terms and automatic reminders
+    </Step>
+  </Steps>
+</Accordion>
+
+### Knowledge Base
+Set up internal documentation:
+
+<Accordion title="Knowledge Base Setup">
+  <Steps>
+    <Step title="Access Knowledge Base">
+      Navigate to Help → Knowledge Base in your dashboard
+    </Step>
+    <Step title="Create Categories">
+      Organize content with categories like "Procedures", "Training", "FAQs"
+    </Step>
+    <Step title="Add Articles">
+      Create helpful articles for your team with rich text, images, and attachments
+    </Step>
+  </Steps>
+</Accordion>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Core Features" icon="compass" href="/core-crm/customers">
+    Learn about customer management, orders, and payment processing
+  </Card>
+  <Card title="Set Up Integrations" icon="plug" href="/api-reference/introduction">
+    Connect DeelRx CRM with your existing tools via our API
+  </Card>
+  <Card title="Configure Team Roles" icon="users-gear" href="/admin/roles-permissions">
+    Set up proper access controls for your team members
+  </Card>
+  <Card title="View Changelog" icon="clock" href="/changelog">
+    Stay updated with the latest features and improvements
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+<Tip>
+  If you need assistance during setup, our support team is available 24/7. You can also access context-sensitive help within the application by clicking the help icon (?) in any section.
+</Tip>

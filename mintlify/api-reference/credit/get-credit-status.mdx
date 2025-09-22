@@ -1,0 +1,159 @@
+---
+title: "Get Credit Status"
+api: "GET /api/teams/{teamId}/credit"
+description: "Retrieve credit account information and current balance for a team"
+---
+
+Retrieves the current credit status for a team, including credit limit, available credit, recent transactions, and payment history.
+
+## Path Parameters
+
+<ParamField path="teamId" type="string" required>
+  The unique identifier for the team
+</ParamField>
+
+## Response
+
+<ResponseField name="creditLimit" type="number">
+  Total credit limit in cents
+</ResponseField>
+
+<ResponseField name="currentBalance" type="number">
+  Current outstanding balance in cents (positive = owed to you)
+</ResponseField>
+
+<ResponseField name="availableCredit" type="number">
+  Available credit remaining in cents
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Credit account status: `active`, `suspended`, `closed`, or `defaulted`
+</ResponseField>
+
+<ResponseField name="paymentTerms" type="string">
+  Payment terms (e.g., "net30", "net15", "due_on_receipt")
+</ResponseField>
+
+<ResponseField name="recentTransactions" type="array">
+  Array of recent credit transactions
+  <Expandable title="Transaction Object">
+    <ResponseField name="id" type="string">
+      Transaction ID
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Transaction type: `charge`, `payment`, `fee`, `adjustment`
+    </ResponseField>
+    <ResponseField name="amount" type="number">
+      Transaction amount in cents
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      Transaction description
+    </ResponseField>
+    <ResponseField name="createdAt" type="string">
+      ISO 8601 timestamp of transaction
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Transaction status: `pending`, `completed`, `failed`, `cancelled`
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "https://deelrxcrm.app/api/teams/team_123/credit" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+const response = await fetch('/api/teams/team_123/credit', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+const creditStatus = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://deelrxcrm.app/api/teams/team_123/credit',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    }
+)
+
+credit_status = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json 200 OK
+{
+  "creditLimit": 500000,
+  "currentBalance": 125000,
+  "availableCredit": 375000,
+  "status": "active",
+  "paymentTerms": "net30",
+  "recentTransactions": [
+    {
+      "id": "txn_abc123",
+      "type": "charge",
+      "amount": 75000,
+      "description": "Order #ORD-001",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "status": "completed",
+      "dueDate": "2024-02-14T23:59:59Z"
+    },
+    {
+      "id": "txn_def456", 
+      "type": "payment",
+      "amount": -50000,
+      "description": "Payment received - Check #1234",
+      "createdAt": "2024-01-10T14:22:00Z",
+      "status": "completed"
+    }
+  ]
+}
+```
+
+```json 404 Not Found
+{
+  "error": "Credit account not found",
+  "message": "No credit account exists for this team"
+}
+```
+
+```json 401 Unauthorized
+{
+  "error": "Unauthorized",
+  "message": "Invalid or missing API key"
+}
+```
+
+</ResponseExample>
+
+## Usage Notes
+
+- Credit limits and balances are returned in cents (e.g., 500000 = $5,000.00)
+- The `currentBalance` represents money owed to you (positive) or credit balance (negative)
+- `availableCredit` is calculated as `creditLimit - currentBalance` (capped at 0 if over limit)
+- Recent transactions are limited to the last 10 transactions; use the transactions endpoint for full history
+
+## Rate Limits
+
+This endpoint is subject to standard rate limits:
+- **100 requests per minute** per API key
+- **1000 requests per hour** per API key
+
+<Tip>
+  Use this endpoint to display credit information in your application UI or to perform credit checks before processing orders.
+</Tip>

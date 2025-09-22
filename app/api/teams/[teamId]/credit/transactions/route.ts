@@ -8,7 +8,7 @@ import { getUser } from "@/lib/db/queries";
 // Validation schemas
 const createTransactionSchema = z.object({
   creditId: z.string().uuid(),
-  transactionType: z.enum(['charge', 'payment', 'fee', 'adjustment']),
+  transactionType: z.enum(["charge", "payment", "fee", "adjustment"]),
   amount: z.number().int(), // amount in cents
   description: z.string().optional(),
   orderId: z.string().uuid().optional(),
@@ -40,7 +40,7 @@ export async function GET(
     const offset = Math.max(parseInt(url.searchParams.get("offset") || "0"), 0);
 
     // Build query conditions
-    const conditions = [eq(creditTransactions.teamId, teamId)];
+    const conditions = [eq(creditTransactions.teamId, parseInt(teamId))];
 
     if (creditId) {
       conditions.push(eq(creditTransactions.creditId, creditId));
@@ -51,7 +51,9 @@ export async function GET(
     }
 
     if (transactionType) {
-      conditions.push(eq(creditTransactions.transactionType, transactionType as any));
+      conditions.push(
+        eq(creditTransactions.transactionType, transactionType as any)
+      );
     }
 
     const transactions = await db
@@ -93,9 +95,13 @@ export async function POST(
       .insert(creditTransactions)
       .values({
         ...validatedData,
-        teamId,
-        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : undefined,
-        idempotencyKey: validatedData.idempotencyKey || `${teamId}-${Date.now()}-${Math.random()}`,
+        teamId: parseInt(teamId),
+        dueDate: validatedData.dueDate
+          ? new Date(validatedData.dueDate)
+          : undefined,
+        idempotencyKey:
+          validatedData.idempotencyKey ||
+          `${teamId}-${Date.now()}-${Math.random()}`,
       })
       .returning();
 

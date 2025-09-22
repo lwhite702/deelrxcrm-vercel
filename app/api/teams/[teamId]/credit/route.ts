@@ -7,9 +7,12 @@ import { getUser } from "@/lib/db/queries";
 
 // Validation schemas
 const updateCreditSchema = z.object({
-  creditLimit: z.string().transform((val) => parseInt(val)).optional(),
+  creditLimit: z
+    .string()
+    .transform((val) => parseInt(val))
+    .optional(),
   customerId: z.string().uuid().optional(),
-  status: z.enum(['active', 'suspended', 'closed', 'defaulted']).optional(),
+  status: z.enum(["active", "suspended", "closed", "defaulted"]).optional(),
 });
 
 export async function GET(
@@ -30,27 +33,29 @@ export async function GET(
     const [creditRecord] = await db
       .select()
       .from(credits)
-      .where(eq(credits.teamId, teamId))
+      .where(eq(credits.teamId, parseInt(teamId)))
       .limit(1);
 
     // Get current balance by summing all successful transactions
     const balanceResult = await db
-      .select({ 
-        totalBalance: sum(creditTransactions.amount)
+      .select({
+        totalBalance: sum(creditTransactions.amount),
       })
       .from(creditTransactions)
-      .where(and(
-        eq(creditTransactions.teamId, teamId),
-        eq(creditTransactions.status, 'completed')
-      ));
+      .where(
+        and(
+          eq(creditTransactions.teamId, parseInt(teamId)),
+          eq(creditTransactions.status, "completed")
+        )
+      );
 
-    const currentBalance = parseInt(balanceResult[0]?.totalBalance || '0');
+    const currentBalance = parseInt(balanceResult[0]?.totalBalance || "0");
 
     // Get recent transactions
     const recentTransactions = await db
       .select()
       .from(creditTransactions)
-      .where(eq(creditTransactions.teamId, teamId))
+      .where(eq(creditTransactions.teamId, parseInt(teamId)))
       .orderBy(desc(creditTransactions.createdAt))
       .limit(10);
 
@@ -58,7 +63,7 @@ export async function GET(
       creditLimit: creditRecord?.creditLimit || 0,
       currentBalance,
       availableCredit: (creditRecord?.creditLimit || 0) - currentBalance,
-      status: creditRecord?.status || 'active',
+      status: creditRecord?.status || "active",
       customerId: creditRecord?.customerId,
       recentTransactions,
     };
@@ -94,7 +99,7 @@ export async function PUT(
     const [existingCredit] = await db
       .select()
       .from(credits)
-      .where(eq(credits.teamId, teamId))
+      .where(eq(credits.teamId, parseInt(teamId)))
       .limit(1);
 
     let creditRecord;
@@ -107,7 +112,7 @@ export async function PUT(
           ...validatedData,
           updatedAt: new Date(),
         })
-        .where(eq(credits.teamId, teamId))
+        .where(eq(credits.teamId, parseInt(teamId)))
         .returning();
     } else {
       // Create new record - requires customerId
@@ -121,10 +126,10 @@ export async function PUT(
       [creditRecord] = await db
         .insert(credits)
         .values({
-          teamId,
+          teamId: parseInt(teamId),
           customerId: validatedData.customerId,
           creditLimit: validatedData.creditLimit || 0,
-          status: validatedData.status || 'active',
+          status: validatedData.status || "active",
         })
         .returning();
     }

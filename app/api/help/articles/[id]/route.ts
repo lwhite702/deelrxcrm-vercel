@@ -13,7 +13,7 @@ const updateArticleSchema = z.object({
   category: z.string().optional(),
   tags: z.array(z.string()).optional(),
   isPublic: z.boolean().optional(),
-  status: z.enum(['draft', 'published', 'archived']).optional(),
+  status: z.enum(["draft", "published", "archived"]).optional(),
 });
 
 export async function GET(
@@ -35,26 +35,23 @@ export async function GET(
       .limit(1);
 
     if (!article) {
-      return NextResponse.json(
-        { error: "Article not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
     // Increment view count
     await db
       .update(kbArticles)
-      .set({ 
+      .set({
         viewCount: (article.viewCount || 0) + 1,
         updatedAt: new Date(),
       })
       .where(eq(kbArticles.id, id));
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       article: {
         ...article,
         viewCount: (article.viewCount || 0) + 1,
-      } 
+      },
     });
   } catch (error) {
     console.error("KB article GET error:", error);
@@ -87,10 +84,7 @@ export async function PUT(
       .limit(1);
 
     if (!existingArticle) {
-      return NextResponse.json(
-        { error: "Article not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
     // TODO: Add proper permission check (author or admin)
@@ -100,8 +94,8 @@ export async function PUT(
     if (validatedData.title && validatedData.title !== existingArticle.title) {
       updatedSlug = validatedData.title
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
     }
 
     const updateData: any = {
@@ -111,7 +105,10 @@ export async function PUT(
     };
 
     // Set publishedAt if status changes to published
-    if (validatedData.status === 'published' && existingArticle.status !== 'published') {
+    if (
+      validatedData.status === "published" &&
+      existingArticle.status !== "published"
+    ) {
       updateData.publishedAt = new Date();
     }
 
@@ -157,17 +154,12 @@ export async function DELETE(
       .limit(1);
 
     if (!existingArticle) {
-      return NextResponse.json(
-        { error: "Article not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
     // TODO: Add proper permission check (author or admin)
 
-    await db
-      .delete(kbArticles)
-      .where(eq(kbArticles.id, id));
+    await db.delete(kbArticles).where(eq(kbArticles.id, id));
 
     return NextResponse.json({ message: "Article deleted successfully" });
   } catch (error) {

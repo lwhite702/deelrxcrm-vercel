@@ -13,14 +13,12 @@ const createArticleSchema = z.object({
   category: z.string().optional(),
   tags: z.array(z.string()).default([]),
   isPublic: z.boolean().default(false),
-  status: z.enum(['draft', 'published', 'archived']).default('draft'),
+  status: z.enum(["draft", "published", "archived"]).default("draft"),
 });
 
 const updateArticleSchema = createArticleSchema.partial();
 
-export async function GET(
-  request: NextRequest
-) {
+export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
     if (!user) {
@@ -44,7 +42,7 @@ export async function GET(
     const conditions = [];
 
     if (teamId) {
-      conditions.push(eq(kbArticles.teamId, teamId));
+      conditions.push(eq(kbArticles.teamId, parseInt(teamId)));
     }
 
     if (status) {
@@ -102,9 +100,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest
-) {
+export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
     if (!user) {
@@ -117,8 +113,8 @@ export async function POST(
     // Generate slug from title
     const slug = validatedData.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
     // TODO: Get teamId from user context or request
     const teamId = body.teamId; // This should come from auth context
@@ -140,10 +136,11 @@ export async function POST(
         tags: validatedData.tags,
         isPublic: validatedData.isPublic,
         status: validatedData.status,
-        teamId,
+        teamId: parseInt(teamId),
         slug: `${slug}-${Date.now()}`, // Ensure uniqueness
         authorId: user.id,
-        publishedAt: validatedData.status === 'published' ? new Date() : undefined,
+        publishedAt:
+          validatedData.status === "published" ? new Date() : undefined,
       })
       .returning();
 

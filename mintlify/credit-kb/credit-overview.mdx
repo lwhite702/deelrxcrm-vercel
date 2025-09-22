@@ -1,0 +1,199 @@
+---
+title: Credit System Overview
+description: 'Flexible credit management with automated billing and payment processing'
+---
+
+## What is the Credit System?
+
+The DeelRx CRM Credit System allows you to extend credit to trusted customers, enabling them to make purchases and pay later according to agreed terms. This system is ideal for B2B relationships, repeat customers, and businesses that need flexible payment options.
+
+<Info>
+  The Credit System is a premium feature available on Pro and Enterprise plans. Contact our sales team to enable this feature for your account.
+</Info>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Flexible Credit Limits" icon="gauge">
+    Set individual credit limits for each customer based on their creditworthiness
+  </Card>
+  <Card title="Automated Billing" icon="calendar-clock">
+    Schedule automatic charges and send payment reminders
+  </Card>
+  <Card title="Payment Terms" icon="handshake">
+    Configure custom payment terms (Net 15, Net 30, etc.) per customer
+  </Card>
+  <Card title="Credit Monitoring" icon="chart-line">
+    Real-time monitoring of credit utilization and payment history
+  </Card>
+</CardGroup>
+
+## How It Works
+
+### 1. Enable Credit for Customers
+Not all customers need credit accounts. Enable credit selectively:
+
+<Steps>
+  <Step title="Customer Evaluation">
+    Assess customer creditworthiness based on purchase history and business relationship
+  </Step>
+  <Step title="Set Credit Limit">
+    Establish an appropriate credit limit based on your risk assessment
+  </Step>
+  <Step title="Define Payment Terms">
+    Set payment terms (e.g., Net 30 days) and late fee policies
+  </Step>
+  <Step title="Activate Credit Account">
+    Once approved, the customer can make credit purchases up to their limit
+  </Step>
+</Steps>
+
+### 2. Credit Purchases
+When a customer with an active credit account makes a purchase:
+
+1. **Order Placement**: Customer places order as usual
+2. **Credit Check**: System verifies available credit limit
+3. **Authorization**: If within limit, order is approved and credit is reserved
+4. **Fulfillment**: Order is processed and shipped
+5. **Billing**: Amount is charged to customer's credit account
+
+### 3. Payment Processing
+The system handles payment collection automatically:
+
+<Tabs>
+  <Tab title="Scheduled Payments">
+    - **Due Date Calculation**: Based on invoice date + payment terms
+    - **Payment Reminders**: Automatic email reminders before due date
+    - **Late Notices**: Escalating notices for overdue payments
+    - **Collections**: Integration with collections workflows
+  </Tab>
+  <Tab title="Manual Payments">
+    - **Customer Portal**: Customers can pay online anytime
+    - **Phone Payments**: Accept payments over the phone
+    - **Check Processing**: Record check payments in the system
+    - **Partial Payments**: Accept partial payments with automatic tracking
+  </Tab>
+</Tabs>
+
+## Credit Management
+
+### Setting Credit Limits
+Establish appropriate credit limits for your customers:
+
+```json Credit Limit Configuration
+{
+  "customerId": "cust_123",
+  "creditLimit": 10000, // $100.00 in cents
+  "paymentTerms": "net30", // Net 30 days
+  "lateFeeRate": 0.015, // 1.5% monthly late fee
+  "gracePeriod": 5, // 5 days grace period
+  "autoSuspend": true // Auto-suspend if over limit
+}
+```
+
+### Monitoring Credit Utilization
+
+<Accordion title="Credit Metrics Dashboard">
+  Track important credit metrics:
+  
+  - **Total Outstanding**: Sum of all unpaid invoices  
+  - **Credit Utilization**: Percentage of credit limits being used
+  - **Days Sales Outstanding (DSO)**: Average collection period
+  - **Aging Report**: Breakdown of receivables by age (0-30, 31-60, 61-90, 90+ days)
+  - **Payment Trends**: Historical payment performance by customer
+</Accordion>
+
+### Risk Management
+Built-in tools to minimize credit risk:
+
+<CardGroup cols={3}>
+  <Card title="Credit Alerts" icon="bell">
+    Get notified when customers approach credit limits or miss payments
+  </Card>
+  <Card title="Auto-Suspension" icon="pause">
+    Automatically suspend credit privileges for delinquent accounts
+  </Card>
+  <Card title="Collection Workflows" icon="list-check">
+    Structured collection processes with escalation rules
+  </Card>
+</CardGroup>
+
+## Payment Terms & Policies
+
+### Standard Payment Terms
+Common payment terms available in the system:
+
+| Term | Description | Due Date |
+|------|-------------|----------|
+| Net 15 | Payment due in 15 days | Invoice date + 15 days |
+| Net 30 | Payment due in 30 days | Invoice date + 30 days |
+| Net 60 | Payment due in 60 days | Invoice date + 60 days |
+| Due on Receipt | Payment due immediately | Invoice date |
+| 2/10 Net 30 | 2% discount if paid within 10 days, otherwise Net 30 | Varies |
+
+### Late Fee Policies
+Configure late fees to encourage timely payment:
+
+- **Flat Fee**: Fixed amount (e.g., $25) for late payments
+- **Percentage**: Percentage of outstanding balance (e.g., 1.5% monthly)
+- **Graduated**: Increasing penalties for longer delinquency
+- **Grace Period**: Days before late fees are applied
+
+## Best Practices
+
+<Tip>
+  **Start Conservative**: Begin with lower credit limits and increase them as customers prove their reliability. It's easier to increase limits than to collect bad debt.
+</Tip>
+
+### Credit Approval Process
+1. **Credit Application**: Require formal credit applications for new accounts
+2. **Reference Checks**: Verify trade references and payment history
+3. **Credit Reports**: Pull business credit reports when appropriate
+4. **Financial Statements**: Review financial statements for larger credit limits
+5. **Personal Guarantees**: Consider personal guarantees for higher-risk accounts
+
+### Ongoing Management
+- **Regular Reviews**: Periodically review and adjust credit limits
+- **Payment History**: Monitor payment patterns and adjust terms accordingly
+- **Communication**: Maintain open communication with customers about their accounts
+- **Documentation**: Keep detailed records of all credit decisions and communications
+
+## Integration with Other Features
+
+### Order Management
+Credit seamlessly integrates with the order system:
+- Credit checks during order placement
+- Automatic credit holds for over-limit customers
+- Integration with shipping and fulfillment workflows
+
+### Reporting & Analytics
+Comprehensive reporting helps you manage credit effectively:
+- Credit utilization reports
+- Payment performance analytics
+- Risk assessment dashboards
+- Cash flow forecasting
+
+<Warning>
+  **Important**: The Credit System involves financial risk. Ensure you have proper policies, procedures, and legal protections in place before extending credit to customers. Consider consulting with legal and financial professionals when setting up your credit program.
+</Warning>
+
+## Getting Started
+
+Ready to enable credit for your customers? Here's how to get started:
+
+<Steps>
+  <Step title="Enable Credit Module">
+    Contact our support team to enable the Credit System for your account
+  </Step>
+  <Step title="Configure Policies">
+    Set up your credit policies, payment terms, and late fee structure
+  </Step>
+  <Step title="Train Your Team">
+    Ensure your team understands credit procedures and approval processes
+  </Step>
+  <Step title="Start Small">
+    Begin with a few trusted customers and small credit limits
+  </Step>
+</Steps>
+
+For detailed technical implementation, see our [API Reference](/api-reference/credit/get-credit-status).

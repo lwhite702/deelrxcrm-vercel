@@ -7,7 +7,7 @@ import { getUser } from "@/lib/db/queries";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2025-08-27.basil",
 });
 
 // Validation schemas
@@ -38,7 +38,7 @@ export async function POST(
       .where(eq(credits.id, creditId))
       .limit(1);
 
-    if (!creditAccount || creditAccount.teamId !== teamId) {
+    if (!creditAccount || creditAccount.teamId !== parseInt(teamId)) {
       return NextResponse.json(
         { error: "Credit account not found" },
         { status: 404 }
@@ -47,8 +47,10 @@ export async function POST(
 
     // Create SetupIntent for saving payment method
     const setupIntent = await stripe.setupIntents.create({
-      customer: customerEmail ? undefined : await getOrCreateStripeCustomer(customerEmail),
-      usage: 'off_session', // For future payments
+      customer: customerEmail
+        ? undefined
+        : await getOrCreateStripeCustomer(customerEmail),
+      usage: "off_session", // For future payments
       metadata: {
         creditId,
         teamId,
@@ -84,9 +86,11 @@ export async function POST(
   }
 }
 
-async function getOrCreateStripeCustomer(email?: string): Promise<string | undefined> {
+async function getOrCreateStripeCustomer(
+  email?: string
+): Promise<string | undefined> {
   if (!email) return undefined;
-  
+
   // Search for existing customer
   const customers = await stripe.customers.list({
     email,

@@ -1,9 +1,21 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Plus, Edit, Trash2, Eye, Upload, Tag, Calendar, User, FileText, Image } from "lucide-react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Upload,
+  Tag,
+  Calendar,
+  User,
+  FileText,
+  Image,
+} from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface KBArticle {
   id: string;
@@ -12,7 +24,7 @@ interface KBArticle {
   slug: string;
   content: string;
   excerpt?: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   category?: string;
   tags: string[];
   authorId?: string;
@@ -40,10 +52,14 @@ export default function HelpClient() {
   const [uploads, setUploads] = useState<KBUpload[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedView, setSelectedView] = useState<'browse' | 'create' | 'uploads'>('browse');
+  const [selectedView, setSelectedView] = useState<
+    "browse" | "create" | "uploads"
+  >("browse");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedArticle, setSelectedArticle] = useState<KBArticle | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<KBArticle | null>(
+    null
+  );
   const [showMarkdownPreview, setShowMarkdownPreview] = useState(false);
 
   // TODO: Get teamId from auth context
@@ -51,16 +67,16 @@ export default function HelpClient() {
 
   // Form state for creating/editing articles
   const [articleForm, setArticleForm] = useState({
-    title: '',
-    content: '',
-    excerpt: '',
-    category: '',
+    title: "",
+    content: "",
+    excerpt: "",
+    category: "",
     tags: [] as string[],
     isPublic: false,
-    status: 'draft' as const,
+    status: "draft" as const,
   });
 
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
     fetchArticles();
@@ -74,13 +90,13 @@ export default function HelpClient() {
         ...(searchTerm && { search: searchTerm }),
         ...(selectedCategory && { category: selectedCategory }),
       });
-      
+
       const response = await fetch(`/api/help/articles?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch articles');
+      if (!response.ok) throw new Error("Failed to fetch articles");
       const data = await response.json();
       setArticles(data.articles || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load articles');
+      setError(err instanceof Error ? err.message : "Failed to load articles");
     } finally {
       setLoading(false);
     }
@@ -88,43 +104,45 @@ export default function HelpClient() {
 
   const fetchUploads = async () => {
     try {
-      const response = await fetch(`/api/help/uploads?teamId=${teamId}&limit=20`);
-      if (!response.ok) throw new Error('Failed to fetch uploads');
+      const response = await fetch(
+        `/api/help/uploads?teamId=${teamId}&limit=20`
+      );
+      if (!response.ok) throw new Error("Failed to fetch uploads");
       const data = await response.json();
       setUploads(data.uploads || []);
     } catch (err) {
-      console.error('Failed to load uploads:', err);
+      console.error("Failed to load uploads:", err);
     }
   };
 
   const handleCreateArticle = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch('/api/help/articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/help/articles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...articleForm,
           teamId,
         }),
       });
-      
-      if (!response.ok) throw new Error('Failed to create article');
-      
+
+      if (!response.ok) throw new Error("Failed to create article");
+
       setArticleForm({
-        title: '',
-        content: '',
-        excerpt: '',
-        category: '',
+        title: "",
+        content: "",
+        excerpt: "",
+        category: "",
         tags: [],
         isPublic: false,
-        status: 'draft',
+        status: "draft",
       });
-      setSelectedView('browse');
+      setSelectedView("browse");
       await fetchArticles();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create article');
+      setError(err instanceof Error ? err.message : "Failed to create article");
     }
   };
 
@@ -133,59 +151,65 @@ export default function HelpClient() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('teamId', teamId);
-    formData.append('isPublic', 'false');
+    formData.append("file", file);
+    formData.append("teamId", teamId);
+    formData.append("isPublic", "false");
 
     try {
-      const response = await fetch('/api/help/uploads', {
-        method: 'POST',
+      const response = await fetch("/api/help/uploads", {
+        method: "POST",
         body: formData,
       });
-      
-      if (!response.ok) throw new Error('Failed to upload file');
-      
+
+      if (!response.ok) throw new Error("Failed to upload file");
+
       await fetchUploads();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload file');
+      setError(err instanceof Error ? err.message : "Failed to upload file");
     }
   };
 
   const addTag = () => {
     if (tagInput && !articleForm.tags.includes(tagInput)) {
-      setArticleForm(prev => ({
+      setArticleForm((prev) => ({
         ...prev,
-        tags: [...prev.tags, tagInput]
+        tags: [...prev.tags, tagInput],
       }));
-      setTagInput('');
+      setTagInput("");
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setArticleForm(prev => ({
+    setArticleForm((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
   const formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    if (bytes === 0) return "0 Bytes";
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'text-green-400';
-      case 'draft': return 'text-yellow-400';
-      case 'archived': return 'text-gray-400';
-      default: return 'text-gray-400';
+      case "published":
+        return "text-green-400";
+      case "draft":
+        return "text-yellow-400";
+      case "archived":
+        return "text-gray-400";
+      default:
+        return "text-gray-400";
     }
   };
 
   // Get unique categories for filtering
-  const categories = Array.from(new Set(articles.map(a => a.category).filter(Boolean)));
+  const categories = Array.from(
+    new Set(articles.map((a) => a.category).filter(Boolean))
+  );
 
   if (loading) {
     return (
@@ -200,17 +224,17 @@ export default function HelpClient() {
       {/* Navigation Tabs */}
       <div className="flex space-x-1 bg-gray-800 rounded-lg p-1">
         {[
-          { key: 'browse', label: 'Browse Articles', icon: FileText },
-          { key: 'create', label: 'Create Article', icon: Plus },
-          { key: 'uploads', label: 'File Uploads', icon: Upload },
+          { key: "browse", label: "Browse Articles", icon: FileText },
+          { key: "create", label: "Create Article", icon: Plus },
+          { key: "uploads", label: "File Uploads", icon: Upload },
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setSelectedView(key as any)}
             className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-              selectedView === key 
-                ? 'bg-purple-600 text-white' 
-                : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              selectedView === key
+                ? "bg-purple-600 text-white"
+                : "text-gray-300 hover:text-white hover:bg-gray-700"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -222,7 +246,7 @@ export default function HelpClient() {
       {error && (
         <div className="urban-card bg-red-900 border-red-700">
           <div className="text-red-400">{error}</div>
-          <button 
+          <button
             onClick={() => setError(null)}
             className="text-red-300 hover:text-red-100 mt-2 text-sm"
           >
@@ -232,7 +256,7 @@ export default function HelpClient() {
       )}
 
       {/* Browse Articles Tab */}
-      {selectedView === 'browse' && (
+      {selectedView === "browse" && (
         <>
           {/* Search and Filters */}
           <div className="urban-card">
@@ -254,8 +278,10 @@ export default function HelpClient() {
                   className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white"
                 >
                   <option value="">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -265,29 +291,43 @@ export default function HelpClient() {
           {/* Articles Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {articles.map((article) => (
-              <div key={article.id} className="urban-card hover:border-purple-500 transition-colors">
+              <div
+                key={article.id}
+                className="urban-card hover:border-purple-500 transition-colors"
+              >
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-lg font-semibold text-white hover:text-purple-400 cursor-pointer"
-                      onClick={() => setSelectedArticle(article)}>
+                  <h3
+                    className="text-lg font-semibold text-white hover:text-purple-400 cursor-pointer"
+                    onClick={() => setSelectedArticle(article)}
+                  >
                     {article.title}
                   </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${getStatusColor(article.status)}`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded ${getStatusColor(
+                      article.status
+                    )}`}
+                  >
                     {article.status.toUpperCase()}
                   </span>
                 </div>
-                
+
                 {article.excerpt && (
-                  <p className="text-gray-300 text-sm mb-3">{article.excerpt}</p>
+                  <p className="text-gray-300 text-sm mb-3">
+                    {article.excerpt}
+                  </p>
                 )}
-                
+
                 <div className="flex flex-wrap gap-1 mb-3">
                   {article.tags.map((tag) => (
-                    <span key={tag} className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-xs">
+                    <span
+                      key={tag}
+                      className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-xs"
+                    >
                       #{tag}
                     </span>
                   ))}
                 </div>
-                
+
                 <div className="flex justify-between items-center text-xs text-gray-400">
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
@@ -306,9 +346,9 @@ export default function HelpClient() {
                     {new Date(article.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
-                
+
                 <div className="flex gap-2 mt-4">
-                  <button 
+                  <button
                     onClick={() => setSelectedArticle(article)}
                     className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-md text-sm flex items-center justify-center gap-1"
                   >
@@ -329,9 +369,11 @@ export default function HelpClient() {
           {articles.length === 0 && (
             <div className="urban-card text-center">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-400">No articles found. Create your first article!</p>
+              <p className="text-gray-400">
+                No articles found. Create your first article!
+              </p>
               <button
-                onClick={() => setSelectedView('create')}
+                onClick={() => setSelectedView("create")}
                 className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md"
               >
                 Create Article
@@ -342,10 +384,12 @@ export default function HelpClient() {
       )}
 
       {/* Create Article Tab */}
-      {selectedView === 'create' && (
+      {selectedView === "create" && (
         <div className="urban-card">
-          <h3 className="text-lg font-semibold text-white mb-6">Create New Article</h3>
-          
+          <h3 className="text-lg font-semibold text-white mb-6">
+            Create New Article
+          </h3>
+
           <form onSubmit={handleCreateArticle} className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
@@ -354,35 +398,50 @@ export default function HelpClient() {
                   type="text"
                   required
                   value={articleForm.title}
-                  onChange={(e) => setArticleForm(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setArticleForm((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                   placeholder="Enter article title"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 mb-2">Category</label>
                 <input
                   type="text"
                   value={articleForm.category}
-                  onChange={(e) => setArticleForm(prev => ({ ...prev, category: e.target.value }))}
+                  onChange={(e) =>
+                    setArticleForm((prev) => ({
+                      ...prev,
+                      category: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                   placeholder="Enter category"
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-gray-300 mb-2">Excerpt</label>
               <textarea
                 value={articleForm.excerpt}
-                onChange={(e) => setArticleForm(prev => ({ ...prev, excerpt: e.target.value }))}
+                onChange={(e) =>
+                  setArticleForm((prev) => ({
+                    ...prev,
+                    excerpt: e.target.value,
+                  }))
+                }
                 className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                 placeholder="Brief description of the article"
                 rows={2}
               />
             </div>
-            
+
             <div>
               <label className="block text-gray-300 mb-2">Tags</label>
               <div className="flex gap-2 mb-2">
@@ -390,7 +449,9 @@ export default function HelpClient() {
                   type="text"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                  onKeyPress={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addTag())
+                  }
                   className="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                   placeholder="Enter tag and press Enter"
                 />
@@ -404,7 +465,10 @@ export default function HelpClient() {
               </div>
               <div className="flex flex-wrap gap-1">
                 {articleForm.tags.map((tag) => (
-                  <span key={tag} className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span
+                    key={tag}
+                    className="bg-gray-700 text-gray-300 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                  >
                     #{tag}
                     <button
                       type="button"
@@ -417,7 +481,7 @@ export default function HelpClient() {
                 ))}
               </div>
             </div>
-            
+
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="text-gray-300">Content *</label>
@@ -426,45 +490,62 @@ export default function HelpClient() {
                   onClick={() => setShowMarkdownPreview(!showMarkdownPreview)}
                   className="text-purple-400 hover:text-purple-300 text-sm"
                 >
-                  {showMarkdownPreview ? 'Edit' : 'Preview'}
+                  {showMarkdownPreview ? "Edit" : "Preview"}
                 </button>
               </div>
-              
+
               {showMarkdownPreview ? (
                 <div className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white min-h-[300px] prose prose-invert max-w-none">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {articleForm.content || 'Nothing to preview yet...'}
+                    {articleForm.content || "Nothing to preview yet..."}
                   </ReactMarkdown>
                 </div>
               ) : (
                 <textarea
                   required
                   value={articleForm.content}
-                  onChange={(e) => setArticleForm(prev => ({ ...prev, content: e.target.value }))}
+                  onChange={(e) =>
+                    setArticleForm((prev) => ({
+                      ...prev,
+                      content: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white font-mono"
                   placeholder="Write your article content in Markdown..."
                   rows={15}
                 />
               )}
             </div>
-            
+
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="isPublic"
                   checked={articleForm.isPublic}
-                  onChange={(e) => setArticleForm(prev => ({ ...prev, isPublic: e.target.checked }))}
+                  onChange={(e) =>
+                    setArticleForm((prev) => ({
+                      ...prev,
+                      isPublic: e.target.checked,
+                    }))
+                  }
                   className="rounded bg-gray-800 border-gray-600"
                 />
-                <label htmlFor="isPublic" className="text-gray-300">Make public</label>
+                <label htmlFor="isPublic" className="text-gray-300">
+                  Make public
+                </label>
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 mb-2">Status</label>
                 <select
                   value={articleForm.status}
-                  onChange={(e) => setArticleForm(prev => ({ ...prev, status: e.target.value as any }))}
+                  onChange={(e) =>
+                    setArticleForm((prev) => ({
+                      ...prev,
+                      status: e.target.value as any,
+                    }))
+                  }
                   className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                 >
                   <option value="draft">Draft</option>
@@ -473,7 +554,7 @@ export default function HelpClient() {
                 </select>
               </div>
             </div>
-            
+
             <div className="flex gap-2">
               <button
                 type="submit"
@@ -483,7 +564,7 @@ export default function HelpClient() {
               </button>
               <button
                 type="button"
-                onClick={() => setSelectedView('browse')}
+                onClick={() => setSelectedView("browse")}
                 className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md"
               >
                 Cancel
@@ -494,7 +575,7 @@ export default function HelpClient() {
       )}
 
       {/* File Uploads Tab */}
-      {selectedView === 'uploads' && (
+      {selectedView === "uploads" && (
         <div className="urban-card">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-white">File Uploads</h3>
@@ -518,22 +599,29 @@ export default function HelpClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {uploads.map((upload) => (
-              <div key={upload.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition-colors">
+              <div
+                key={upload.id}
+                className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition-colors"
+              >
                 <div className="flex items-center gap-3 mb-2">
-                  {upload.mimeType.startsWith('image/') ? (
+                  {upload.mimeType.startsWith("image/") ? (
                     <Image className="w-5 h-5 text-green-400" />
                   ) : (
                     <FileText className="w-5 h-5 text-blue-400" />
                   )}
-                  <span className="text-white font-medium truncate">{upload.originalName}</span>
+                  <span className="text-white font-medium truncate">
+                    {upload.originalName}
+                  </span>
                 </div>
-                
+
                 <div className="text-sm text-gray-400 space-y-1">
                   <p>Size: {formatFileSize(upload.fileSize)}</p>
                   <p>Type: {upload.mimeType}</p>
-                  <p>Uploaded: {new Date(upload.createdAt).toLocaleDateString()}</p>
+                  <p>
+                    Uploaded: {new Date(upload.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-                
+
                 <div className="flex gap-2 mt-3">
                   <a
                     href={upload.storageUrl}
@@ -572,7 +660,9 @@ export default function HelpClient() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
             <div className="flex justify-between items-center p-6 border-b border-gray-700">
-              <h2 className="text-xl font-semibold text-white">{selectedArticle.title}</h2>
+              <h2 className="text-xl font-semibold text-white">
+                {selectedArticle.title}
+              </h2>
               <button
                 onClick={() => setSelectedArticle(null)}
                 className="text-gray-400 hover:text-gray-200"
@@ -580,7 +670,7 @@ export default function HelpClient() {
                 ×
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="prose prose-invert max-w-none">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>

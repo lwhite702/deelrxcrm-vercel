@@ -1,0 +1,112 @@
+{
+  "name": "DeelRx CRM Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://deelrxcrm.app"
+  },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication"
+      ]
+    },
+    {
+      "group": "Core CRM",
+      "pages": [
+        "core-crm/customers",
+        "core-crm/orders",
+        "core-crm/products",
+        "core-crm/payments"
+      ]
+    },
+    {
+      "group": "Extended Operations",
+      "pages": [
+        "extended-ops/deliveries",
+        "extended-ops/loyalty",
+        "extended-ops/referrals",
+        "extended-ops/adjustments"
+      ]
+    },
+    {
+      "group": "Credit & Knowledge Base",
+      "pages": [
+        "credit-kb/credit-overview",
+        "credit-kb/knowledge-base",
+        "credit-kb/best-practices"
+      ]
+    },
+    {
+      "group": "Account & Administration",
+      "pages": [
+        "admin/team-management",
+        "admin/roles-permissions",
+        "admin/data-management"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/introduction",
+        {
+          "group": "Teams",
+          "pages": [
+            "api-reference/teams/get-team",
+            "api-reference/teams/update-team"
+          ]
+        },
+        {
+          "group": "Customers",
+          "pages": [
+            "api-reference/customers/list-customers",
+            "api-reference/customers/create-customer",
+            "api-reference/customers/get-customer",
+            "api-reference/customers/update-customer"
+          ]
+        },
+        {
+          "group": "Credit System",
+          "pages": [
+            "api-reference/credit/get-credit-status",
+            "api-reference/credit/create-credit-account",
+            "api-reference/credit/list-transactions"
+          ]
+        },
+        {
+          "group": "Knowledge Base",
+          "pages": [
+            "api-reference/kb/list-articles",
+            "api-reference/kb/create-article",
+            "api-reference/kb/upload-file"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/lwhite702/deelrxcrm-vercel",
+    "linkedin": "https://www.linkedin.com/company/deelrx"
+  },
+  "analytics": {
+    "gtag": {
+      "tagId": "G-XXXXXXXXXX"
+    }
+  }
+}

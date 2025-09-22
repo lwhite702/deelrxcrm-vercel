@@ -21,9 +21,7 @@ const createPolicySchema = z.object({
 
 const updatePolicySchema = createPolicySchema.partial();
 
-export async function GET(
-  request: NextRequest
-) {
+export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
     if (!user) {
@@ -46,7 +44,7 @@ export async function GET(
     const conditions = [];
 
     if (teamId) {
-      conditions.push(eq(inactivityPolicies.teamId, teamId));
+      conditions.push(eq(inactivityPolicies.teamId, parseInt(teamId)));
     }
 
     if (isActive !== null) {
@@ -71,9 +69,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest
-) {
+export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
     if (!user) {
@@ -87,7 +83,10 @@ export async function POST(
 
     const [newPolicy] = await db
       .insert(inactivityPolicies)
-      .values(validatedData)
+      .values({
+        ...validatedData,
+        teamId: parseInt(validatedData.teamId),
+      })
       .returning();
 
     return NextResponse.json({ policy: newPolicy }, { status: 201 });

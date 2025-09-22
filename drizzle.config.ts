@@ -5,11 +5,7 @@ export default defineConfig({
   schema: "./lib/db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    // Prefer unpooled Neon host for WebSocket driver compatibility
-    url:
-      (process.env.DATABASE_URL_UNPOOLED ||
-        process.env.POSTGRES_URL ||
-        process.env.DATABASE_URL) ??
-      "",
+    // Prefer unpooled Neon host for better connectivity
+    url: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || "",
   },
 });

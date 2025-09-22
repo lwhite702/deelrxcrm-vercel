@@ -1,6 +1,6 @@
 ---
-title: 'Quickstart'
-description: 'Get DeelRx CRM up and running in minutes'
+title: "Quickstart"
+description: "Get DeelRx CRM up and running in minutes"
 ---
 
 ## Prerequisites
@@ -21,51 +21,27 @@ Before you begin, make sure you have the following installed:
     ```
   </Step>
 
-  <Step title="Install Dependencies">
-    ```bash
-    npm install
-    # or
-    yarn install
-    # or 
-    pnpm install
-    ```
-  </Step>
+{" "}
+<Step title="Install Dependencies">
+  ```bash npm install # or yarn install # or pnpm install ```
+</Step>
 
-  <Step title="Environment Setup">
-    Create a `.env.local` file in the root directory:
-    
-    ```bash
-    cp .env.example .env.local
-    ```
-    
-    Update the environment variables:
-    
-    ```env .env.local
-    # Database
-    DATABASE_URL="postgresql://username:password@localhost:5432/deelrxcrm?sslmode=require"
-    
-    # Authentication (Clerk)
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-    CLERK_SECRET_KEY="sk_test_..."
-    
-    # Payments (Stripe)
-    STRIPE_SECRET_KEY="sk_test_..."
-    STRIPE_WEBHOOK_SECRET="whsec_..."
-    
-    # CORS Origins (comma-separated)
-    CORS_ORIGIN="http://localhost:3000"
-    ```
-  </Step>
+{" "}
+<Step title="Environment Setup">
+  Create a `.env.local` file in the root directory: ```bash cp .env.example
+  .env.local ``` Update the environment variables: ```env .env.local # Database
+  DATABASE_URL="postgresql://username:password@localhost:5432/deelrxcrm?sslmode=require"
+  # Authentication (Clerk) NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+  CLERK_SECRET_KEY="sk_test_..." # Payments (Stripe)
+  STRIPE_SECRET_KEY="sk_test_..." STRIPE_WEBHOOK_SECRET="whsec_..." # CORS
+  Origins (comma-separated) CORS_ORIGIN="http://localhost:3000" ```
+</Step>
 
-  <Step title="Database Setup">
-    Run the database migrations:
-    
-    ```bash
-    npm run db:push
-    ```
-    
-    This will create all the necessary tables and relationships in your PostgreSQL database.
-  </Step>
+{" "}
+<Step title="Database Setup">
+  Run the database migrations: ```bash npm run db:push ``` This will create all
+  the necessary tables and relationships in your PostgreSQL database.
+</Step>
 
   <Step title="Start Development Server">
     ```bash
@@ -91,17 +67,12 @@ Once your development server is running, verify the installation:
     This opens a web interface at `http://localhost:4983` where you can view your database tables.
   </Accordion>
 
-  <Accordion title="Test API Endpoints">
-    Test a few key endpoints to ensure everything is working:
-    
-    ```bash
-    # Health check
-    curl http://localhost:3000/api/health
-    
-    # Teams endpoint (requires authentication)
-    curl http://localhost:3000/api/teams
-    ```
-  </Accordion>
+{" "}
+<Accordion title="Test API Endpoints">
+  Test a few key endpoints to ensure everything is working: ```bash # Health
+  check curl http://localhost:3000/api/health # Teams endpoint (requires
+  authentication) curl http://localhost:3000/api/teams ```
+</Accordion>
 
   <Accordion title="Access the Dashboard">
     Navigate to [http://localhost:3000](http://localhost:3000) and you should see the DeelRx CRM login page.
@@ -113,18 +84,10 @@ Once your development server is running, verify the installation:
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card
-    title="Development Guide"
-    icon="code"
-    href="/development"
-  >
+  <Card title="Development Guide" icon="code" href="/development">
     Learn about the development workflow and best practices
   </Card>
-  <Card
-    title="Core Features"
-    icon="star"
-    href="/features/products"
-  >
+  <Card title="Core Features" icon="star" href="/features/products">
     Explore the core CRM features and functionality
   </Card>
   <Card
@@ -134,11 +97,7 @@ Once your development server is running, verify the installation:
   >
     Dive into the complete API reference
   </Card>
-  <Card
-    title="Deployment"
-    icon="rocket"
-    href="/deployment/overview"
-  >
+  <Card title="Deployment" icon="rocket" href="/deployment/overview">
     Deploy your CRM to production
   </Card>
 </CardGroup>
@@ -155,13 +114,12 @@ Once your development server is running, verify the installation:
     4. For Neon, make sure you include `?sslmode=require` in the URL
   </Accordion>
 
-  <Accordion title="Authentication Problems">
-    For Clerk authentication issues:
-    
-    1. Verify your Clerk keys in `.env.local`
-    2. Check that your domain is configured in Clerk dashboard
-    3. Ensure CORS origins are properly set
-  </Accordion>
+{" "}
+<Accordion title="Authentication Problems">
+  For Clerk authentication issues: 1. Verify your Clerk keys in `.env.local` 2.
+  Check that your domain is configured in Clerk dashboard 3. Ensure CORS origins
+  are properly set
+</Accordion>
 
   <Accordion title="Build Errors">
     If you encounter build errors:

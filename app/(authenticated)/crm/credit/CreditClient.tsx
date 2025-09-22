@@ -1,23 +1,37 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CreditCard, DollarSign, TrendingUp, AlertCircle, Plus, History, Settings } from "lucide-react";
+import {
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+  AlertCircle,
+  Plus,
+  History,
+  Settings,
+} from "lucide-react";
 
 interface CreditAccount {
   creditLimit: number;
   currentBalance: number;
   availableCredit: number;
-  status: 'active' | 'suspended' | 'closed' | 'defaulted';
+  status: "active" | "suspended" | "closed" | "defaulted";
   customerId?: string;
   recentTransactions: CreditTransaction[];
 }
 
 interface CreditTransaction {
   id: string;
-  transactionType: 'charge' | 'payment' | 'fee' | 'adjustment';
+  transactionType: "charge" | "payment" | "fee" | "adjustment";
   amount: number;
   description?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | 'refunded';
+  status:
+    | "pending"
+    | "processing"
+    | "completed"
+    | "failed"
+    | "cancelled"
+    | "refunded";
   createdAt: string;
   orderId?: string;
   dueDate?: string;
@@ -25,24 +39,28 @@ interface CreditTransaction {
 
 export default function CreditClient() {
   const router = useRouter();
-  const [creditAccount, setCreditAccount] = useState<CreditAccount | null>(null);
+  const [creditAccount, setCreditAccount] = useState<CreditAccount | null>(
+    null
+  );
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showSetupIntent, setShowSetupIntent] = useState(false);
   const [showTransactionForm, setShowTransactionForm] = useState(false);
-  const [selectedView, setSelectedView] = useState<'overview' | 'transactions' | 'settings'>('overview');
+  const [selectedView, setSelectedView] = useState<
+    "overview" | "transactions" | "settings"
+  >("overview");
 
   // TODO: Get teamId from auth context
   const teamId = "placeholder-team-id";
 
   // Form state for new transactions
   const [transactionForm, setTransactionForm] = useState({
-    transactionType: 'charge' as const,
-    amount: '',
-    description: '',
-    orderId: '',
-    dueDate: '',
+    transactionType: "charge" as const,
+    amount: "",
+    description: "",
+    orderId: "",
+    dueDate: "",
   });
 
   useEffect(() => {
@@ -53,11 +71,13 @@ export default function CreditClient() {
   const fetchCreditAccount = async () => {
     try {
       const response = await fetch(`/api/teams/${teamId}/credit`);
-      if (!response.ok) throw new Error('Failed to fetch credit account');
+      if (!response.ok) throw new Error("Failed to fetch credit account");
       const data = await response.json();
       setCreditAccount(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load credit account');
+      setError(
+        err instanceof Error ? err.message : "Failed to load credit account"
+      );
     } finally {
       setLoading(false);
     }
@@ -65,12 +85,14 @@ export default function CreditClient() {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch(`/api/teams/${teamId}/credit/transactions?limit=50`);
-      if (!response.ok) throw new Error('Failed to fetch transactions');
+      const response = await fetch(
+        `/api/teams/${teamId}/credit/transactions?limit=50`
+      );
+      if (!response.ok) throw new Error("Failed to fetch transactions");
       const data = await response.json();
       setTransactions(data.transactions || []);
     } catch (err) {
-      console.error('Failed to load transactions:', err);
+      console.error("Failed to load transactions:", err);
     }
   };
 
@@ -81,51 +103,60 @@ export default function CreditClient() {
 
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch(`/api/teams/${teamId}/credit/transactions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...transactionForm,
           amount: parseInt(transactionForm.amount) * 100, // Convert to cents
           creditId: creditAccount?.customerId, // TODO: Get actual credit ID
         }),
       });
-      
-      if (!response.ok) throw new Error('Failed to create transaction');
-      
+
+      if (!response.ok) throw new Error("Failed to create transaction");
+
       setShowTransactionForm(false);
       setTransactionForm({
-        transactionType: 'charge',
-        amount: '',
-        description: '',
-        orderId: '',
-        dueDate: '',
+        transactionType: "charge",
+        amount: "",
+        description: "",
+        orderId: "",
+        dueDate: "",
       });
       await fetchTransactions();
       await fetchCreditAccount();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create transaction');
+      setError(
+        err instanceof Error ? err.message : "Failed to create transaction"
+      );
     }
   };
 
   const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(cents / 100);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-400';
-      case 'completed': return 'text-green-400';
-      case 'pending': return 'text-yellow-400';
-      case 'processing': return 'text-blue-400';
-      case 'failed': return 'text-red-400';
-      case 'suspended': return 'text-orange-400';
-      default: return 'text-gray-400';
+      case "active":
+        return "text-green-400";
+      case "completed":
+        return "text-green-400";
+      case "pending":
+        return "text-yellow-400";
+      case "processing":
+        return "text-blue-400";
+      case "failed":
+        return "text-red-400";
+      case "suspended":
+        return "text-orange-400";
+      default:
+        return "text-gray-400";
     }
   };
 
@@ -153,17 +184,17 @@ export default function CreditClient() {
       {/* Navigation Tabs */}
       <div className="flex space-x-1 bg-gray-800 rounded-lg p-1">
         {[
-          { key: 'overview', label: 'Overview', icon: CreditCard },
-          { key: 'transactions', label: 'Transactions', icon: History },
-          { key: 'settings', label: 'Settings', icon: Settings },
+          { key: "overview", label: "Overview", icon: CreditCard },
+          { key: "transactions", label: "Transactions", icon: History },
+          { key: "settings", label: "Settings", icon: Settings },
         ].map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setSelectedView(key as any)}
             className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-              selectedView === key 
-                ? 'bg-purple-600 text-white' 
-                : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              selectedView === key
+                ? "bg-purple-600 text-white"
+                : "text-gray-300 hover:text-white hover:bg-gray-700"
             }`}
           >
             <Icon className="w-4 h-4" />
@@ -173,14 +204,16 @@ export default function CreditClient() {
       </div>
 
       {/* Overview Tab */}
-      {selectedView === 'overview' && (
+      {selectedView === "overview" && (
         <>
           {/* Credit Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="urban-card">
               <div className="flex items-center gap-3 mb-2">
                 <DollarSign className="w-5 h-5 text-green-400" />
-                <h3 className="text-lg font-semibold text-white">Credit Limit</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  Credit Limit
+                </h3>
               </div>
               <p className="text-2xl font-bold text-green-400">
                 {formatCurrency(creditAccount?.creditLimit || 0)}
@@ -190,7 +223,9 @@ export default function CreditClient() {
             <div className="urban-card">
               <div className="flex items-center gap-3 mb-2">
                 <TrendingUp className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-semibold text-white">Current Balance</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  Current Balance
+                </h3>
               </div>
               <p className="text-2xl font-bold text-blue-400">
                 {formatCurrency(creditAccount?.currentBalance || 0)}
@@ -200,7 +235,9 @@ export default function CreditClient() {
             <div className="urban-card">
               <div className="flex items-center gap-3 mb-2">
                 <CreditCard className="w-5 h-5 text-purple-400" />
-                <h3 className="text-lg font-semibold text-white">Available Credit</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  Available Credit
+                </h3>
               </div>
               <p className="text-2xl font-bold text-purple-400">
                 {formatCurrency(creditAccount?.availableCredit || 0)}
@@ -212,9 +249,15 @@ export default function CreditClient() {
           <div className="urban-card">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-white">Account Status</h3>
-                <p className={`${getStatusColor(creditAccount?.status || '')} font-medium`}>
-                  {creditAccount?.status?.toUpperCase() || 'UNKNOWN'}
+                <h3 className="text-lg font-semibold text-white">
+                  Account Status
+                </h3>
+                <p
+                  className={`${getStatusColor(
+                    creditAccount?.status || ""
+                  )} font-medium`}
+                >
+                  {creditAccount?.status?.toUpperCase() || "UNKNOWN"}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -238,7 +281,9 @@ export default function CreditClient() {
 
           {/* Recent Transactions */}
           <div className="urban-card">
-            <h3 className="text-lg font-semibold text-white mb-4">Recent Transactions</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Recent Transactions
+            </h3>
             <div className="space-y-2">
               {creditAccount?.recentTransactions?.length === 0 ? (
                 <p className="text-gray-400">No recent transactions</p>
@@ -253,17 +298,25 @@ export default function CreditClient() {
                         {transaction.transactionType.toUpperCase()}
                       </p>
                       <p className="text-gray-400 text-sm">
-                        {transaction.description || 'No description'}
+                        {transaction.description || "No description"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold ${
-                        transaction.transactionType === 'payment' ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        {transaction.transactionType === 'payment' ? '+' : '-'}
+                      <p
+                        className={`font-bold ${
+                          transaction.transactionType === "payment"
+                            ? "text-green-400"
+                            : "text-red-400"
+                        }`}
+                      >
+                        {transaction.transactionType === "payment" ? "+" : "-"}
                         {formatCurrency(transaction.amount)}
                       </p>
-                      <p className={`text-sm ${getStatusColor(transaction.status)}`}>
+                      <p
+                        className={`text-sm ${getStatusColor(
+                          transaction.status
+                        )}`}
+                      >
                         {transaction.status.toUpperCase()}
                       </p>
                     </div>
@@ -276,10 +329,12 @@ export default function CreditClient() {
       )}
 
       {/* Transactions Tab */}
-      {selectedView === 'transactions' && (
+      {selectedView === "transactions" && (
         <div className="urban-card">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-white">All Transactions</h3>
+            <h3 className="text-lg font-semibold text-white">
+              All Transactions
+            </h3>
             <button
               onClick={() => setShowTransactionForm(true)}
               className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
@@ -288,7 +343,7 @@ export default function CreditClient() {
               New Transaction
             </button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -306,17 +361,23 @@ export default function CreditClient() {
                     <td className="py-3 text-white font-medium">
                       {transaction.transactionType.toUpperCase()}
                     </td>
-                    <td className={`py-3 font-bold ${
-                      transaction.transactionType === 'payment' ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {transaction.transactionType === 'payment' ? '+' : '-'}
+                    <td
+                      className={`py-3 font-bold ${
+                        transaction.transactionType === "payment"
+                          ? "text-green-400"
+                          : "text-red-400"
+                      }`}
+                    >
+                      {transaction.transactionType === "payment" ? "+" : "-"}
                       {formatCurrency(transaction.amount)}
                     </td>
-                    <td className={`py-3 ${getStatusColor(transaction.status)}`}>
+                    <td
+                      className={`py-3 ${getStatusColor(transaction.status)}`}
+                    >
                       {transaction.status.toUpperCase()}
                     </td>
                     <td className="py-3 text-gray-300">
-                      {transaction.description || 'No description'}
+                      {transaction.description || "No description"}
                     </td>
                     <td className="py-3 text-gray-400">
                       {new Date(transaction.createdAt).toLocaleDateString()}
@@ -330,16 +391,22 @@ export default function CreditClient() {
       )}
 
       {/* Settings Tab */}
-      {selectedView === 'settings' && (
+      {selectedView === "settings" && (
         <div className="urban-card">
-          <h3 className="text-lg font-semibold text-white mb-4">Credit Settings</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">
+            Credit Settings
+          </h3>
           <div className="space-y-4">
             <div>
               <label className="block text-gray-300 mb-2">Credit Limit</label>
               <input
                 type="number"
                 className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
-                defaultValue={creditAccount?.creditLimit ? creditAccount.creditLimit / 100 : 0}
+                defaultValue={
+                  creditAccount?.creditLimit
+                    ? creditAccount.creditLimit / 100
+                    : 0
+                }
                 placeholder="Enter credit limit"
               />
             </div>
@@ -366,16 +433,22 @@ export default function CreditClient() {
       {showTransactionForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-900 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-white mb-4">New Transaction</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">
+              New Transaction
+            </h3>
             <form onSubmit={handleSubmitTransaction} className="space-y-4">
               <div>
-                <label className="block text-gray-300 mb-2">Transaction Type</label>
+                <label className="block text-gray-300 mb-2">
+                  Transaction Type
+                </label>
                 <select
                   value={transactionForm.transactionType}
-                  onChange={(e) => setTransactionForm(prev => ({ 
-                    ...prev, 
-                    transactionType: e.target.value as any 
-                  }))}
+                  onChange={(e) =>
+                    setTransactionForm((prev) => ({
+                      ...prev,
+                      transactionType: e.target.value as any,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                 >
                   <option value="charge">Charge</option>
@@ -384,7 +457,7 @@ export default function CreditClient() {
                   <option value="adjustment">Adjustment</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 mb-2">Amount ($)</label>
                 <input
@@ -392,23 +465,33 @@ export default function CreditClient() {
                   step="0.01"
                   required
                   value={transactionForm.amount}
-                  onChange={(e) => setTransactionForm(prev => ({ ...prev, amount: e.target.value }))}
+                  onChange={(e) =>
+                    setTransactionForm((prev) => ({
+                      ...prev,
+                      amount: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                   placeholder="Enter amount"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 mb-2">Description</label>
                 <textarea
                   value={transactionForm.description}
-                  onChange={(e) => setTransactionForm(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setTransactionForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
                   placeholder="Enter description"
                   rows={3}
                 />
               </div>
-              
+
               <div className="flex gap-2">
                 <button
                   type="submit"

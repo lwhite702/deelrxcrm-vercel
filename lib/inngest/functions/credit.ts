@@ -4,7 +4,7 @@ import { credits, creditTransactions, teams } from "@/lib/db/schema";
 import { eq, and, lt, sql } from "drizzle-orm";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
 
 export const creditReminderDaily = inngest.createFunction(
   { id: "credit-reminder-daily" },
@@ -71,7 +71,9 @@ export const creditReminderDaily = inngest.createFunction(
           amount: reminderType === "urgent" ? 2500 : 1000, // Late fee in cents
           description: `Late payment fee - ${reminderType} reminder`,
           status: "pending",
-          idempotencyKey: `reminder-${credit.creditId}-${today.toISOString().split('T')[0]}`,
+          idempotencyKey: `reminder-${credit.creditId}-${
+            today.toISOString().split("T")[0]
+          }`,
         });
 
         return {
