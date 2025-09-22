@@ -21,6 +21,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.17",
+    "@ai-sdk/openai": "^2.0.32",
     "@supabase/supabase-js": "^2.41.1",
     "@tailwindcss/postcss": "4.1.13",
     "@tailwindcss/typography": "^0.5.18",
@@ -28,6 +30,7 @@
     "@types/react": "19.1.4",
     "@types/react-dom": "19.1.5",
     "@vercel/blob": "^2.0.0",
+    "ai": "^5.0.48",
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
@@ -49,6 +52,8 @@
     "remark-gfm": "^4.0.0",
     "resend": "^3.5.0",
     "server-only": "^0.0.1",
+    "statsig-node": "^6.5.0",
+    "statsig-react": "^2.1.0",
     "stripe": "^18.1.0",
     "swr": "^2.3.3",
     "tailwind-merge": "^3.3.0",

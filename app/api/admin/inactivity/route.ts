@@ -7,7 +7,7 @@ import { getUser } from "@/lib/db/queries";
 
 // Validation schemas
 const createPolicySchema = z.object({
-  teamId: z.string().uuid(),
+  teamId: z.number().int().positive(),
   name: z.string().min(1).max(255),
   description: z.string().optional(),
   thresholdDays: z.number().int().min(1).max(3650),
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     // Get query parameters
     const url = new URL(request.url);
-    const teamId = url.searchParams.get("teamId");
+    const teamIdStr = url.searchParams.get("teamId");
     const isActive = url.searchParams.get("active");
     const limit = Math.min(
       parseInt(url.searchParams.get("limit") || "50"),
@@ -43,8 +43,11 @@ export async function GET(request: NextRequest) {
     // Build query conditions
     const conditions = [];
 
-    if (teamId) {
-      conditions.push(eq(inactivityPolicies.teamId, teamId));
+    if (teamIdStr) {
+      const teamId = parseInt(teamIdStr);
+      if (!isNaN(teamId)) {
+        conditions.push(eq(inactivityPolicies.teamId, teamId));
+      }
     }
 
     if (isActive !== null) {

@@ -9,6 +9,7 @@ import {
   jsonb,
   pgEnum,
   varchar,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -615,7 +616,7 @@ export const kbArticleStatusEnum = pgEnum("kb_article_status", [
 // Phase 3: Credit System Tables
 export const credits = pgTable("credits", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   customerId: uuid("customer_id")
@@ -636,7 +637,7 @@ export const credits = pgTable("credits", {
 
 export const creditTransactions = pgTable("credit_transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   creditId: uuid("credit_id")
@@ -663,7 +664,7 @@ export const creditTransactions = pgTable("credit_transactions", {
 // Phase 3: Knowledge Base Tables
 export const kbArticles = pgTable("kb_articles", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
@@ -673,7 +674,7 @@ export const kbArticles = pgTable("kb_articles", {
   status: kbArticleStatusEnum("status").notNull().default("draft"),
   category: text("category"),
   tags: jsonb("tags").$type<string[]>().default([]),
-  authorId: uuid("author_id").references(() => users.id),
+  authorId: integer("author_id").references(() => users.id),
   viewCount: integer("view_count").default(0),
   isPublic: boolean("is_public").default(false),
   publishedAt: timestamp("published_at"),
@@ -683,7 +684,7 @@ export const kbArticles = pgTable("kb_articles", {
 
 export const kbUploads = pgTable("kb_uploads", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   articleId: uuid("article_id").references(() => kbArticles.id, {
@@ -694,20 +695,20 @@ export const kbUploads = pgTable("kb_uploads", {
   mimeType: text("mime_type").notNull(),
   fileSize: integer("file_size").notNull(),
   storageUrl: text("storage_url").notNull(),
-  uploadedBy: uuid("uploaded_by").references(() => users.id),
+  uploadedBy: integer("uploaded_by").references(() => users.id),
   isPublic: boolean("is_public").default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const kbFeedback = pgTable("kb_feedback", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   articleId: uuid("article_id")
     .notNull()
     .references(() => kbArticles.id, { onDelete: "cascade" }),
-  userId: uuid("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id),
   rating: integer("rating"), // 1-5 stars
   feedback: text("feedback"),
   isHelpful: boolean("is_helpful"),
@@ -717,10 +718,10 @@ export const kbFeedback = pgTable("kb_feedback", {
 // Phase 3: Admin Operations Tables
 export const purgeOperations = pgTable("purge_operations", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  requestedBy: uuid("requested_by")
+  requestedBy: integer("requested_by")
     .notNull()
     .references(() => users.id),
   status: purgeStatusEnum("status").notNull().default("requested"),
@@ -734,7 +735,7 @@ export const purgeOperations = pgTable("purge_operations", {
   scheduledFor: timestamp("scheduled_for"),
   exportUrl: text("export_url"),
   exportExpiresAt: timestamp("export_expires_at"),
-  acknowledgedBy: uuid("acknowledged_by").references(() => users.id),
+  acknowledgedBy: integer("acknowledged_by").references(() => users.id),
   acknowledgedAt: timestamp("acknowledged_at"),
   executedAt: timestamp("executed_at"),
   completedAt: timestamp("completed_at"),
@@ -746,7 +747,7 @@ export const purgeOperations = pgTable("purge_operations", {
 
 export const inactivityPolicies = pgTable("inactivity_policies", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
@@ -817,3 +818,202 @@ export type NewInactivityPolicy = typeof inactivityPolicies.$inferInsert;
 export type ActivityEvent = typeof activityEvents.$inferSelect;
 export type NewActivityEvent = typeof activityEvents.$inferInsert;
 export type NewLoyaltyTransaction = typeof loyaltyTransactions.$inferInsert;
+
+// ==============================================
+// PHASE 4A: AI LAYER SCHEMAS
+// ==============================================
+
+// AI Providers table - manages available AI providers and models
+export const aiProviders = pgTable("ai_providers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull(), // openai, anthropic, mistral
+  model: varchar("model", { length: 100 }).notNull(), // gpt-4o, claude-3-sonnet
+  enabled: boolean("enabled").notNull().default(true),
+  config: jsonb("config").$type<{
+    apiKey?: string;
+    endpoint?: string;
+    maxTokens?: number;
+    temperature?: number;
+  }>(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// AI Requests table - logs all AI API calls for monitoring and billing
+export const aiRequests = pgTable("ai_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  teamId: integer("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  providerId: uuid("provider_id")
+    .notNull()
+    .references(() => aiProviders.id),
+  model: varchar("model", { length: 100 }).notNull(),
+  promptHash: varchar("prompt_hash", { length: 64 }).notNull(), // SHA-256 for deduplication
+  latencyMs: integer("latency_ms").notNull(),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  costCents: integer("cost_cents"), // cost in cents for billing
+  success: boolean("success").notNull(),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Pricing Suggestions - AI-generated pricing recommendations
+export const pricingSuggestions = pgTable("pricing_suggestions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id")
+    .notNull()
+    .references(() => aiRequests.id, { onDelete: "cascade" }),
+  teamId: integer("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  productId: varchar("product_id", { length: 100 }).notNull(),
+  currentPrice: decimal("current_price", { precision: 10, scale: 2 }),
+  suggestedPrice: decimal("suggested_price", { precision: 10, scale: 2 }).notNull(),
+  suggestedDelta: decimal("suggested_delta", { precision: 5, scale: 2 }).notNull(), // percentage change
+  rationale: text("rationale").notNull(),
+  confidence: decimal("confidence", { precision: 3, scale: 2 }).notNull(), // 0-1 confidence score
+  marketData: jsonb("market_data").$type<{
+    competitors?: Array<{ name: string; price: number }>;
+    trends?: Array<{ period: string; change: number }>;
+    demand?: { score: number; factors: string[] };
+  }>(),
+  applied: boolean("applied").default(false),
+  appliedAt: timestamp("applied_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Credit Analyses - AI-powered credit risk assessments
+export const creditAnalyses = pgTable("credit_analyses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id")
+    .notNull()
+    .references(() => aiRequests.id, { onDelete: "cascade" }),
+  teamId: integer("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  customerId: uuid("customer_id")
+    .notNull()
+    .references(() => customers.id, { onDelete: "cascade" }),
+  riskScore: integer("risk_score").notNull(), // 1-100 risk score
+  riskBand: varchar("risk_band", { length: 20 }).notNull(), // low, medium, high, critical
+  recommendedLimit: decimal("recommended_limit", { precision: 10, scale: 2 }),
+  paymentTerms: integer("payment_terms"), // recommended payment terms in days
+  notes: text("notes").notNull(),
+  factors: jsonb("factors").$type<{
+    positive: string[];
+    negative: string[];
+    neutral: string[];
+  }>().notNull(),
+  confidence: decimal("confidence", { precision: 3, scale: 2 }).notNull(),
+  reviewRequired: boolean("review_required").notNull().default(false),
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Data Enrichments - AI-enhanced data augmentation results
+export const dataEnrichments = pgTable("data_enrichments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id")
+    .notNull()
+    .references(() => aiRequests.id, { onDelete: "cascade" }),
+  teamId: integer("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  entityType: varchar("entity_type", { length: 50 }).notNull(), // customer, product, etc.
+  entityId: varchar("entity_id", { length: 100 }).notNull(),
+  originalData: jsonb("original_data").notNull(),
+  enrichedData: jsonb("enriched_data").notNull(),
+  enrichmentTypes: jsonb("enrichment_types").$type<string[]>().notNull(), // ["industry", "size", "location"]
+  confidence: decimal("confidence", { precision: 3, scale: 2 }).notNull(),
+  sources: jsonb("sources").$type<Array<{
+    name: string;
+    url?: string;
+    confidence: number;
+  }>>(),
+  applied: boolean("applied").default(false),
+  appliedAt: timestamp("applied_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Training Content - AI-generated training materials
+export const trainingContent = pgTable("training_content", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id")
+    .notNull()
+    .references(() => aiRequests.id, { onDelete: "cascade" }),
+  teamId: integer("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  contentType: varchar("content_type", { length: 50 }).notNull(), // article, syllabus, quiz
+  title: varchar("title", { length: 200 }).notNull(),
+  topic: varchar("topic", { length: 100 }).notNull(),
+  audience: varchar("audience", { length: 100 }).notNull(),
+  difficulty: varchar("difficulty", { length: 20 }).notNull(), // beginner, intermediate, advanced
+  content: text("content").notNull(), // markdown or JSON content
+  metadata: jsonb("metadata").$type<{
+    wordCount?: number;
+    readingTime?: number;
+    sections?: string[];
+    objectives?: string[];
+  }>(),
+  status: varchar("status", { length: 20 }).notNull().default("draft"), // draft, review, published
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Training Sessions - AI-powered training session plans
+export const trainingSessions = pgTable("training_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id")
+    .notNull()
+    .references(() => aiRequests.id, { onDelete: "cascade" }),
+  teamId: integer("team_id")
+    .notNull()
+    .references(() => teams.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 200 }).notNull(),
+  subject: varchar("subject", { length: 100 }).notNull(),
+  duration: varchar("duration", { length: 50 }).notNull(), // "4_weeks", "2_hours"
+  level: varchar("level", { length: 20 }).notNull(), // beginner, intermediate, advanced
+  syllabus: jsonb("syllabus").$type<{
+    modules: Array<{
+      title: string;
+      duration: string;
+      objectives: string[];
+      topics: string[];
+      activities: string[];
+    }>;
+    prerequisites: string[];
+    resources: Array<{ type: string; title: string; url?: string }>;
+    assessments: Array<{ type: string; title: string; weight: number }>;
+  }>().notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("draft"),
+  createdBy: integer("created_by")
+    .notNull()
+    .references(() => users.id),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Phase 4A: Type exports
+export type AiProvider = typeof aiProviders.$inferSelect;
+export type NewAiProvider = typeof aiProviders.$inferInsert;
+export type AiRequest = typeof aiRequests.$inferSelect;
+export type NewAiRequest = typeof aiRequests.$inferInsert;
+export type PricingSuggestion = typeof pricingSuggestions.$inferSelect;
+export type NewPricingSuggestion = typeof pricingSuggestions.$inferInsert;
+export type CreditAnalysis = typeof creditAnalyses.$inferSelect;
+export type NewCreditAnalysis = typeof creditAnalyses.$inferInsert;
+export type DataEnrichment = typeof dataEnrichments.$inferSelect;
+export type NewDataEnrichment = typeof dataEnrichments.$inferInsert;
+export type TrainingContent = typeof trainingContent.$inferSelect;
+export type NewTrainingContent = typeof trainingContent.$inferInsert;
+export type TrainingSession = typeof trainingSessions.$inferSelect;
+export type NewTrainingSession = typeof trainingSessions.$inferInsert;

@@ -18,13 +18,11 @@ const getBlobConfig = (storeType: BlobStoreType) => {
       return {
         token: process.env.BLOB_READ_WRITE_TOKEN_PRIVATE || process.env.BLOB_READ_WRITE_TOKEN,
         prefix: "private",
-        access: "private" as const,
       };
     case "public":
       return {
         token: process.env.BLOB_READ_WRITE_TOKEN_PUBLIC || process.env.BLOB_READ_WRITE_TOKEN,
         prefix: "public",
-        access: "public" as const,
       };
     default:
       throw new Error(`Invalid store type: ${storeType}`);
@@ -43,7 +41,7 @@ export async function uploadFileToBlob(
   
   try {
     const blob = await put(blobPath, file, {
-      access: config.access, // Note: Vercel Blob currently only supports public access, but we control privacy via path/token
+      access: "public", // Note: Vercel Blob only supports public access, privacy controlled via store separation
       contentType,
       token: config.token,
     });

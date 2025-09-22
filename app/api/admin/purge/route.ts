@@ -7,7 +7,7 @@ import { getUser } from "@/lib/db/queries";
 
 // Validation schemas
 const createPurgeOperationSchema = z.object({
-  teamId: z.string().uuid(),
+  teamId: z.number().int().positive(),
   operationType: z.enum([
     "customer_data",
     "transaction_history",
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     // Get query parameters
     const url = new URL(request.url);
-    const teamId = url.searchParams.get("teamId");
+    const teamIdStr = url.searchParams.get("teamId");
     const status = url.searchParams.get("status");
     const operationType = url.searchParams.get("type");
     const fromDate = url.searchParams.get("fromDate");
@@ -63,8 +63,11 @@ export async function GET(request: NextRequest) {
     // Build query conditions
     const conditions = [];
 
-    if (teamId) {
-      conditions.push(eq(purgeOperations.teamId, teamId));
+    if (teamIdStr) {
+      const teamId = parseInt(teamIdStr);
+      if (!isNaN(teamId)) {
+        conditions.push(eq(purgeOperations.teamId, teamId));
+      }
     }
 
     if (status) {
