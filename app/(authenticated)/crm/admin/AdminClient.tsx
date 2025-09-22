@@ -59,6 +59,13 @@ interface InactivityPolicy {
   createdAt: string;
 }
 
+/**
+ * AdminClient component that manages purge operations and inactivity policies.
+ *
+ * This component fetches and displays purge operations and inactivity policies, allowing users to create new operations and policies. It manages various states including loading, error handling, and form visibility. The component also provides a dashboard overview of the current system status and recent activities related to purge operations and inactivity policies.
+ *
+ * @returns {JSX.Element} The rendered AdminClient component.
+ */
 export default function AdminClient() {
   const router = useRouter();
   const [purgeOperations, setPurgeOperations] = useState<PurgeOperation[]>([]);
@@ -97,6 +104,14 @@ export default function AdminClient() {
     fetchInactivityPolicies();
   }, []);
 
+  /**
+   * Fetches purge operations from the server and updates the state accordingly.
+   *
+   * This function makes an asynchronous request to the "/api/admin/purge" endpoint with a limit of 50.
+   * If the response is successful, it extracts the operations from the JSON data and updates the state using
+   * setPurgeOperations. In case of an error, it sets an error message using setError. Finally, it ensures that
+   * loading state is set to false regardless of the outcome.
+   */
   const fetchPurgeOperations = async () => {
     try {
       const response = await fetch("/api/admin/purge?limit=50");
@@ -112,6 +127,13 @@ export default function AdminClient() {
     }
   };
 
+  /**
+   * Fetches inactivity policies from the server.
+   *
+   * This asynchronous function makes a request to the "/api/admin/inactivity" endpoint with a limit of 50.
+   * It checks the response for success and, if successful, parses the JSON data to extract the policies.
+   * If the fetch fails or the response is not ok, it logs an error to the console.
+   */
   const fetchInactivityPolicies = async () => {
     try {
       const response = await fetch("/api/admin/inactivity?limit=50");
@@ -123,6 +145,15 @@ export default function AdminClient() {
     }
   };
 
+  /**
+   * Handles the creation of a purge operation.
+   *
+   * This function prevents the default form submission behavior, then sends a POST request to the "/api/admin/purge" endpoint with the purge form data.
+   * If the response is not successful, it throws an error. Upon success, it resets the purge form state and fetches the updated list of purge operations.
+   * In case of an error, it sets an error message to be displayed.
+   *
+   * @param e - The form event triggered by the submission.
+   */
   const handleCreatePurgeOperation = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -156,6 +187,13 @@ export default function AdminClient() {
     }
   };
 
+  /**
+   * Handles the creation of an inactivity policy.
+   *
+   * This function prevents the default form submission behavior, then sends a POST request to the server to create a new inactivity policy using the data from the policyForm. If the request is successful, it resets the form and fetches the updated inactivity policies. In case of an error, it sets an error message to be displayed.
+   *
+   * @param e - The form event triggered by the submission.
+   */
   const handleCreateInactivityPolicy = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -198,6 +236,14 @@ export default function AdminClient() {
     }
   };
 
+  /**
+   * Get the corresponding color class for a given status.
+   *
+   * The function maps specific status strings to their associated color classes. It uses a switch statement to determine the color based on the input status. If the status does not match any predefined cases, a default gray color class is returned.
+   *
+   * @param status - A string representing the current status.
+   * @returns A string representing the corresponding color class for the status.
+   */
   const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
@@ -217,6 +263,15 @@ export default function AdminClient() {
     }
   };
 
+  /**
+   * Get the icon component corresponding to a specific operation type.
+   *
+   * The function uses a switch statement to determine which icon to return based on the provided type string.
+   * It handles multiple cases, returning a different icon for each recognized type, and defaults to a trash icon for unrecognized types.
+   *
+   * @param type - A string representing the operation type.
+   * @returns A JSX element representing the icon for the specified operation type.
+   */
   const getOperationTypeIcon = (type: string) => {
     switch (type) {
       case "customer_data":
