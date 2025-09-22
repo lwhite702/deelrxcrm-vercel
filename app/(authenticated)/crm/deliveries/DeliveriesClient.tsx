@@ -133,7 +133,7 @@ export default function DeliveriesClient() {
   /**
    * Handles the submission of the delivery creation form.
    *
-   * This function prevents the default form submission behavior, sends a POST request to create a new delivery with the provided data, and handles the response. If the request is successful, it fetches the updated deliveries, hides the form, and resets the form fields. In case of an error, it alerts the user with the error message.
+   * This function prevents the default form submission behavior and sends a POST request to create a new delivery with the provided data. It processes the response by fetching updated deliveries, hiding the form, and resetting the form fields if the request is successful. In case of an error, it alerts the user with the error message.
    *
    * @param e - The event object from the form submission.
    * @returns void
@@ -281,7 +281,7 @@ export default function DeliveriesClient() {
   /**
    * Get the corresponding color class for a given status.
    *
-   * The function maps specific status strings to their associated color classes. It uses a switch statement to determine the color based on the input status. If the status does not match any predefined cases, a default gray color class is returned.
+   * The function maps specific status strings such as "pending", "assigned", and others to their associated color classes using a switch statement. If the input status does not match any predefined cases, it defaults to returning a gray color class. This allows for a clear visual representation of the status in a user interface.
    *
    * @param status - A string representing the status to evaluate.
    * @returns A string representing the corresponding color class for the given status.
