@@ -95,7 +95,7 @@ export async function POST(
       .insert(creditTransactions)
       .values({
         ...validatedData,
-        teamId: parseInt(teamId),
+        teamId: teamId,
         dueDate: validatedData.dueDate
           ? new Date(validatedData.dueDate)
           : undefined,
