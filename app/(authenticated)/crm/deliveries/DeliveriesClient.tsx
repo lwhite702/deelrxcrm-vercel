@@ -45,6 +45,13 @@ interface Order {
   totalCents: number;
 }
 
+/**
+ * Manages the delivery and order functionalities for the client interface.
+ *
+ * This component handles the state for deliveries and orders, including fetching data from the API, creating new deliveries, and updating existing ones. It utilizes hooks to manage form states and loading indicators, and renders the UI for displaying deliveries, including their statuses and associated actions. The component also provides modals for creating and updating deliveries, ensuring a seamless user experience.
+ *
+ * @returns {JSX.Element} The rendered component for managing deliveries and orders.
+ */
 export default function DeliveriesClient() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -123,6 +130,15 @@ export default function DeliveriesClient() {
     }
   };
 
+  /**
+   * Handles the submission of the delivery creation form.
+   *
+   * This function prevents the default form submission behavior, sends a POST request to create a new delivery with the provided data, and handles the response. If the request is successful, it fetches the updated deliveries, hides the form, and resets the form fields. In case of an error, it alerts the user with the error message.
+   *
+   * @param e - The event object from the form submission.
+   * @returns void
+   * @throws Error If the fetch request fails or if the response is not ok.
+   */
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -153,6 +169,15 @@ export default function DeliveriesClient() {
     }
   };
 
+  /**
+   * Handles the submission of the update form for a delivery.
+   *
+   * This function prevents the default form submission behavior, checks if a delivery is selected, and constructs an updateData object with the new status, notes, and optional tracking number and actual delivery date. It then sends a PATCH request to update the delivery on the server. If the update is successful, it fetches the updated deliveries and resets the form state. In case of an error, it alerts the user with the error message.
+   *
+   * @param e - The form event triggered by the submission.
+   * @returns void
+   * @throws Error If the fetch request fails or the response is not ok.
+   */
   const handleUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDelivery) return;
@@ -224,6 +249,16 @@ export default function DeliveriesClient() {
     }).format(cents / 100);
   };
 
+  /**
+   * Get the appropriate status icon based on the provided status string.
+   *
+   * The function uses a switch statement to determine which icon to return based on the input status.
+   * It handles various statuses such as "pending", "assigned", "in_transit", "delivered", "failed", and "returned",
+   * returning a default icon for any unrecognized status.
+   *
+   * @param status - A string representing the current status.
+   * @returns A JSX element representing the corresponding status icon.
+   */
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
@@ -243,6 +278,14 @@ export default function DeliveriesClient() {
     }
   };
 
+  /**
+   * Get the corresponding color class for a given status.
+   *
+   * The function maps specific status strings to their associated color classes. It uses a switch statement to determine the color based on the input status. If the status does not match any predefined cases, a default gray color class is returned.
+   *
+   * @param status - A string representing the status to evaluate.
+   * @returns A string representing the corresponding color class for the given status.
+   */
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":

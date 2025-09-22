@@ -19,6 +19,13 @@ interface Customer {
   createdAt: string;
 }
 
+/**
+ * Manages customer and referral data for a client application.
+ *
+ * This component handles the loading and displaying of customers and referrals, as well as managing forms for adding new customers and creating referrals. It utilizes various state variables to track loading status, errors, and form data. The component fetches team, customer, and referral data from the API and updates the UI accordingly. It also includes functionality for searching customers and displaying referral details for selected customers.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function CustomersClient() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
