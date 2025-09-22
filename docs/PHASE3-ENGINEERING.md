@@ -11,12 +11,14 @@ Phase 3 introduces advanced business operations features including Credit Manage
 Phase 3 adds 8 new tables and 4 enums to support advanced business operations:
 
 #### New Enums
+
 - `credit_status`: "active", "suspended", "defaulted", "closed"
 - `transaction_status`: "pending", "completed", "failed", "cancelled"
 - `purge_status`: "requested", "scheduled", "export_ready", "acknowledged", "executing", "completed", "cancelled"
 - `kb_article_status`: "draft", "review", "published", "archived"
 
 #### New Tables
+
 1. **credits** - Credit account management
 2. **credit_transactions** - Credit transaction history
 3. **kb_articles** - Knowledge base articles
@@ -27,8 +29,9 @@ Phase 3 adds 8 new tables and 4 enums to support advanced business operations:
 8. **activity_events** - Activity logging
 
 ### Key Foreign Key Relationships
+
 - All `teamId` fields use `integer` type (references `teams.id`)
-- All `userId` fields use `integer` type (references `users.id`)  
+- All `userId` fields use `integer` type (references `users.id`)
 - `customerId` fields use `uuid` type (references `customers.id`)
 - Article IDs use `uuid` type for KB system
 
@@ -45,6 +48,7 @@ Phase 3 adds 8 new tables and 4 enums to support advanced business operations:
 - **POST** `/setup-intent` - Create Stripe setup intent for payment methods
 
 **Key Features**:
+
 - Real-time balance calculations
 - Transaction history with pagination
 - Stripe integration for payment processing
@@ -63,6 +67,7 @@ Phase 3 adds 8 new tables and 4 enums to support advanced business operations:
 - **GET** `/uploads` - List uploaded files
 
 **Key Features**:
+
 - Draft/Review/Published workflow
 - File attachments with dual storage
 - Team-based access control
@@ -83,15 +88,18 @@ Phase 3 adds 8 new tables and 4 enums to support advanced business operations:
 Phase 3 uses Inngest for background job processing with the following functions:
 
 #### Credit Management Jobs
+
 - **credit-payment-reminder** - Send payment reminders
 - **credit-overdue-check** - Check for overdue accounts
 - **credit-limit-adjustment** - Automated limit adjustments
 
 #### Knowledge Base Jobs
+
 - **kb-links-verify** - Weekly link validation
 - **kb-cleanup-orphaned** - Monthly orphaned file cleanup
 
 #### Admin Jobs (Temporarily Disabled)
+
 - **admin-purge-execute** - Execute scheduled purges
 - **admin-inactivity-check** - Daily inactivity monitoring
 - **admin-retention-enforce** - Weekly retention policy enforcement
@@ -114,6 +122,7 @@ export const inngest = new Inngest({
 Phase 3 implements dual blob storage for enhanced security:
 
 - **Private Store** (`BLOB_READ_WRITE_TOKEN_PRIVATE`)
+
   - Sensitive documents (invoices, receipts, legal docs)
   - User uploads requiring authentication
   - Path prefix: `private/`
@@ -128,7 +137,13 @@ Phase 3 implements dual blob storage for enhanced security:
 ```typescript
 export function determineStoreType(
   fileType: string,
-  context: "kb-article" | "user-upload" | "invoice" | "receipt" | "legal-doc" | "public-asset"
+  context:
+    | "kb-article"
+    | "user-upload"
+    | "invoice"
+    | "receipt"
+    | "legal-doc"
+    | "public-asset"
 ): BlobStoreType {
   const sensitiveContexts = ["invoice", "receipt", "legal-doc"];
   if (sensitiveContexts.includes(context)) return "private";
@@ -192,6 +207,7 @@ npm run db:migrate
 ### Schema Validation
 
 The system includes runtime validation to ensure foreign key type consistency:
+
 - String `teamId` parameters are converted to integers using `parseInt()`
 - UUID fields maintain string format
 - All database operations include proper type conversion
@@ -199,16 +215,19 @@ The system includes runtime validation to ensure foreign key type consistency:
 ## Security Considerations
 
 ### Access Control
+
 - Team-based data isolation via `teamId` filtering
 - User authentication required for all operations
 - Admin operations require elevated permissions
 
 ### Data Protection
+
 - Sensitive files automatically routed to private blob storage
 - Credit card data handled via Stripe (PCI compliant)
 - Activity logging for audit trails
 
 ### Error Handling
+
 - Global error handler in Express app
 - Structured error responses with appropriate HTTP codes
 - Error logging for debugging and monitoring
@@ -216,16 +235,19 @@ The system includes runtime validation to ensure foreign key type consistency:
 ## Performance Optimizations
 
 ### Database
+
 - Proper indexing on foreign keys
 - Pagination for large result sets
 - Connection pooling via Neon
 
 ### File Storage
+
 - CDN distribution via Vercel Blob
 - Automatic file compression
 - Cleanup jobs prevent storage bloat
 
 ### Background Jobs
+
 - Async processing for heavy operations
 - Retry logic for failed jobs
 - Rate limiting for external API calls
@@ -233,11 +255,13 @@ The system includes runtime validation to ensure foreign key type consistency:
 ## Monitoring and Observability
 
 ### Logging
+
 - Structured logging throughout the application
 - Error tracking via Sentry (configured)
 - Performance monitoring via Vercel Analytics
 
 ### Health Checks
+
 - Database connection monitoring
 - Background job status tracking
 - File storage accessibility checks
@@ -245,6 +269,7 @@ The system includes runtime validation to ensure foreign key type consistency:
 ## Deployment Procedures
 
 ### Build Process
+
 ```bash
 # Install dependencies
 npm install
@@ -257,12 +282,14 @@ npm run start
 ```
 
 ### Environment Setup
+
 1. Configure all required environment variables
 2. Run database migrations
 3. Verify Inngest webhook endpoint
 4. Test blob storage connectivity
 
 ### Rollback Procedures
+
 - Database: Use migration rollback scripts
 - Code: Git branch reversion
 - Files: Blob storage version management
@@ -272,14 +299,17 @@ npm run start
 ### Common Issues
 
 1. **Foreign Key Type Mismatches**
+
    - Ensure `parseInt()` conversion for teamId parameters
    - Verify UUID format for customer IDs
 
 2. **Blob Storage Errors**
+
    - Check token validity and permissions
    - Verify correct store type selection
 
 3. **Background Job Failures**
+
    - Check Inngest webhook configuration
    - Verify environment variables
    - Monitor job execution logs
@@ -308,12 +338,14 @@ curl -X GET "/api/admin/blob-management?storeType=public"
 ## Future Enhancements
 
 ### Planned Features
+
 1. Real-time notifications via WebSocket
 2. Advanced analytics and reporting
 3. Multi-tenant data isolation improvements
 4. Enhanced file processing (OCR, thumbnails)
 
 ### Technical Debt
+
 1. Fix admin function schema mismatches
 2. Implement comprehensive error boundaries
 3. Add end-to-end testing suite
@@ -322,24 +354,28 @@ curl -X GET "/api/admin/blob-management?storeType=public"
 ## API Reference
 
 See the public Mintlify documentation for detailed API specifications:
+
 - Credit Management APIs
-- Knowledge Base APIs  
+- Knowledge Base APIs
 - Admin Operations APIs
 - Background Job Webhooks
 
 ## Development Workflow
 
 1. **Feature Development**
+
    - Create feature branch from `dev-phase3`
    - Implement with comprehensive tests
    - Update documentation
 
 2. **Database Changes**
+
    - Update schema in `lib/db/schema.ts`
    - Run `npm run db:push` to apply changes
    - Update type definitions
 
 3. **API Development**
+
    - Follow existing patterns in `app/api/`
    - Include proper validation and error handling
    - Add to public documentation
