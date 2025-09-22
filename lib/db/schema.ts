@@ -786,7 +786,7 @@ export const inactivityTrackers = pgTable("inactivity_trackers", {
 
 export const activityEvents = pgTable("activity_events", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: serial("team_id")
+  teamId: uuid("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
   userId: serial("user_id")
