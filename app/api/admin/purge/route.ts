@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (teamId) {
-      conditions.push(eq(purgeOperations.teamId, parseInt(teamId)));
+      conditions.push(eq(purgeOperations.teamId, teamId));
     }
 
     if (status) {
