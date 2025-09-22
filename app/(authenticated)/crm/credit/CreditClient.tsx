@@ -37,6 +37,13 @@ interface CreditTransaction {
   dueDate?: string;
 }
 
+/**
+ * CreditClient component for managing credit accounts and transactions.
+ *
+ * This component fetches and displays credit account details and recent transactions. It allows users to create new transactions, view transaction history, and manage account settings. The component handles loading states and errors, and utilizes hooks for state management and side effects. It also provides a modal for creating new transactions and updates the UI based on user interactions.
+ *
+ * @returns {JSX.Element} The rendered CreditClient component.
+ */
 export default function CreditClient() {
   const router = useRouter();
   const [creditAccount, setCreditAccount] = useState<CreditAccount | null>(
@@ -68,6 +75,13 @@ export default function CreditClient() {
     fetchTransactions();
   }, []);
 
+  /**
+   * Fetches the credit account data for a specific team.
+   *
+   * This asynchronous function makes a network request to retrieve the credit account information
+   * associated with a given team ID. It handles potential errors by setting an error message if
+   * the fetch operation fails, and ensures that the loading state is updated accordingly.
+   */
   const fetchCreditAccount = async () => {
     try {
       const response = await fetch(`/api/teams/${teamId}/credit`);
@@ -83,6 +97,14 @@ export default function CreditClient() {
     }
   };
 
+  /**
+   * Fetches transaction data for a specific team.
+   *
+   * This asynchronous function retrieves transaction information from the API endpoint
+   * associated with the given teamId. It checks the response for success, processes the
+   * JSON data, and updates the state with the transactions. In case of an error, it logs
+   * the error message to the console.
+   */
   const fetchTransactions = async () => {
     try {
       const response = await fetch(
@@ -96,11 +118,25 @@ export default function CreditClient() {
     }
   };
 
+  /**
+   * Initiates the creation of a Stripe SetupIntent.
+   */
   const handleCreateSetupIntent = async () => {
     // TODO: Implement Stripe SetupIntent creation
     setShowSetupIntent(true);
   };
 
+  /**
+   * Handles the submission of a transaction form.
+   *
+   * This function prevents the default form submission behavior, constructs a POST request to create a transaction, and processes the response.
+   * It updates the transaction form state and fetches the latest transactions and credit account information upon a successful response.
+   * In case of an error, it sets an error message based on the caught exception.
+   *
+   * @param e - The event object from the form submission.
+   * @returns Promise<void>
+   * @throws Error If the response from the transaction creation is not ok.
+   */
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -134,6 +170,9 @@ export default function CreditClient() {
     }
   };
 
+  /**
+   * Formats a number in cents to a USD currency string.
+   */
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -141,6 +180,15 @@ export default function CreditClient() {
     }).format(cents / 100);
   };
 
+  /**
+   * Get the corresponding color class for a given status.
+   *
+   * The function maps various status strings to specific color classes, allowing for consistent styling based on the status.
+   * It uses a switch statement to determine the appropriate color class, returning a default color for unrecognized statuses.
+   *
+   * @param status - A string representing the status to evaluate.
+   * @returns A string representing the corresponding color class for the given status.
+   */
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
