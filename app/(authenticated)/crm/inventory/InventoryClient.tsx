@@ -37,7 +37,7 @@ interface InventoryAdjustment {
 /**
  * Manages the inventory client interface, including product display and stock adjustments.
  *
- * This component fetches products and adjustments from the API on mount, manages the state for products, adjustments, and the adjustment form, and handles the submission of stock adjustments. It also provides visual feedback for stock status and allows users to view recent adjustments.
+ * This component fetches products and adjustments from the API on mount, manages the state for products, adjustments, and the adjustment form, and handles the submission of stock adjustments. It also provides visual feedback for stock status and allows users to view recent adjustments. The component includes various helper functions for formatting currency and determining stock status.
  *
  * @returns {JSX.Element} The rendered inventory client component.
  */
@@ -99,9 +99,9 @@ export default function InventoryClient() {
   /**
    * Handles the submission of an adjustment form.
    *
-   * This function prevents the default form submission behavior, checks if a product is selected, and then sends a POST request to create an adjustment.
-   * If the request is successful, it refreshes the product and adjustment data, resets the form, and updates the UI state.
-   * In case of an error, it alerts the user with the error message.
+   * This function prevents the default form submission behavior, checks if a product is selected, and sends a POST request to create an adjustment with the specified details.
+   * Upon a successful request, it refreshes the product and adjustment data, resets the form state, and updates the UI.
+   * If an error occurs during the request, it alerts the user with the error message.
    *
    * @param e - The event object from the form submission.
    */
@@ -164,9 +164,10 @@ export default function InventoryClient() {
   /**
    * Determines the CSS class for stock status color based on the provided status.
    *
-   * The function evaluates the input `status` string and returns a corresponding CSS class
-   * for styling. It checks for "out-of-stock" and "low-stock" statuses, returning specific
-   * classes for each, while defaulting to a class indicating that the stock is available.
+   * The function evaluates the input `status` string using a switch statement. It checks for
+   * specific cases such as "out-of-stock" and "low-stock", returning corresponding CSS classes
+   * for each. If the status does not match these cases, it defaults to a class indicating
+   * that the stock is available.
    *
    * @param {string} status - The stock status to evaluate, which can be "out-of-stock",
    * "low-stock", or any other string indicating available stock.
