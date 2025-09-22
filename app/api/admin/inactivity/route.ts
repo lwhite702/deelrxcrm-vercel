@@ -85,7 +85,6 @@ export async function POST(request: NextRequest) {
       .insert(inactivityPolicies)
       .values({
         ...validatedData,
-        teamId: parseInt(validatedData.teamId),
       })
       .returning();
 

@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
       .insert(purgeOperations)
       .values({
         teamId: validatedData.teamId,
+        requestedBy: user.id,
         purgeScope: {
           entities: [validatedData.operationType],
           dateRange: validatedData.targetDate ? {
@@ -127,7 +128,6 @@ export async function POST(request: NextRequest) {
         scheduledFor: validatedData.scheduledFor
           ? new Date(validatedData.scheduledFor)
           : undefined,
-        requestedBy: user.id,
       })
       .returning();
 
