@@ -1,6 +1,9 @@
 import { Suspense } from "react";
 import CreditClient from "./CreditClient";
 
+/**
+ * Renders the Credit Management page with a loading fallback.
+ */
 export default function CreditPage() {
   return (
     <div className="container mx-auto px-6 py-8">
