@@ -789,7 +789,7 @@ export const activityEvents = pgTable("activity_events", {
   teamId: uuid("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  userId: serial("user_id")
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   eventType: text("event_type").notNull(), // login, order_created, etc
