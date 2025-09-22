@@ -1,0 +1,110 @@
+---
+title: Introduction
+description: "Welcome to DeelRx CRM - A comprehensive customer relationship management system"
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.png"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.png"
+  alt="Hero Dark"
+/>
+
+## What is DeelRx CRM?
+
+DeelRx CRM is a modern, full-stack customer relationship management system built with Next.js, TypeScript, and PostgreSQL. It provides businesses with comprehensive tools to manage customers, products, orders, and extended operations like inventory tracking, referral programs, and loyalty systems.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Customer Management" icon="users" href="/features/customers">
+    Complete customer profiles with contact details, order history, and referral
+    tracking
+  </Card>
+  <Card title="Product Catalog" icon="box" href="/features/products">
+    Advanced inventory management with stock tracking and automated adjustments
+  </Card>
+  <Card title="Order Processing" icon="shopping-cart" href="/features/orders">
+    Streamlined order creation, tracking, and fulfillment workflows
+  </Card>
+  <Card title="Payment Management" icon="credit-card" href="/features/payments">
+    Integrated payment processing with Stripe and comprehensive transaction
+    tracking
+  </Card>
+</CardGroup>
+
+## Extended Operations
+
+DeelRx CRM goes beyond basic CRM functionality with advanced operational features:
+
+<CardGroup cols={2}>
+  <Card
+    title="Inventory Adjustments"
+    icon="warehouse"
+    href="/extended/inventory-adjustments"
+  >
+    Track stock changes with detailed reason codes and audit trails
+  </Card>
+  <Card
+    title="Customer Referrals"
+    icon="share"
+    href="/extended/customer-referrals"
+  >
+    Manage referral programs with reward tracking and conversion metrics
+  </Card>
+  <Card
+    title="Delivery Management"
+    icon="truck"
+    href="/extended/delivery-management"
+  >
+    Complete delivery tracking with status updates and address management
+  </Card>
+  <Card title="Loyalty Programs" icon="star" href="/extended/loyalty-programs">
+    Points-based customer retention with automated accrual and redemption
+  </Card>
+</CardGroup>
+
+## Architecture
+
+DeelRx CRM is built with modern technologies for scalability and performance:
+
+- **Frontend**: Next.js 15 with TypeScript and Tailwind CSS
+- **Backend**: Next.js API routes with comprehensive validation
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: JWT-based with role-based access control
+- **Deployment**: Vercel with serverless functions
+- **Payments**: Stripe integration for secure transactions
+
+## Multi-tenant Ready
+
+The system is designed from the ground up for multi-tenancy:
+
+- **Team-based Data Isolation**: All data is scoped to teams/organizations
+- **Role-based Access Control**: Fine-grained permissions per user
+- **Scalable Architecture**: Efficient queries with team-scoped filtering
+- **Secure by Design**: Multi-layered security with input validation
+
+## Getting Started
+
+Ready to get started? Jump right into the quickstart guide:
+
+<CardGroup cols={1}>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Get DeelRx CRM up and running in minutes with our step-by-step guide
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Complete API documentation with examples and schemas
+  </Card>
+  <Card title="Support" icon="life-ring" href="mailto:support@deelrxcrm.app">
+    Get help from our support team
+  </Card>
+</CardGroup>
