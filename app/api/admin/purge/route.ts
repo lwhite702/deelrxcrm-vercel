@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     const [newOperation] = await db
       .insert(purgeOperations)
       .values({
-        teamId: parseInt(validatedData.teamId),
+        teamId: validatedData.teamId,
         purgeScope: {
           entities: [validatedData.operationType],
           dateRange: validatedData.targetDate ? {
