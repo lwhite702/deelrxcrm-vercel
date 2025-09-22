@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (teamId) {
-      conditions.push(eq(inactivityPolicies.teamId, parseInt(teamId)));
+      conditions.push(eq(inactivityPolicies.teamId, teamId));
     }
 
     if (isActive !== null) {
