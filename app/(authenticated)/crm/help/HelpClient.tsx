@@ -46,6 +46,13 @@ interface KBUpload {
   createdAt: string;
 }
 
+/**
+ * HelpClient component for managing articles and file uploads.
+ *
+ * This component handles the fetching, creation, and display of articles and uploads. It maintains various states for articles, uploads, loading status, error messages, and user interactions. The component utilizes hooks to manage side effects, such as fetching data based on search terms and selected categories. It also provides functionality for creating new articles, uploading files, and managing tags.
+ *
+ * @returns {JSX.Element} The rendered HelpClient component.
+ */
 export default function HelpClient() {
   const router = useRouter();
   const [articles, setArticles] = useState<KBArticle[]>([]);
@@ -83,6 +90,19 @@ export default function HelpClient() {
     fetchUploads();
   }, [searchTerm, selectedCategory]);
 
+  /**
+   * Fetch articles from the API based on specified parameters.
+   *
+   * The function constructs a query string using URLSearchParams with teamId, searchTerm, and selectedCategory.
+   * It then makes a fetch request to the API endpoint. If the response is not ok, it throws an error.
+   * The articles are set in the state, and any errors encountered during the process are handled gracefully.
+   *
+   * @param teamId - The ID of the team for which articles are being fetched.
+   * @param searchTerm - An optional term to filter the articles by search.
+   * @param selectedCategory - An optional category to filter the articles.
+   * @returns Promise<void> - A promise that resolves when the articles are fetched and set.
+   * @throws Error If the fetch request fails or if the response is not ok.
+   */
   const fetchArticles = async () => {
     try {
       const params = new URLSearchParams({
@@ -102,6 +122,14 @@ export default function HelpClient() {
     }
   };
 
+  /**
+   * Fetches uploads for a specific team and updates the state with the retrieved data.
+   *
+   * This function makes an asynchronous request to the API endpoint to fetch uploads
+   * associated with a given teamId, limiting the results to 20. It checks the response
+   * for success and updates the uploads state with the fetched data. In case of an error,
+   * it logs the error message to the console.
+   */
   const fetchUploads = async () => {
     try {
       const response = await fetch(
@@ -115,6 +143,13 @@ export default function HelpClient() {
     }
   };
 
+  /**
+   * Handles the creation of a new article.
+   *
+   * This function prevents the default form submission behavior, then attempts to send a POST request to the "/api/help/articles" endpoint with the article data. If the response is not successful, it throws an error. Upon successful creation, it resets the article form state and updates the selected view to "browse", followed by fetching the updated articles. In case of an error, it sets an error message in the state.
+   *
+   * @param e - The event object from the form submission.
+   */
   const handleCreateArticle = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -146,6 +181,16 @@ export default function HelpClient() {
     }
   };
 
+  /**
+   * Handles the file upload process triggered by a file input change event.
+   *
+   * It retrieves the selected file from the event, constructs a FormData object with the file and additional parameters,
+   * and sends a POST request to the server to upload the file. If the upload is successful, it fetches the updated uploads.
+   * In case of an error during the upload, it sets an error message.
+   *
+   * @param e - The change event from the file input element.
+   * @returns void
+   */
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -169,6 +214,9 @@ export default function HelpClient() {
     }
   };
 
+  /**
+   * Adds a tag to the article form if it is not already included.
+   */
   const addTag = () => {
     if (tagInput && !articleForm.tags.includes(tagInput)) {
       setArticleForm((prev) => ({
@@ -179,6 +227,9 @@ export default function HelpClient() {
     }
   };
 
+  /**
+   * Removes a specified tag from the article form.
+   */
   const removeTag = (tagToRemove: string) => {
     setArticleForm((prev) => ({
       ...prev,
@@ -186,6 +237,9 @@ export default function HelpClient() {
     }));
   };
 
+  /**
+   * Converts a file size in bytes to a human-readable format.
+   */
   const formatFileSize = (bytes: number) => {
     const sizes = ["Bytes", "KB", "MB", "GB"];
     if (bytes === 0) return "0 Bytes";
@@ -193,6 +247,16 @@ export default function HelpClient() {
     return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
   };
 
+  /**
+   * Determines the color associated with a given status.
+   *
+   * The function takes a status string and returns a corresponding color class.
+   * It uses a switch statement to map specific statuses like "published", "draft",
+   * and "archived" to their respective color classes. If the status does not match
+   * any predefined cases, it defaults to "text-gray-400".
+   *
+   * @param status - The status string to evaluate.
+   */
   const getStatusColor = (status: string) => {
     switch (status) {
       case "published":
