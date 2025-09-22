@@ -1,6 +1,9 @@
 import { Suspense } from "react";
 import AdminClient from "./AdminClient";
 
+/**
+ * Renders the Admin page with operations and a loading fallback.
+ */
 export default function AdminPage() {
   return (
     <div className="container mx-auto px-6 py-8">
