@@ -46,8 +46,6 @@ export async function GET(request: NextRequest) {
 
     const validatedParams = listFilesSchema.parse(queryParams);
 
-    const files = await listBlobFiles(
-      validatedParams.prefix,
       validatedParams.storeType
     );
 
