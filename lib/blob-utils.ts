@@ -43,7 +43,7 @@ export async function uploadFileToBlob(
   
   try {
     const blob = await put(blobPath, file, {
-      access: "public", // Note: Vercel Blob currently only supports public access, but we control privacy via path/token
+      access: config.access, // Note: Vercel Blob currently only supports public access, but we control privacy via path/token
       contentType,
       token: config.token,
     });
