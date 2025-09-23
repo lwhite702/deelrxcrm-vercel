@@ -21,6 +21,15 @@ const createPolicySchema = z.object({
 
 const updatePolicySchema = createPolicySchema.partial();
 
+/**
+ * Handles the GET request for inactivity policies.
+ *
+ * This function retrieves the current user and checks for authorization. It then extracts query parameters such as teamId, active status, limit, and offset. Based on these parameters, it builds conditions to query the inactivityPolicies from the database, applying limits and offsets as specified. If any errors occur during the process, it logs the error and returns a 500 status response.
+ *
+ * @param request - The NextRequest object containing the request details.
+ * @returns A JSON response containing the retrieved policies or an error message.
+ * @throws Error If an internal server error occurs during the execution.
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
@@ -72,6 +81,18 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * Handles the POST request to create a new inactivity policy.
+ *
+ * The function first retrieves the user and checks for authorization. If the user is not authorized, it returns a 401 response.
+ * It then parses the request body and validates it against the createPolicySchema. If validation passes, it inserts the new policy
+ * into the database and returns the created policy with a 201 status. If a validation error occurs, it returns a 400 response with
+ * error details. Any other errors result in a 500 response.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @returns A JSON response containing the created policy or an error message.
+ * @throws z.ZodError If the request body fails validation against the schema.
+ */
 export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
