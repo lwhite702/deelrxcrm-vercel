@@ -15,6 +15,9 @@ const REQUIRED_ENV_VARS = [
   'RESEND_API_KEY',
 ] as const;
 
+/**
+ * Validates the presence of required environment variables and exits if any are missing.
+ */
 export function validateRequiredEnvVars() {
   const missing: string[] = [];
   
@@ -35,6 +38,9 @@ export function validateRequiredEnvVars() {
   console.log('✅ All required environment variables are present');
 }
 
+/**
+ * Checks for missing optional environment variables and logs a warning if any are not set.
+ */
 export function checkOptionalEnvVars() {
   const optional = [
     'BLOB_READ_WRITE_TOKEN',
