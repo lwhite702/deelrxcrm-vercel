@@ -768,10 +768,10 @@ export const inactivityPolicies = pgTable("inactivity_policies", {
 
 export const inactivityTrackers = pgTable("inactivity_trackers", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   policyId: uuid("policy_id")
@@ -787,10 +787,10 @@ export const inactivityTrackers = pgTable("inactivity_trackers", {
 
 export const activityEvents = pgTable("activity_events", {
   id: uuid("id").primaryKey().defaultRandom(),
-  teamId: uuid("team_id")
+  teamId: integer("team_id")
     .notNull()
     .references(() => teams.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   eventType: text("event_type").notNull(), // login, order_created, etc

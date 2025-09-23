@@ -23,6 +23,8 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.17",
     "@ai-sdk/openai": "^2.0.32",
+    "@knocklabs/node": "^1.17.1",
+    "@sentry/nextjs": "^10.13.0",
     "@supabase/supabase-js": "^2.41.1",
     "@tailwindcss/postcss": "4.1.13",
     "@tailwindcss/typography": "^0.5.18",
