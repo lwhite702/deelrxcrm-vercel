@@ -1,0 +1,255 @@
+# Create Customer
+
+Create a new customer record in your CRM.
+
+## Request Body
+
+<Param body="name" type="string" required>
+Customer's name or company name
+</Param>
+
+<Param body="email" type="string" required>
+Primary email address
+</Param>
+
+<Param body="phone" type="string">
+Primary phone number
+</Param>
+
+<Param body="address" type="object">
+Customer's address information
+</Param>
+
+<Param body="address.street" type="string">
+Street address
+</Param>
+
+<Param body="address.city" type="string">
+City
+</Param>
+
+<Param body="address.state" type="string">
+State or province
+</Param>
+
+<Param body="address.zip" type="string">
+ZIP or postal code
+</Param>
+
+<Param body="address.country" type="string">
+Country code (ISO 3166-1 alpha-2)
+</Param>
+
+<Param body="tags" type="array">
+Array of tag strings for categorization
+</Param>
+
+<Param body="customFields" type="object">
+Custom field values specific to your organization
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: session=your_session_token" \
+  -d '{
+    "name": "Acme Corporation",
+    "email": "contact@acme.com",
+    "phone": "+1-555-0123",
+    "address": {
+      "street": "123 Business Ave",
+      "city": "Enterprise City",
+      "state": "CA",
+      "zip": "90210",
+      "country": "US"
+    },
+    "tags": ["enterprise", "technology"],
+    "customFields": {
+      "industry": "Technology",
+      "employees": "50-100"
+    }
+  }' \
+  https://api.deelrxcrm.app/api/customers
+```
+
+```javascript JavaScript
+const customer = await crm.customers.create({
+  name: "Acme Corporation",
+  email: "contact@acme.com",
+  phone: "+1-555-0123",
+  address: {
+    street: "123 Business Ave",
+    city: "Enterprise City",
+    state: "CA",
+    zip: "90210",
+    country: "US"
+  },
+  tags: ["enterprise", "technology"],
+  customFields: {
+    industry: "Technology",
+    employees: "50-100"
+  }
+});
+```
+
+```python Python
+customer = crm.customers.create({
+  "name": "Acme Corporation",
+  "email": "contact@acme.com",
+  "phone": "+1-555-0123",
+  "address": {
+    "street": "123 Business Ave",
+    "city": "Enterprise City",
+    "state": "CA",
+    "zip": "90210",
+    "country": "US"
+  },
+  "tags": ["enterprise", "technology"],
+  "customFields": {
+    "industry": "Technology",
+    "employees": "50-100"
+  }
+})
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "data": {
+    "id": "cust_123",
+    "name": "Acme Corporation",
+    "email": "contact@acme.com",
+    "phone": "+1-555-0123",
+    "status": "active",
+    "address": {
+      "street": "123 Business Ave",
+      "city": "Enterprise City",
+      "state": "CA",
+      "zip": "90210",
+      "country": "US"
+    },
+    "tags": ["enterprise", "technology"],
+    "customFields": {
+      "industry": "Technology",
+      "employees": "50-100"
+    },
+    "totalOrders": 0,
+    "lifetimeValue": 0.00,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid email address format",
+    "details": {
+      "field": "email",
+      "value": "invalid-email"
+    }
+  }
+}
+```
+
+```json 409 Conflict
+{
+  "success": false,
+  "error": {
+    "code": "CUSTOMER_EXISTS",
+    "message": "Customer with this email already exists",
+    "details": {
+      "field": "email",
+      "existingCustomerId": "cust_456"
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the created customer
+</ResponseField>
+
+<ResponseField name="name" type="string">
+Customer's name or company name
+</ResponseField>
+
+<ResponseField name="email" type="string">
+Primary email address
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+Primary phone number
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Customer status (defaults to "active")
+</ResponseField>
+
+<ResponseField name="address" type="object">
+Customer's address information
+  <Expandable title="address properties">
+    <ResponseField name="street" type="string">
+    Street address
+    </ResponseField>
+    
+    <ResponseField name="city" type="string">
+    City
+    </ResponseField>
+    
+    <ResponseField name="state" type="string">
+    State or province
+    </ResponseField>
+    
+    <ResponseField name="zip" type="string">
+    ZIP or postal code
+    </ResponseField>
+    
+    <ResponseField name="country" type="string">
+    Country code (ISO 3166-1 alpha-2)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="tags" type="array">
+Array of tag strings for categorization
+</ResponseField>
+
+<ResponseField name="customFields" type="object">
+Custom field values specific to your organization
+</ResponseField>
+
+<ResponseField name="totalOrders" type="integer">
+Total number of orders (initially 0)
+</ResponseField>
+
+<ResponseField name="lifetimeValue" type="number">
+Customer lifetime value (initially 0.00)
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+ISO 8601 timestamp when customer was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when customer was last updated
+</ResponseField>
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid input data
+- `CUSTOMER_EXISTS` - Customer with email already exists
+- `RATE_LIMIT_EXCEEDED` - Too many requests

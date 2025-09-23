@@ -1,0 +1,373 @@
+# List Knowledge Base Articles
+
+Retrieve a list of knowledge base articles with filtering and search capabilities.
+
+<Param query="category" type="string">
+Filter articles by category
+</Param>
+
+<Param query="status" type="string">
+Filter by article status (published, draft, archived)
+</Param>
+
+<Param query="search" type="string">
+Search articles by title and content
+</Param>
+
+<Param query="tags" type="string">
+Filter by tags (comma-separated)
+</Param>
+
+<Param query="authorId" type="string">
+Filter articles by author
+</Param>
+
+<Param query="limit" type="integer">
+Maximum number of articles to return (default: 50, max: 200)
+</Param>
+
+<Param query="offset" type="integer">
+Number of articles to skip for pagination (default: 0)
+</Param>
+
+<Param query="sortBy" type="string">
+Sort order (created_at, updated_at, title, popularity)
+</Param>
+
+<Param query="sortDirection" type="string">
+Sort direction (asc, desc) - default: desc
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET \
+  -H "Cookie: session=your_session_token" \
+  "https://api.deelrxcrm.app/api/kb/articles?status=published&limit=20"
+```
+
+```javascript JavaScript
+// List all published articles
+const articles = await crm.kb.listArticles({
+  status: "published",
+  limit: 20
+});
+
+// Search articles
+const searchResults = await crm.kb.listArticles({
+  search: "credit policy",
+  status: "published"
+});
+
+// Filter by category and tags
+const filteredArticles = await crm.kb.listArticles({
+  category: "policies",
+  tags: "credit,payment",
+  sortBy: "popularity"
+});
+```
+
+```python Python
+# List all published articles
+articles = crm.kb.list_articles(
+    status="published",
+    limit=20
+)
+
+# Search articles
+search_results = crm.kb.list_articles(
+    search="credit policy",
+    status="published"
+)
+
+# Filter by category and tags
+filtered_articles = crm.kb.list_articles(
+    category="policies",
+    tags="credit,payment",
+    sort_by="popularity"
+)
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "articles": [
+      {
+        "id": "kb_001",
+        "title": "Credit Application Process",
+        "slug": "credit-application-process",
+        "excerpt": "Complete guide to applying for credit accounts including requirements and approval process.",
+        "category": "credit-policies",
+        "status": "published",
+        "tags": ["credit", "application", "approval"],
+        "author": {
+          "id": "user_123",
+          "name": "John Smith",
+          "email": "john.smith@deelrx.com"
+        },
+        "viewCount": 1247,
+        "likeCount": 89,
+        "lastViewedAt": "2024-01-20T14:30:00Z",
+        "publishedAt": "2024-01-15T10:00:00Z",
+        "createdAt": "2024-01-14T09:00:00Z",
+        "updatedAt": "2024-01-18T11:30:00Z"
+      },
+      {
+        "id": "kb_002",
+        "title": "Payment Terms and Conditions",
+        "slug": "payment-terms-conditions",
+        "excerpt": "Overview of available payment terms, late fees, and collection procedures.",
+        "category": "credit-policies",
+        "status": "published",
+        "tags": ["payment", "terms", "conditions"],
+        "author": {
+          "id": "user_124",
+          "name": "Sarah Johnson",
+          "email": "sarah.johnson@deelrx.com"
+        },
+        "viewCount": 892,
+        "likeCount": 67,
+        "lastViewedAt": "2024-01-20T13:15:00Z",
+        "publishedAt": "2024-01-12T14:00:00Z",
+        "createdAt": "2024-01-11T16:00:00Z",
+        "updatedAt": "2024-01-19T09:45:00Z"
+      }
+    ],
+    "categories": [
+      {
+        "id": "credit-policies",
+        "name": "Credit Policies",
+        "articleCount": 15
+      },
+      {
+        "id": "procedures",
+        "name": "Procedures",
+        "articleCount": 23
+      }
+    ],
+    "pagination": {
+      "total": 67,
+      "limit": 50,
+      "offset": 0,
+      "hasMore": true
+    }
+  }
+}
+```
+
+```json 200 Empty Results
+{
+  "success": true,
+  "data": {
+    "articles": [],
+    "categories": [],
+    "pagination": {
+      "total": 0,
+      "limit": 50,
+      "offset": 0,
+      "hasMore": false
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Response Fields
+
+<ResponseField name="articles" type="array">
+Array of knowledge base article objects
+  <Expandable title="article properties">
+    <ResponseField name="id" type="string">
+    Unique identifier for the article
+    </ResponseField>
+    
+    <ResponseField name="title" type="string">
+    Article title
+    </ResponseField>
+    
+    <ResponseField name="slug" type="string">
+    URL-friendly slug for the article
+    </ResponseField>
+    
+    <ResponseField name="excerpt" type="string">
+    Brief summary or excerpt of the article content
+    </ResponseField>
+    
+    <ResponseField name="category" type="string">
+    Category identifier for the article
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+    Publication status (published, draft, archived)
+    </ResponseField>
+    
+    <ResponseField name="tags" type="array">
+    Array of tag strings associated with the article
+    </ResponseField>
+    
+    <ResponseField name="author" type="object">
+    Author information
+      <Expandable title="author properties">
+        <ResponseField name="id" type="string">
+        Author's user ID
+        </ResponseField>
+        
+        <ResponseField name="name" type="string">
+        Author's full name
+        </ResponseField>
+        
+        <ResponseField name="email" type="string">
+        Author's email address
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    
+    <ResponseField name="viewCount" type="integer">
+    Total number of views for this article
+    </ResponseField>
+    
+    <ResponseField name="likeCount" type="integer">
+    Total number of likes for this article
+    </ResponseField>
+    
+    <ResponseField name="lastViewedAt" type="string">
+    ISO 8601 timestamp of the most recent view
+    </ResponseField>
+    
+    <ResponseField name="publishedAt" type="string">
+    ISO 8601 timestamp when article was published
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+    ISO 8601 timestamp when article was created
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="string">
+    ISO 8601 timestamp when article was last updated
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="categories" type="array">
+Available categories with article counts
+  <Expandable title="category properties">
+    <ResponseField name="id" type="string">
+    Category identifier
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+    Human-readable category name
+    </ResponseField>
+    
+    <ResponseField name="articleCount" type="integer">
+    Number of articles in this category
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+Pagination information
+  <Expandable title="pagination properties">
+    <ResponseField name="total" type="integer">
+    Total number of articles matching the filter
+    </ResponseField>
+    
+    <ResponseField name="limit" type="integer">
+    Number of articles requested per page
+    </ResponseField>
+    
+    <ResponseField name="offset" type="integer">
+    Number of articles skipped
+    </ResponseField>
+    
+    <ResponseField name="hasMore" type="boolean">
+    Whether there are more articles available
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Article Status Values
+
+- `published` - Article is live and visible to users
+- `draft` - Article is being written and not yet published
+- `archived` - Article has been removed from active use
+
+## Sort Options
+
+### Sort By
+- `created_at` - Sort by creation date
+- `updated_at` - Sort by last modification date
+- `title` - Sort alphabetically by title
+- `popularity` - Sort by view count and engagement
+
+### Sort Direction
+- `desc` - Descending order (newest/highest first)
+- `asc` - Ascending order (oldest/lowest first)
+
+## Filtering Examples
+
+### By Category
+```
+GET /api/kb/articles?category=credit-policies
+```
+
+### Search Articles
+```
+GET /api/kb/articles?search=payment%20terms&status=published
+```
+
+### By Tags
+```
+GET /api/kb/articles?tags=credit,application
+```
+
+### Multiple Filters
+```
+GET /api/kb/articles?category=procedures&tags=approval&status=published&sortBy=popularity
+```
+
+## Search Functionality
+
+The search parameter performs full-text search across:
+- Article titles
+- Article content
+- Article excerpts
+- Tags
+
+Search is case-insensitive and supports partial matching.
+
+## Pagination
+
+Use `limit` and `offset` parameters for pagination:
+
+```
+GET /api/kb/articles?limit=20&offset=40
+```
+
+This returns articles 41-60. Check the `hasMore` field to determine if additional pages are available.
+
+## Performance Tips
+
+- Use specific category filters to reduce result set size
+- Implement client-side caching for frequently accessed articles
+- Use appropriate `limit` values based on your UI requirements
+- Consider using the `lastViewedAt` field to show recently accessed content
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid query parameters
+- `CATEGORY_NOT_FOUND` - Specified category does not exist
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to view articles
+- `RATE_LIMIT_EXCEEDED` - Too many requests
+
+## Notes
+
+- Only published articles are returned by default unless status filter is specified
+- View counts are updated asynchronously and may have slight delays
+- Categories are returned based on articles matching the current filter criteria

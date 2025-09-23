@@ -1,0 +1,189 @@
+# Update Team
+
+Update team information and settings.
+
+<Param query="teamId" type="string" required>
+The unique identifier for the team
+</Param>
+
+## Request Body
+
+<Param body="name" type="string">
+Display name of the team
+</Param>
+
+<Param body="settings" type="object">
+Team configuration settings
+</Param>
+
+<Param body="settings.timezone" type="string">
+Team's timezone (e.g., "America/New_York")
+</Param>
+
+<Param body="settings.currency" type="string">
+Default currency code (ISO 4217, e.g., "USD")
+</Param>
+
+<Param body="settings.locale" type="string">
+Language and region locale (e.g., "en-US")
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X PUT \
+  -H "Content-Type: application/json" \
+  -H "Cookie: session=your_session_token" \
+  -d '{
+    "name": "Acme Corporation Updated",
+    "settings": {
+      "timezone": "America/Los_Angeles",
+      "currency": "USD",
+      "locale": "en-US"
+    }
+  }' \
+  https://api.deelrxcrm.app/api/teams/123
+```
+
+```javascript JavaScript
+const updatedTeam = await crm.teams.update("123", {
+  name: "Acme Corporation Updated",
+  settings: {
+    timezone: "America/Los_Angeles",
+    currency: "USD",
+    locale: "en-US"
+  }
+});
+```
+
+```python Python
+updated_team = crm.teams.update("123", {
+  "name": "Acme Corporation Updated",
+  "settings": {
+    "timezone": "America/Los_Angeles",
+    "currency": "USD",
+    "locale": "en-US"
+  }
+})
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": "123",
+    "name": "Acme Corporation Updated",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-22T09:45:00Z",
+    "settings": {
+      "timezone": "America/Los_Angeles",
+      "currency": "USD",
+      "locale": "en-US"
+    },
+    "subscription": {
+      "plan": "professional",
+      "status": "active",
+      "billingCycle": "monthly"
+    }
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid timezone specified",
+    "details": {
+      "field": "settings.timezone",
+      "value": "Invalid/Timezone"
+    }
+  }
+}
+```
+
+```json 403 Forbidden
+{
+  "success": false,
+  "error": {
+    "code": "INSUFFICIENT_PERMISSIONS",
+    "message": "Only team owners can update team settings"
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "success": false,
+  "error": {
+    "code": "TEAM_NOT_FOUND",
+    "message": "Team not found"
+  }
+}
+```
+</ResponseExample>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the team
+</ResponseField>
+
+<ResponseField name="name" type="string">
+Updated display name of the team
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+ISO 8601 timestamp when the team was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when the team was last updated
+</ResponseField>
+
+<ResponseField name="settings" type="object">
+Updated team configuration settings
+  <Expandable title="settings properties">
+    <ResponseField name="timezone" type="string">
+    Team's timezone
+    </ResponseField>
+    
+    <ResponseField name="currency" type="string">
+    Default currency code (ISO 4217)
+    </ResponseField>
+    
+    <ResponseField name="locale" type="string">
+    Language and region locale
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="subscription" type="object">
+Current subscription information (unchanged)
+  <Expandable title="subscription properties">
+    <ResponseField name="plan" type="string">
+    Current subscription plan
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+    Subscription status
+    </ResponseField>
+    
+    <ResponseField name="billingCycle" type="string">
+    Billing frequency
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid input data
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to update team
+- `TEAM_NOT_FOUND` - Team does not exist
+- `RATE_LIMIT_EXCEEDED` - Too many requests

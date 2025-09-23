@@ -1,0 +1,252 @@
+# Get Customer
+
+Retrieve detailed information about a specific customer.
+
+<Param query="customerId" type="string" required>
+The unique identifier for the customer
+</Param>
+
+<Param query="include" type="string">
+Include related data (orders, payments, interactions)
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET \
+  -H "Cookie: session=your_session_token" \
+  https://api.deelrxcrm.app/api/customers/cust_123
+```
+
+```javascript JavaScript
+const customer = await crm.customers.get("cust_123");
+
+// Include related data
+const customerWithOrders = await crm.customers.get("cust_123", {
+  include: "orders,payments"
+});
+```
+
+```python Python
+customer = crm.customers.get("cust_123")
+
+# Include related data
+customer_with_orders = crm.customers.get("cust_123", include="orders,payments")
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": "cust_123",
+    "name": "Acme Corporation",
+    "email": "contact@acme.com",
+    "phone": "+1-555-0123",
+    "status": "active",
+    "address": {
+      "street": "123 Business Ave",
+      "city": "Enterprise City",
+      "state": "CA",
+      "zip": "90210",
+      "country": "US"
+    },
+    "tags": ["enterprise", "technology"],
+    "customFields": {
+      "industry": "Technology",
+      "employees": "50-100",
+      "website": "https://acme.com"
+    },
+    "totalOrders": 15,
+    "lifetimeValue": 12500.00,
+    "lastOrderDate": "2024-01-20T09:30:00Z",
+    "acquisitionSource": "website",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-20T14:15:00Z"
+  }
+}
+```
+
+```json 200 Success with Related Data
+{
+  "success": true,
+  "data": {
+    "id": "cust_123",
+    "name": "Acme Corporation",
+    "email": "contact@acme.com",
+    "phone": "+1-555-0123",
+    "status": "active",
+    "totalOrders": 15,
+    "lifetimeValue": 12500.00,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-20T14:15:00Z",
+    "orders": [
+      {
+        "id": "order_456",
+        "total": 299.99,
+        "status": "completed",
+        "createdAt": "2024-01-20T09:30:00Z"
+      }
+    ],
+    "payments": [
+      {
+        "id": "pay_789",
+        "amount": 299.99,
+        "status": "succeeded",
+        "createdAt": "2024-01-20T09:32:00Z"
+      }
+    ]
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "success": false,
+  "error": {
+    "code": "CUSTOMER_NOT_FOUND",
+    "message": "Customer not found"
+  }
+}
+```
+</ResponseExample>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the customer
+</ResponseField>
+
+<ResponseField name="name" type="string">
+Customer's name or company name
+</ResponseField>
+
+<ResponseField name="email" type="string">
+Primary email address
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+Primary phone number
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Customer status (active, inactive, archived)
+</ResponseField>
+
+<ResponseField name="address" type="object">
+Customer's address information
+  <Expandable title="address properties">
+    <ResponseField name="street" type="string">
+    Street address
+    </ResponseField>
+    
+    <ResponseField name="city" type="string">
+    City
+    </ResponseField>
+    
+    <ResponseField name="state" type="string">
+    State or province
+    </ResponseField>
+    
+    <ResponseField name="zip" type="string">
+    ZIP or postal code
+    </ResponseField>
+    
+    <ResponseField name="country" type="string">
+    Country code (ISO 3166-1 alpha-2)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="tags" type="array">
+Array of tag strings for categorization
+</ResponseField>
+
+<ResponseField name="customFields" type="object">
+Custom field values specific to your organization
+</ResponseField>
+
+<ResponseField name="totalOrders" type="integer">
+Total number of orders placed by this customer
+</ResponseField>
+
+<ResponseField name="lifetimeValue" type="number">
+Customer lifetime value in currency units
+</ResponseField>
+
+<ResponseField name="lastOrderDate" type="string">
+ISO 8601 timestamp of the customer's last order
+</ResponseField>
+
+<ResponseField name="acquisitionSource" type="string">
+How the customer was acquired (website, referral, advertising, etc.)
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+ISO 8601 timestamp when customer was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when customer was last updated
+</ResponseField>
+
+<ResponseField name="orders" type="array">
+Array of order objects (only when include=orders)
+  <Expandable title="order properties">
+    <ResponseField name="id" type="string">
+    Unique identifier for the order
+    </ResponseField>
+    
+    <ResponseField name="total" type="number">
+    Order total amount
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+    Order status
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+    ISO 8601 timestamp when order was created
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="payments" type="array">
+Array of payment objects (only when include=payments)
+  <Expandable title="payment properties">
+    <ResponseField name="id" type="string">
+    Unique identifier for the payment
+    </ResponseField>
+    
+    <ResponseField name="amount" type="number">
+    Payment amount
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+    Payment status
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+    ISO 8601 timestamp when payment was processed
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Include Options
+
+Use the `include` parameter to fetch related data:
+
+- `orders` - Include customer's orders
+- `payments` - Include customer's payments  
+- `interactions` - Include customer interactions
+- `multiple` - Use comma-separated values: `orders,payments`
+
+## Error Codes
+
+- `CUSTOMER_NOT_FOUND` - Customer does not exist
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to view customer
+- `RATE_LIMIT_EXCEEDED` - Too many requests

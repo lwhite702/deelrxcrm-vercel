@@ -161,6 +161,83 @@ Run this checklist after deployment to verify all critical systems are working.
 
 ## Security Checks
 
+### Phase 5 Security Hardening
+- [ ] **Security Headers Verification**
+  ```bash
+  curl -I https://yourdomain.com/
+  # Check for:
+  # - Content-Security-Policy header with nonces
+  # - X-Content-Type-Options: nosniff
+  # - Referrer-Policy: strict-origin-when-cross-origin
+  # - Strict-Transport-Security (production only)
+  ```
+
+- [ ] **Rate Limiting Tests**
+  ```bash
+  # Test rate limiting on sensitive endpoints
+  for i in {1..25}; do 
+    curl -X POST https://yourdomain.com/api/auth/login \
+      -H "Content-Type: application/json" \
+      -d '{"email":"test","password":"test"}'
+  done
+  # Should receive 429 after limit exceeded
+  ```
+
+- [ ] **Health Check Endpoints**
+  ```bash
+  # Test liveness probe
+  curl -sf https://yourdomain.com/api/_health/live
+  # Expected: {"status":"live"}
+  
+  # Test readiness probe
+  curl -sf https://yourdomain.com/api/_health/ready
+  # Expected: {"status":"ready"}
+  ```
+
+- [ ] **Feature Gate Verification**
+  ```bash
+  # Verify feature gates are working
+  # Test with kill switches enabled/disabled
+  curl -sf https://yourdomain.com/api/ai/panel
+  # Should respect feature gate settings
+  ```
+
+- [ ] **Idempotency Enforcement**
+  ```bash
+  # Test idempotency on webhook endpoints
+  curl -X POST https://yourdomain.com/api/stripe/webhook \
+    -H "idempotency-key: test123" \
+    -H "Content-Type: application/json" \
+    -d '{}'
+  
+  # Repeat with same key - should get 409 Conflict
+  curl -X POST https://yourdomain.com/api/stripe/webhook \
+    -H "idempotency-key: test123" \
+    -H "Content-Type: application/json" \
+    -d '{}'
+  ```
+
+- [ ] **Audit Logging**
+  ```bash
+  # Verify audit logs are being written
+  # Check database for activity_logs entries
+  # Confirm admin actions are logged
+  ```
+
+- [ ] **Field-Level Encryption**
+  ```bash
+  # Test encryption functionality
+  node -e "
+  const { encryptField, decryptField } = require('./lib/security/encryption');
+  const key = Buffer.from(process.env.ENCRYPTION_KEY, 'base64');
+  const test = 'sensitive data';
+  const encrypted = encryptField(test, key);
+  const decrypted = decryptField(encrypted, key);
+  console.log(decrypted === test ? '✅ Encryption working' : '❌ Encryption failed');
+  "
+  ```
+
+### Standard Security Checks
 - [ ] HTTPS enforced on all pages
 - [ ] Sensitive routes require authentication
 - [ ] API endpoints validate permissions

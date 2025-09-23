@@ -1,0 +1,384 @@
+# Create Knowledge Base Article
+
+Create a new knowledge base article with content, metadata, and publication settings.
+
+<Param body="title" type="string" required>
+Article title (maximum 200 characters)
+</Param>
+
+<Param body="content" type="string" required>
+Article content in Markdown format
+</Param>
+
+<Param body="excerpt" type="string">
+Brief summary or excerpt (maximum 500 characters)
+</Param>
+
+<Param body="category" type="string" required>
+Category identifier for the article
+</Param>
+
+<Param body="tags" type="array">
+Array of tag strings for categorization
+</Param>
+
+<Param body="status" type="string">
+Publication status (draft, published) - default: draft
+</Param>
+
+<Param body="slug" type="string">
+URL-friendly slug (auto-generated if not provided)
+</Param>
+
+<Param body="publishAt" type="string">
+Schedule publication for future date (ISO 8601)
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST \
+  -H "Cookie: session=your_session_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "New Credit Policy Guidelines",
+    "content": "# Credit Policy Guidelines\\n\\nThis document outlines the updated credit policies...\\n\\n## Application Process\\n\\n1. Customer submits application\\n2. Credit check performed\\n3. Risk assessment completed",
+    "excerpt": "Updated guidelines for credit policy implementation and application procedures.",
+    "category": "credit-policies",
+    "tags": ["credit", "policy", "guidelines"],
+    "status": "published",
+    "slug": "new-credit-policy-guidelines"
+  }' \
+  https://api.deelrxcrm.app/api/kb/articles
+```
+
+```javascript JavaScript
+const article = await crm.kb.createArticle({
+  title: "New Credit Policy Guidelines",
+  content: `# Credit Policy Guidelines
+
+This document outlines the updated credit policies...
+
+## Application Process
+
+1. Customer submits application
+2. Credit check performed
+3. Risk assessment completed`,
+  excerpt: "Updated guidelines for credit policy implementation and application procedures.",
+  category: "credit-policies",
+  tags: ["credit", "policy", "guidelines"],
+  status: "published",
+  slug: "new-credit-policy-guidelines"
+});
+```
+
+```python Python
+article = crm.kb.create_article({
+    "title": "New Credit Policy Guidelines",
+    "content": """# Credit Policy Guidelines
+
+This document outlines the updated credit policies...
+
+## Application Process
+
+1. Customer submits application
+2. Credit check performed
+3. Risk assessment completed""",
+    "excerpt": "Updated guidelines for credit policy implementation and application procedures.",
+    "category": "credit-policies",
+    "tags": ["credit", "policy", "guidelines"],
+    "status": "published",
+    "slug": "new-credit-policy-guidelines"
+})
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "data": {
+    "id": "kb_003",
+    "title": "New Credit Policy Guidelines",
+    "slug": "new-credit-policy-guidelines",
+    "excerpt": "Updated guidelines for credit policy implementation and application procedures.",
+    "content": "# Credit Policy Guidelines\\n\\nThis document outlines the updated credit policies...\\n\\n## Application Process\\n\\n1. Customer submits application\\n2. Credit check performed\\n3. Risk assessment completed",
+    "category": "credit-policies",
+    "status": "published",
+    "tags": ["credit", "policy", "guidelines"],
+    "author": {
+      "id": "user_123",
+      "name": "John Smith",
+      "email": "john.smith@deelrx.com"
+    },
+    "viewCount": 0,
+    "likeCount": 0,
+    "publishedAt": "2024-01-20T16:45:00Z",
+    "createdAt": "2024-01-20T16:45:00Z",
+    "updatedAt": "2024-01-20T16:45:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      {
+        "field": "title",
+        "message": "Title is required and cannot be empty"
+      },
+      {
+        "field": "content",
+        "message": "Content must be at least 50 characters"
+      }
+    ]
+  }
+}
+```
+
+```json 409 Conflict
+{
+  "success": false,
+  "error": {
+    "code": "SLUG_ALREADY_EXISTS",
+    "message": "An article with this slug already exists"
+  }
+}
+```
+</ResponseExample>
+
+## Request Body
+
+<RequestExample>
+```json Basic Article
+{
+  "title": "Getting Started with Credit Applications",
+  "content": "# Getting Started\\n\\nThis guide covers the basics of credit applications...",
+  "category": "getting-started",
+  "status": "draft"
+}
+```
+
+```json Complete Article
+{
+  "title": "Comprehensive Payment Processing Guide",
+  "content": "# Payment Processing\\n\\n## Overview\\n\\nThis comprehensive guide covers all aspects of payment processing...\\n\\n## Supported Methods\\n\\n- Credit Cards\\n- ACH Transfers\\n- Check Payments",
+  "excerpt": "Complete guide to payment processing including methods, security, and troubleshooting.",
+  "category": "procedures",
+  "tags": ["payments", "processing", "guide"],
+  "status": "published",
+  "slug": "payment-processing-guide"
+}
+```
+
+```json Scheduled Article
+{
+  "title": "Q2 Policy Updates",
+  "content": "# Q2 Policy Updates\\n\\nThe following policies will take effect in Q2...",
+  "excerpt": "Important policy changes taking effect in the second quarter.",
+  "category": "announcements",
+  "tags": ["policy", "updates", "q2"],
+  "status": "draft",
+  "publishAt": "2024-04-01T00:00:00Z"
+}
+```
+</RequestExample>
+
+## Request Fields
+
+<Param body="title" type="string" required>
+Article title (3-200 characters)
+</Param>
+
+<Param body="content" type="string" required>
+Article content in Markdown format (minimum 50 characters)
+</Param>
+
+<Param body="excerpt" type="string">
+Brief summary displayed in article lists (maximum 500 characters)
+</Param>
+
+<Param body="category" type="string" required>
+Category identifier - must be an existing category
+</Param>
+
+<Param body="tags" type="array">
+Array of tag strings (maximum 20 tags, each up to 50 characters)
+</Param>
+
+<Param body="status" type="string">
+Publication status:
+- `draft` - Article saved but not published (default)
+- `published` - Article is live and visible to users
+</Param>
+
+<Param body="slug" type="string">
+URL-friendly identifier (auto-generated from title if not provided)
+Must be unique, lowercase, and contain only letters, numbers, and hyphens
+</Param>
+
+<Param body="publishAt" type="string">
+Schedule article publication for a future date (ISO 8601 format)
+Only valid when status is "draft"
+</Param>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the created article
+</ResponseField>
+
+<ResponseField name="title" type="string">
+Article title as provided
+</ResponseField>
+
+<ResponseField name="slug" type="string">
+Generated or provided URL slug
+</ResponseField>
+
+<ResponseField name="excerpt" type="string">
+Article excerpt (auto-generated from content if not provided)
+</ResponseField>
+
+<ResponseField name="content" type="string">
+Article content in Markdown format
+</ResponseField>
+
+<ResponseField name="category" type="string">
+Category identifier
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Current publication status
+</ResponseField>
+
+<ResponseField name="tags" type="array">
+Array of associated tags
+</ResponseField>
+
+<ResponseField name="author" type="object">
+Information about the article author (current user)
+  <Expandable title="author properties">
+    <ResponseField name="id" type="string">
+    Author's user ID
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+    Author's full name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+    Author's email address
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="viewCount" type="integer">
+View count (always 0 for new articles)
+</ResponseField>
+
+<ResponseField name="likeCount" type="integer">
+Like count (always 0 for new articles)
+</ResponseField>
+
+<ResponseField name="publishedAt" type="string">
+ISO 8601 timestamp when article was published (null for drafts)
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+ISO 8601 timestamp when article was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when article was last updated
+</ResponseField>
+
+## Validation Rules
+
+### Title Requirements
+- Length: 3-200 characters
+- Must be unique within the category
+- Cannot contain only whitespace
+
+### Content Requirements
+- Minimum length: 50 characters
+- Supports Markdown formatting
+- Maximum size: 1MB
+
+### Slug Requirements
+- Must be unique across all articles
+- Contains only lowercase letters, numbers, and hyphens
+- Length: 3-100 characters
+- Auto-generated from title if not provided
+
+### Category Validation
+- Must reference an existing category
+- User must have permission to create articles in the category
+
+### Tags Validation
+- Maximum 20 tags per article
+- Each tag: 1-50 characters
+- Tags are case-insensitive and automatically normalized
+
+## Automatic Features
+
+### Auto-Generated Fields
+- **Slug**: Generated from title if not provided
+- **Excerpt**: Generated from first 200 characters of content if not provided
+- **Author**: Set to current authenticated user
+- **Timestamps**: Created and updated timestamps set automatically
+
+### Content Processing
+- Markdown is validated and sanitized
+- Links are checked for validity
+- Images are processed and optimized
+- Table of contents generated automatically
+
+## Publication Behavior
+
+### Draft Articles
+- Saved but not visible to end users
+- Can be edited and updated freely
+- Can be scheduled for future publication
+
+### Published Articles
+- Immediately visible to users with appropriate permissions
+- Indexed for search functionality
+- Generate activity notifications
+- Version history maintained
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid input data
+- `CATEGORY_NOT_FOUND` - Specified category does not exist
+- `SLUG_ALREADY_EXISTS` - Provided slug is already in use
+- `CONTENT_TOO_LARGE` - Article content exceeds maximum size
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to create articles
+- `RATE_LIMIT_EXCEEDED` - Too many requests
+
+## Best Practices
+
+### Content Guidelines
+- Use clear, descriptive titles
+- Structure content with headers and sections
+- Include relevant tags for discoverability
+- Write concise, informative excerpts
+
+### SEO Optimization
+- Use descriptive slugs
+- Include relevant keywords in title and content
+- Structure content with proper heading hierarchy
+- Add internal links to related articles
+
+### Maintenance
+- Review and update articles regularly
+- Use consistent tagging conventions
+- Organize content into logical categories
+- Monitor article performance and engagement

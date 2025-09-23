@@ -28,6 +28,12 @@
       ]
     },
     {
+      "group": "Platform",
+      "pages": [
+        "pages/integrations-overview"
+      ]
+    },
+    {
       "group": "Core CRM",
       "pages": [
         "core-crm/customers",
