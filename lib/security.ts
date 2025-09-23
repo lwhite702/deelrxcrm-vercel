@@ -2,11 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 
 // CSP nonce generation and security headers
+/**
+ * Generates a Content Security Policy (CSP) nonce as a string.
+ */
 export function generateCSPNonce(): string {
   return randomUUID().replace(/-/g, '');
 }
 
 // Helper to get client IP from NextRequest
+/**
+ * Retrieves the client's IP address from the request headers.
+ *
+ * The function first checks for the 'x-forwarded-for' header, which may contain a list of IPs.
+ * If present, it returns the first IP after trimming whitespace. If the 'x-real-ip' header is available,
+ * it returns that value. If neither header is found, it defaults to returning 'unknown'.
+ *
+ * @param req - The NextRequest object containing the headers from which to extract the IP address.
+ */
 function getClientIP(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
   const realIP = req.headers.get('x-real-ip');
@@ -22,6 +34,9 @@ function getClientIP(req: NextRequest): string {
   return 'unknown';
 }
 
+/**
+ * Generates security headers for HTTP responses.
+ */
 export function getSecurityHeaders(nonce?: string): Record<string, string> {
   const cspDirectives = [
     "default-src 'self'",
@@ -51,6 +66,9 @@ export function getSecurityHeaders(nonce?: string): Record<string, string> {
   };
 }
 
+/**
+ * Applies security headers to the given response.
+ */
 export function applySecurityHeaders(response: NextResponse, nonce?: string): NextResponse {
   const headers = getSecurityHeaders(nonce);
   
@@ -130,10 +148,16 @@ export const rateLimitConfigs: Record<string, RateLimitConfig> = {
 };
 
 // Idempotency key utilities
+/**
+ * Generates a unique idempotency key.
+ */
 export function generateIdempotencyKey(): string {
   return `idem_${Date.now()}_${randomUUID()}`;
 }
 
+/**
+ * Extracts the idempotency key from the request headers.
+ */
 export function extractIdempotencyKey(req: NextRequest): string | null {
   return req.headers.get('Idempotency-Key') || req.headers.get('x-idempotency-key');
 }
@@ -246,6 +270,15 @@ export const requiredEnvVars: RequiredEnvVars = {
   },
 };
 
+/**
+ * Validates the presence and status of required environment variables.
+ *
+ * The function checks each entry in the requiredEnvVars object to determine if the corresponding
+ * environment variable is set. It categorizes missing variables as required or optional,
+ * collecting warnings for optional variables that are not set. The function returns an object
+ * indicating the validity of the environment variables, along with lists of missing variables
+ * and warnings.
+ */
 export function validateEnvironmentVariables(): {
   valid: boolean;
   missing: string[];
@@ -272,6 +305,9 @@ export function validateEnvironmentVariables(): {
 }
 
 // Security utilities
+/**
+ * Sanitizes the provided headers by filtering out allowed headers.
+ */
 export function sanitizeHeaders(headers: Headers): Record<string, string> {
   const sanitized: Record<string, string> = {};
   const allowedHeaders = [
@@ -294,14 +330,27 @@ export function sanitizeHeaders(headers: Headers): Record<string, string> {
   return sanitized;
 }
 
+/**
+ * Checks if the application is running in production mode.
+ */
 export function isProduction(): boolean {
   return process.env.NODE_ENV === 'production';
 }
 
+/**
+ * Checks if the current environment is development.
+ */
 export function isDevelopment(): boolean {
   return process.env.NODE_ENV === 'development';
 }
 
+/**
+ * Retrieves the current environment name based on the VERCEL_ENV variable.
+ *
+ * The function checks the value of process.env.VERCEL_ENV to determine the environment.
+ * If it is set to 'production', it returns 'production'. If it is 'preview', it returns 'preview'.
+ * For any other value, it defaults to returning 'development'.
+ */
 export function getEnvironmentName(): string {
   if (process.env.VERCEL_ENV === 'production') return 'production';
   if (process.env.VERCEL_ENV === 'preview') return 'preview';
