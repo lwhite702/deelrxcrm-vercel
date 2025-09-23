@@ -3,6 +3,11 @@ import Statsig from 'statsig-node';
 // Initialize Statsig server instance
 let statsigInitialized = false;
 
+/**
+ * Initializes the Statsig SDK if it has not been initialized yet.
+ *
+ * This function checks if the Statsig SDK is already initialized. If not, it retrieves the STATSIG_SERVER_SECRET_KEY from the environment variables. If the key is missing, a warning is logged, and the function exits. If the key is present, it attempts to initialize Statsig with the provided secret key and environment tier. Upon successful initialization, a success message is logged; otherwise, an error message is displayed.
+ */
 export async function initializeStatsig(): Promise<void> {
   if (statsigInitialized) return;
 
@@ -59,6 +64,17 @@ export interface StatsigUser {
 }
 
 // Feature gate checker with fallback
+/**
+ * Checks if a feature is enabled for a given user based on the feature gate key.
+ *
+ * The function first verifies if Statsig is initialized. If not, it determines if the gate is a kill switch
+ * and returns the appropriate boolean value. If Statsig is initialized, it attempts to check the feature gate
+ * using the Statsig.checkGate method. In case of an error, it logs the error and applies the same logic for
+ * kill switches to return the result.
+ *
+ * @param gate - The feature gate key to check.
+ * @param user - The user for whom the feature gate is being checked.
+ */
 export async function isFeatureEnabled(
   gate: FeatureGateKey,
   user: StatsigUser
@@ -80,6 +96,9 @@ export async function isFeatureEnabled(
 }
 
 // Check multiple gates at once
+/**
+ * Checks the status of feature gates for a given user.
+ */
 export async function checkFeatureGates(
   gates: FeatureGateKey[],
   user: StatsigUser
@@ -103,6 +122,16 @@ export const DYNAMIC_CONFIGS = {
 
 export type DynamicConfigKey = typeof DYNAMIC_CONFIGS[keyof typeof DYNAMIC_CONFIGS];
 
+/**
+ * Retrieves the dynamic configuration for a given user.
+ *
+ * This function checks if Statsig has been initialized. If not, it returns the default configuration using getDefaultConfig.
+ * If initialized, it attempts to fetch the dynamic configuration using Statsig.getConfig. In case of an error during the fetch,
+ * it logs the error and falls back to the default configuration.
+ *
+ * @param {DynamicConfigKey} config - The key for the dynamic configuration to retrieve.
+ * @param {StatsigUser} user - The user for whom the dynamic configuration is being fetched.
+ */
 export async function getDynamicConfig(
   config: DynamicConfigKey,
   user: StatsigUser
@@ -121,6 +150,16 @@ export async function getDynamicConfig(
 }
 
 // Default configurations when Statsig is unavailable
+/**
+ * Retrieve the default configuration based on the specified dynamic config key.
+ *
+ * The function uses a switch statement to return different configuration objects depending on the value of the config parameter.
+ * Each case corresponds to a specific set of configurations, such as rate limits, AI settings, credit settings, and upload settings.
+ * If the config does not match any predefined cases, an empty object is returned.
+ *
+ * @param config - The dynamic configuration key to retrieve the corresponding settings.
+ * @returns The default configuration object for the specified dynamic config key.
+ */
 function getDefaultConfig(config: DynamicConfigKey): any {
   switch (config) {
     case DYNAMIC_CONFIGS.RATE_LIMITS:
@@ -166,6 +205,9 @@ function getDefaultConfig(config: DynamicConfigKey): any {
 }
 
 // Middleware helpers for route protection
+/**
+ * Ensures a feature gate is enabled for a user before proceeding.
+ */
 export function requireFeatureGate(gate: FeatureGateKey) {
   return async (user: StatsigUser, next: () => Promise<any>) => {
     const enabled = await isFeatureEnabled(gate, user);
@@ -179,6 +221,9 @@ export function requireFeatureGate(gate: FeatureGateKey) {
 }
 
 // Kill switch checker for critical operations
+/**
+ * Checks the status of various kill switches for a user.
+ */
 export async function checkKillSwitches(user: StatsigUser): Promise<{
   creditSystemKilled: boolean;
   kbUploadsKilled: boolean;
@@ -201,6 +246,18 @@ export async function checkKillSwitches(user: StatsigUser): Promise<{
 }
 
 // Log feature gate evaluation for debugging
+/**
+ * Logs the evaluation of a feature gate for a user.
+ *
+ * This function checks the current environment and logs the feature gate evaluation result.
+ * In development, it outputs the result to the console. In production, it attempts to log the
+ * event using the Statsig analytics service, capturing relevant user information. If logging fails,
+ * it catches the error and logs it to the console.
+ *
+ * @param gate - The key of the feature gate being evaluated.
+ * @param user - The user for whom the feature gate is evaluated.
+ * @param result - The boolean result of the feature gate evaluation.
+ */
 export async function logFeatureGateEvaluation(
   gate: FeatureGateKey,
   user: StatsigUser,
@@ -225,6 +282,9 @@ export async function logFeatureGateEvaluation(
 }
 
 // Cleanup on shutdown
+/**
+ * Shuts down Statsig if it has been initialized.
+ */
 export async function shutdownStatsig(): Promise<void> {
   if (statsigInitialized) {
     await Statsig.shutdown();

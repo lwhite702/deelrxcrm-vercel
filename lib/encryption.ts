@@ -18,14 +18,21 @@ export class FieldEncryption {
   }
 
   /**
-   * Derive encryption key from master key and salt
+   * Derives an encryption key from the master key and salt.
    */
   private async deriveKey(salt: Buffer): Promise<Buffer> {
     return (await scryptAsync(this.masterKey, salt, this.keyLength)) as Buffer;
   }
 
   /**
-   * Encrypt sensitive field data
+   * Encrypt sensitive field data.
+   *
+   * This function generates a random salt and initialization vector (IV), derives a cryptographic key,
+   * and then encrypts the provided plaintext using the specified algorithm. It sets the salt as additional
+   * authenticated data (AAD) and combines the salt, IV, authentication tag, and ciphertext into a single
+   * buffer before returning the result as a base64-encoded string.
+   *
+   * @param {string} plaintext - The plaintext data to be encrypted.
    */
   async encrypt(plaintext: string): Promise<string> {
     try {
@@ -51,7 +58,11 @@ export class FieldEncryption {
   }
 
   /**
-   * Decrypt sensitive field data
+   * Decrypt sensitive field data.
+   *
+   * This function takes an encrypted string, decodes it from base64, and extracts the salt, initialization vector (iv), authentication tag, and ciphertext. It derives a decryption key using the salt, then creates a decipher instance to decrypt the ciphertext. The resulting plaintext is returned as a UTF-8 string. If any errors occur during the process, an error is thrown with a descriptive message.
+   *
+   * @param {string} encryptedData - The base64-encoded string containing the encrypted data.
    */
   async decrypt(encryptedData: string): Promise<string> {
     try {
@@ -82,7 +93,7 @@ export class FieldEncryption {
   }
 
   /**
-   * Encrypt multiple fields at once
+   * Encrypt multiple fields at once.
    */
   async encryptFields(fields: Record<string, string>): Promise<Record<string, string>> {
     const encrypted: Record<string, string> = {};
@@ -97,7 +108,11 @@ export class FieldEncryption {
   }
 
   /**
-   * Decrypt multiple fields at once
+   * Decrypt multiple fields at once.
+   *
+   * This function takes an object containing fields to be decrypted. It iterates over each field, attempting to decrypt its value using the `decrypt` method. If decryption fails for any field, an error is logged, and the field is marked as '[DECRYPTION_FAILED]'. The function returns an object containing the decrypted values or error indicators for each field.
+   *
+   * @param {Record<string, string>} fields - An object where each key corresponds to a field name and each value is the encrypted string to be decrypted.
    */
   async decryptFields(fields: Record<string, string>): Promise<Record<string, string>> {
     const decrypted: Record<string, string> = {};
@@ -121,6 +136,9 @@ export class FieldEncryption {
 // Global encryption instance
 let encryptionInstance: FieldEncryption | null = null;
 
+/**
+ * Retrieves the FieldEncryption instance, creating it if it doesn't exist.
+ */
 export function getEncryption(): FieldEncryption {
   if (!encryptionInstance) {
     const masterKey = process.env.ENCRYPTION_KEY;
@@ -156,6 +174,16 @@ export const ENCRYPTED_FIELDS = {
 } as const;
 
 // Helper functions for database operations
+/**
+ * Encrypts specified fields in the provided data object.
+ *
+ * This function takes an object and an array of field names, encrypting the values of those fields if they are strings.
+ * It utilizes the `getEncryption` function to obtain the encryption mechanism and processes each field in the `fieldsToEncrypt` array.
+ * The resulting object with encrypted fields is returned.
+ *
+ * @param data - The object containing fields to potentially encrypt.
+ * @param fieldsToEncrypt - An array of field names that should be encrypted.
+ */
 export async function encryptSensitiveFields<T extends Record<string, any>>(
   data: T,
   fieldsToEncrypt: string[]
@@ -172,6 +200,16 @@ export async function encryptSensitiveFields<T extends Record<string, any>>(
   return result;
 }
 
+/**
+ * Decrypts specified sensitive fields in the provided data object.
+ *
+ * This function retrieves the encryption mechanism using getEncryption, then iterates over the fieldsToDecrypt array.
+ * For each field, it checks if the field exists and is a string, attempting to decrypt it. If decryption fails, it logs an error
+ * and replaces the field's value with '[ENCRYPTED]'. The function returns a new object with the decrypted fields.
+ *
+ * @param data - The object containing sensitive fields to be decrypted.
+ * @param fieldsToDecrypt - An array of field names that need to be decrypted.
+ */
 export async function decryptSensitiveFields<T extends Record<string, any>>(
   data: T,
   fieldsToDecrypt: string[]
@@ -206,7 +244,7 @@ export class KeyRotationManager {
   private rotationPlans = new Map<string, KeyRotationPlan>();
 
   /**
-   * Start key rotation process
+   * Starts the key rotation process.
    */
   async startRotation(plan: Omit<KeyRotationPlan, 'rotationStarted'>): Promise<void> {
     const fullPlan: KeyRotationPlan = {
@@ -226,14 +264,14 @@ export class KeyRotationManager {
   }
 
   /**
-   * Check rotation status
+   * Retrieves the rotation status for a given key ID.
    */
   getRotationStatus(keyId: string): KeyRotationPlan | null {
     return this.rotationPlans.get(keyId) || null;
   }
 
   /**
-   * Complete key rotation
+   * Completes the key rotation for the specified keyId.
    */
   async completeRotation(keyId: string): Promise<void> {
     const plan = this.rotationPlans.get(keyId);
@@ -252,7 +290,7 @@ export class KeyRotationManager {
 export const keyRotationManager = new KeyRotationManager();
 
 /**
- * Validate encryption configuration on startup
+ * Validates the encryption configuration on startup.
  */
 export function validateEncryptionConfig(): {
   valid: boolean;
