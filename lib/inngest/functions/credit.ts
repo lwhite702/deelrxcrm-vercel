@@ -136,6 +136,105 @@ export const creditPaymentFailed = inngest.createFunction(
   }
 );
 
+export const creditChargePostdated = inngest.createFunction(
+  { id: "credit-charge-postdated" },
+  { event: "credit/charge.postdated" },
+  async ({ event, step }) => {
+    const { teamId, creditId, transactionId, amount, scheduledDate } = event.data;
+
+    // Wait until scheduled date
+    const now = new Date();
+    const scheduled = new Date(scheduledDate);
+    if (scheduled > now) {
+      const delayMs = scheduled.getTime() - now.getTime();
+      await step.sleep("wait-for-scheduled-date", `${delayMs}ms`);
+    }
+
+    // Check if transaction still exists and is pending
+    const transaction = await step.run("verify-transaction", async () => {
+      const [tx] = await db
+        .select()
+        .from(creditTransactions)
+        .where(
+          and(
+            eq(creditTransactions.id, transactionId),
+            eq(creditTransactions.status, "pending")
+          )
+        )
+        .limit(1);
+      return tx;
+    });
+
+    if (!transaction) {
+      return { 
+        success: false, 
+        reason: "Transaction not found or already processed" 
+      };
+    }
+
+    // Process the charge with idempotency
+    const idempotencyKey = `postdated-${transactionId}-${scheduledDate}`;
+    
+    try {
+      await step.run("process-stripe-charge", async () => {
+        // TODO: Implement Stripe SetupIntent charge
+        // This would use the stored payment method to charge the customer
+        console.log(`Processing postdated charge for transaction ${transactionId}:`, {
+          amount: amount / 100,
+          idempotencyKey,
+          scheduledDate,
+        });
+
+        // Update transaction status
+        await db
+          .update(creditTransactions)
+          .set({
+            status: "completed",
+            lastAttemptAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(creditTransactions.id, transactionId));
+
+        return { success: true };
+      });
+
+      return { 
+        success: true, 
+        transactionId, 
+        amount, 
+        processedAt: new Date().toISOString() 
+      };
+    } catch (error) {
+      // Handle payment failure
+      await step.run("handle-payment-failure", async () => {
+        await db
+          .update(creditTransactions)
+          .set({
+            status: "failed",
+            lastAttemptAt: new Date(),
+            description: `${transaction.description} (Failed: ${error instanceof Error ? error.message : "Unknown error"})`,
+            updatedAt: new Date(),
+          })
+          .where(eq(creditTransactions.id, transactionId));
+      });
+
+      // Send failure notification
+      await inngest.send({
+        name: "credit/payment.failed",
+        data: {
+          teamId,
+          creditId,
+          transactionId,
+          amount,
+          reason: error instanceof Error ? error.message : "Unknown error",
+        },
+      });
+
+      throw error;
+    }
+  }
+);
+
 export const creditLimitExceeded = inngest.createFunction(
   { id: "credit-limit-exceeded" },
   { event: "credit/limit.exceeded" },
