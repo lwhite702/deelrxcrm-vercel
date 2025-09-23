@@ -17,8 +17,11 @@ export async function middleware(request: NextRequest) {
   let res = NextResponse.next();
 
   // Apply security headers
-  securityHeaders(res);
-
+  try {
+    applySecurityHeaders(res);
+  } catch (error) {
+    console.error('Failed to apply security headers:', error);
+  }
   if (sessionCookie && request.method === 'GET') {
     try {
       const parsed = await verifyToken(sessionCookie.value);
