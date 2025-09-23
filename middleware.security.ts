@@ -21,7 +21,7 @@ function buildCSP(nonce: string, isDev: boolean = false): string {
     "frame-ancestors 'none'",
     "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
     "manifest-src 'self'",
-    `connect-src 'self' https://api.stripe.com https://checkout.stripe.com https://notify.bugsnag.com https://api.statsig.com https://events.statsig.com https://knock.app https://api.knock.app https://api.resend.com https://vitals.vercel-insights.com https://vercel.live https://*.sentry.io https://api.github.com https://deelrxcrm.vercel.app https://deelrxcrm.app ${isDev ? 'ws://localhost:* http://localhost:* https://localhost:*' : ''}`,
+    `connect-src 'self' https://api.stripe.com https://checkout.stripe.com https://notify.bugsnag.com https://api.statsig.com https://events.statsig.com https://knock.app https://api.knock.app https://api.resend.com https://vitals.vercel-insights.com https://vercel.live https://o123456.ingest.sentry.io https://api.github.com https://deelrxcrm.vercel.app https://deelrxcrm.app${isDev ? ' ws://localhost:3000 ws://localhost:3001 http://localhost:3000 http://localhost:3001 https://localhost:3000 https://localhost:3001' : ''}`,
     "worker-src 'self' blob:",
     "child-src 'self'",
     "upgrade-insecure-requests"
