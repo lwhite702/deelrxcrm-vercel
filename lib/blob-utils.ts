@@ -12,6 +12,15 @@ export interface BlobUploadOptions {
 }
 
 // Configuration for different blob store types
+/**
+ * Retrieve the configuration for a specified blob store type.
+ *
+ * The function checks the provided storeType and returns an object containing the appropriate token and prefix based on whether the store type is "private" or "public". If an invalid store type is provided, it throws an error.
+ *
+ * @param storeType - The type of blob store, which can be either "private" or "public".
+ * @returns An object containing the token and prefix for the specified blob store type.
+ * @throws Error If the provided store type is invalid.
+ */
 const getBlobConfig = (storeType: BlobStoreType) => {
   switch (storeType) {
     case "private":
@@ -29,6 +38,17 @@ const getBlobConfig = (storeType: BlobStoreType) => {
   }
 };
 
+/**
+ * Uploads a file to a specified blob storage.
+ *
+ * This function constructs a blob path using the provided teamId and filename,
+ * then attempts to upload the file to the blob storage using the put function.
+ * It handles errors by logging them and throwing a new error if the upload fails.
+ * The upload options include content type and store type, which are used to configure the upload.
+ *
+ * @param {File} file - The file to be uploaded.
+ * @param {BlobUploadOptions} options - Options for the blob upload, including teamId, filename, contentType, and storeType.
+ */
 export async function uploadFileToBlob(
   file: File,
   options: BlobUploadOptions
