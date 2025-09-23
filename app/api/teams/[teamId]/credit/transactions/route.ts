@@ -74,6 +74,16 @@ export async function GET(
   }
 }
 
+/**
+ * Handles the creation of a new credit transaction.
+ *
+ * This function first retrieves the user and checks for authorization. It then extracts the teamId from the parameters and validates the request body against a predefined schema. If validation passes, it inserts the new transaction into the database and returns the created transaction. In case of validation errors or other exceptions, appropriate error responses are returned.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @param params - An object containing a Promise that resolves to an object with the teamId.
+ * @returns A JSON response containing the created transaction or an error message.
+ * @throws z.ZodError If the request body fails validation against the schema.
+ */
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ teamId: string }> }
