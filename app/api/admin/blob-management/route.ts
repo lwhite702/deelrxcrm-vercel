@@ -28,6 +28,15 @@ const deleteFileSchema = z.object({
 });
 
 // GET /api/admin/blob-management - List files in blob stores
+/**
+ * Handles GET requests for listing blob files.
+ *
+ * The function first retrieves the user and checks for authorization. It then parses the request URL to extract query parameters, validates them against a schema, and fetches the corresponding blob files. Finally, it returns a JSON response containing the store type, a limited list of files, and the total count of files.
+ *
+ * @param request - The incoming NextRequest object containing the request details.
+ * @returns A JSON response with the store type, an array of files, and the count of files.
+ * @throws Error If the parameters are invalid, a 400 response is returned with details. If an internal error occurs, a 500 response is returned.
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
