@@ -38,6 +38,15 @@ const updatePurgeOperationSchema = z.object({
   errorMessage: z.string().optional(),
 });
 
+/**
+ * Handles the GET request for purge operations.
+ *
+ * This function retrieves user information and validates authorization. It then extracts query parameters from the request URL, constructs conditions for querying the database, and fetches the relevant purge operations based on the specified filters. If any errors occur during the process, an appropriate error response is returned.
+ *
+ * @param request - The NextRequest object containing the request details.
+ * @returns A JSON response containing the fetched operations or an error message.
+ * @throws Error If an internal server error occurs during the operation.
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
@@ -103,6 +112,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * Handles the POST request for creating a purge operation.
+ *
+ * This function retrieves the current user, validates the request body against a schema, and inserts a new purge operation into the database.
+ * It also handles potential validation errors and returns appropriate responses based on the outcome of the operation.
+ *
+ * @param request - The incoming NextRequest object containing the request data.
+ * @returns A JSON response containing the newly created operation or an error message.
+ * @throws z.ZodError If the request body fails validation.
+ */
 export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
