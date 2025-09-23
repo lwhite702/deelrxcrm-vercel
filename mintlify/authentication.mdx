@@ -1,0 +1,78 @@
+# Authentication
+
+DeelRx CRM uses session-based authentication with role-based access control (RBAC) to secure your data and ensure proper team permissions.
+
+## Authentication Methods
+
+### Session-Based Auth
+- Secure JWT tokens with automatic renewal
+- HTTPOnly cookies for enhanced security
+- Configurable session timeouts
+
+### Multi-Factor Authentication
+- Optional 2FA for enhanced security
+- Support for TOTP authenticator apps
+- Backup recovery codes
+
+## Role-Based Access Control
+
+### Owner
+- Full administrative access to the team
+- Can manage billing and subscriptions
+- Can invite and remove team members
+- Access to all CRM features and data
+
+### Manager
+- Team configuration and user management
+- Access to team analytics and reports
+- Can manage customer data and orders
+- Cannot modify billing or subscription settings
+
+### Staff
+- Limited access to assigned functionality
+- Can view and edit assigned customers
+- Cannot access team management features
+- Read-only access to reports
+
+## API Authentication
+
+### Session Tokens
+All API requests must include a valid session token. The token is automatically included in requests when using our SDKs.
+
+```bash
+curl -H "Cookie: session=your_session_token" \
+  https://api.deelrxcrm.app/api/teams/123
+```
+
+### Rate Limiting
+API requests are rate-limited based on your plan:
+- **Starter**: 100 requests/minute
+- **Professional**: 1,000 requests/minute  
+- **Enterprise**: 10,000 requests/minute
+
+## Security Features
+
+### Data Protection
+- All data encrypted in transit and at rest
+- SOC 2 Type II compliant infrastructure
+- Regular security audits and penetration testing
+
+### Session Management
+- Automatic session expiration
+- Device-based session tracking
+- Remote session revocation
+
+### Audit Logging
+- Complete audit trail of all actions
+- Real-time security monitoring
+- Suspicious activity detection
+
+## Getting Started
+
+1. **Sign up** for a DeelRx CRM account
+2. **Verify** your email address
+3. **Set up** your team and invite members
+4. **Configure** role-based permissions
+5. **Enable** two-factor authentication (recommended)
+
+For technical integration details, see our [API Reference](/api-reference/introduction).

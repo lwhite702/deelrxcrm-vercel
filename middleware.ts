@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { signToken, verifyToken } from '@/lib/auth/session';
+import { securityHeaders } from '@/lib/security/headers';
 
 const protectedRoutes = '/dashboard';
 
@@ -15,6 +16,12 @@ export async function middleware(request: NextRequest) {
 
   let res = NextResponse.next();
 
+  // Apply security headers
+  try {
+    applySecurityHeaders(res);
+  } catch (error) {
+    console.error('Failed to apply security headers:', error);
+  }
   if (sessionCookie && request.method === 'GET') {
     try {
       const parsed = await verifyToken(sessionCookie.value);

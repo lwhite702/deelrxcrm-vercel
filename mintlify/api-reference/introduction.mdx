@@ -1,0 +1,234 @@
+# API Reference Introduction
+
+Welcome to the DeelRx CRM API documentation. Our RESTful API provides programmatic access to all CRM functionality.
+
+## Getting Started
+
+### Base URL
+All API requests should be made to:
+```
+https://api.deelrxcrm.app/api
+```
+
+### Authentication
+The DeelRx CRM API uses session-based authentication. Include your session token in the `Cookie` header:
+
+```bash
+curl -H "Cookie: session=your_session_token" \
+  https://api.deelrxcrm.app/api/customers
+```
+
+### Rate Limiting
+API requests are rate-limited based on your plan:
+- **Starter**: 100 requests/minute
+- **Professional**: 1,000 requests/minute
+- **Enterprise**: 10,000 requests/minute
+
+Rate limit headers are included in all responses:
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Request Format
+
+### HTTP Methods
+- `GET` - Retrieve data
+- `POST` - Create new resources
+- `PUT` - Update existing resources
+- `PATCH` - Partial updates
+- `DELETE` - Delete resources
+
+### Content Type
+All requests should use `application/json` content type:
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: session=your_session_token" \
+  -d '{"name": "Acme Corp", "email": "contact@acme.com"}' \
+  https://api.deelrxcrm.app/api/customers
+```
+
+## Response Format
+
+### Success Responses
+All successful responses return JSON with the following structure:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cust_123",
+    "name": "Acme Corp",
+    "email": "contact@acme.com",
+    "createdAt": "2024-01-15T10:30:00Z"
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "requestId": "req_abc123"
+  }
+}
+```
+
+### Error Responses
+Error responses include detailed information:
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid email address format",
+    "details": {
+      "field": "email",
+      "value": "invalid-email"
+    }
+  },
+  "meta": {
+    "timestamp": "2024-01-15T10:30:00Z",
+    "requestId": "req_abc123"
+  }
+}
+```
+
+## Pagination
+
+### Query Parameters
+Use query parameters for pagination:
+- `limit` - Number of results per page (max 100)
+- `offset` - Number of results to skip
+- `cursor` - Cursor-based pagination token
+
+```bash
+curl "https://api.deelrxcrm.app/api/customers?limit=50&offset=100"
+```
+
+### Response Format
+Paginated responses include pagination metadata:
+```json
+{
+  "success": true,
+  "data": [...],
+  "pagination": {
+    "limit": 50,
+    "offset": 100,
+    "total": 1250,
+    "hasMore": true,
+    "nextCursor": "eyJpZCI6ImN1c3RfMTIzIn0="
+  }
+}
+```
+
+## Filtering and Sorting
+
+### Filtering
+Use query parameters to filter results:
+```bash
+curl "https://api.deelrxcrm.app/api/customers?status=active&created_after=2024-01-01"
+```
+
+### Sorting
+Use the `sort` parameter with field names:
+```bash
+curl "https://api.deelrxcrm.app/api/customers?sort=created_at&order=desc"
+```
+
+## Field Selection
+
+### Sparse Fields
+Request only specific fields using the `fields` parameter:
+```bash
+curl "https://api.deelrxcrm.app/api/customers?fields=id,name,email"
+```
+
+### Related Data
+Include related data using the `include` parameter:
+```bash
+curl "https://api.deelrxcrm.app/api/customers?include=orders,payments"
+```
+
+## Webhooks
+
+### Event Types
+The API supports webhooks for real-time notifications:
+- `customer.created`
+- `customer.updated`
+- `order.created`
+- `payment.processed`
+
+### Webhook Configuration
+Configure webhooks in your account settings or via API:
+```json
+{
+  "url": "https://your-app.com/webhooks",
+  "events": ["customer.created", "order.created"],
+  "secret": "your_webhook_secret"
+}
+```
+
+## SDKs and Libraries
+
+### Official SDKs
+- **JavaScript/Node.js**: `npm install @deelrx/crm-sdk`
+- **Python**: `pip install deelrx-crm`
+- **PHP**: `composer require deelrx/crm-sdk`
+
+### Community Libraries
+- **Ruby**: `gem install deelrx_crm`
+- **Go**: `go get github.com/deelrx/crm-go`
+
+## API Versioning
+
+### Version Header
+Specify API version using the `API-Version` header:
+```bash
+curl -H "API-Version: 2024-01-15" \
+  https://api.deelrxcrm.app/api/customers
+```
+
+### Version Support
+- Current version: `2024-01-15`
+- Minimum supported: `2023-06-01`
+- Deprecation policy: 12 months notice
+
+## Error Codes
+
+### HTTP Status Codes
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `422` - Unprocessable Entity
+- `429` - Too Many Requests
+- `500` - Internal Server Error
+
+### API Error Codes
+- `VALIDATION_ERROR` - Request validation failed
+- `AUTHENTICATION_ERROR` - Invalid or missing authentication
+- `AUTHORIZATION_ERROR` - Insufficient permissions
+- `RESOURCE_NOT_FOUND` - Requested resource not found
+- `RATE_LIMIT_EXCEEDED` - Rate limit exceeded
+- `INTERNAL_ERROR` - Internal server error
+
+## Best Practices
+
+### Performance
+- Use field selection to minimize response size
+- Implement proper pagination for large datasets
+- Cache responses when appropriate
+- Use bulk operations for multiple records
+
+### Security
+- Always use HTTPS
+- Implement proper error handling
+- Don't log sensitive data
+- Validate all input data
+
+### Reliability
+- Implement retry logic with exponential backoff
+- Handle rate limiting gracefully
+- Monitor API usage and performance
+- Set appropriate timeout values
+
+For detailed endpoint documentation, explore the specific API sections in this documentation.

@@ -1,0 +1,80 @@
+# Delivery Management
+
+Advanced delivery tracking and logistics management with real-time updates and carrier integration.
+
+## Overview
+
+DeelRx CRM's delivery management system provides comprehensive tracking and management of order deliveries from dispatch through final delivery confirmation.
+
+## Delivery Operations
+
+### Shipment Creation
+- **Automated Processing**: Auto-generate shipments from orders
+- **Carrier Selection**: Smart carrier selection based on rules
+- **Label Generation**: Integrated shipping label creation
+- **Tracking Assignment**: Automatic tracking number assignment
+
+### Carrier Integration
+- **Major Carriers**: UPS, FedEx, USPS, DHL integration
+- **Regional Carriers**: Local and specialized carrier support
+- **International**: Global shipping and customs management
+- **Same-Day Delivery**: Local courier and same-day services
+
+## Tracking & Updates
+
+### Real-time Tracking
+
+```javascript
+// Create a delivery
+const delivery = await crm.deliveries.create({
+  orderId: "order_123",
+  carrier: "ups",
+  serviceType: "ground",
+  trackingNumber: "1Z999AA1234567890",
+  estimatedDelivery: "2024-01-15",
+  shippingAddress: {
+    name: "John Doe",
+    street: "123 Main St",
+    city: "Anytown",
+    state: "CA",
+    zip: "12345"
+  }
+});
+
+// Get delivery status
+const status = await crm.deliveries.getStatus("delivery_456");
+```
+
+### Status Updates
+- **Real-time Events**: Live tracking event processing
+- **Customer Notifications**: Automated delivery updates
+- **Exception Handling**: Delivery issue management
+- **Proof of Delivery**: Digital delivery confirmation
+
+### Delivery Analytics
+- **Performance Metrics**: On-time delivery rates
+- **Cost Analysis**: Shipping cost optimization
+- **Customer Satisfaction**: Delivery experience tracking
+- **Carrier Performance**: Carrier comparison and selection
+
+## Advanced Features
+
+### Route Optimization
+- **Multi-stop Delivery**: Optimized delivery routes
+- **Time Windows**: Scheduled delivery appointments
+- **Driver Management**: Delivery team coordination
+- **Real-time Adjustments**: Dynamic route optimization
+
+### Delivery Experience
+- **Customer Portal**: Self-service tracking interface
+- **SMS Updates**: Text message delivery notifications
+- **Email Notifications**: Professional delivery communications
+- **Delivery Instructions**: Special handling requirements
+
+### International Shipping
+- **Customs Documentation**: Automated customs forms
+- **Duty Calculation**: Import duty and tax estimation
+- **Restricted Items**: Prohibited item screening
+- **Documentation**: Commercial invoices and certificates
+
+For detailed API documentation, see [Delivery API Reference](/api-reference/deliveries/create-delivery).

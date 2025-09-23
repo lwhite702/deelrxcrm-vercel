@@ -1,0 +1,321 @@
+# Create Credit Account
+
+Create a new credit account for a customer with specified terms and limits.
+
+<Param body="customerId" type="string" required>
+The unique identifier for the customer
+</Param>
+
+<Param body="creditLimit" type="number" required>
+Maximum credit limit to approve for this account
+</Param>
+
+<Param body="paymentTerms" type="string" required>
+Payment terms (net15, net30, net60, immediate)
+</Param>
+
+<Param body="riskAssessment" type="object">
+Risk assessment data for the account
+</Param>
+
+<Param body="notes" type="string">
+Internal notes about the account
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST \
+  -H "Cookie: session=your_session_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerId": "cust_456",
+    "creditLimit": 5000.00,
+    "paymentTerms": "net30",
+    "riskAssessment": {
+      "score": "low",
+      "reason": "Strong payment history",
+      "creditScore": 750
+    },
+    "notes": "Established customer with good payment history"
+  }' \
+  https://api.deelrxcrm.app/api/credit/accounts
+```
+
+```javascript JavaScript
+const creditAccount = await crm.credit.createAccount({
+  customerId: "cust_456",
+  creditLimit: 5000.00,
+  paymentTerms: "net30",
+  riskAssessment: {
+    score: "low",
+    reason: "Strong payment history",
+    creditScore: 750
+  },
+  notes: "Established customer with good payment history"
+});
+```
+
+```python Python
+credit_account = crm.credit.create_account({
+    "customerId": "cust_456",
+    "creditLimit": 5000.00,
+    "paymentTerms": "net30",
+    "riskAssessment": {
+        "score": "low",
+        "reason": "Strong payment history",
+        "creditScore": 750
+    },
+    "notes": "Established customer with good payment history"
+})
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "data": {
+    "accountId": "acc_123",
+    "customerId": "cust_456",
+    "creditLimit": 5000.00,
+    "currentBalance": 0.00,
+    "availableCredit": 5000.00,
+    "status": "active",
+    "paymentTerms": "net30",
+    "riskScore": "low",
+    "minimumPayment": 0.00,
+    "overdueAmount": 0.00,
+    "daysPastDue": 0,
+    "notes": "Established customer with good payment history",
+    "createdAt": "2024-01-20T16:45:00Z",
+    "updatedAt": "2024-01-20T16:45:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      {
+        "field": "creditLimit",
+        "message": "Credit limit must be greater than 0"
+      }
+    ]
+  }
+}
+```
+
+```json 409 Conflict
+{
+  "success": false,
+  "error": {
+    "code": "ACCOUNT_ALREADY_EXISTS",
+    "message": "Credit account already exists for this customer"
+  }
+}
+```
+</ResponseExample>
+
+## Request Body
+
+<RequestExample>
+```json Basic Account
+{
+  "customerId": "cust_456",
+  "creditLimit": 2500.00,
+  "paymentTerms": "net30"
+}
+```
+
+```json Account with Risk Assessment
+{
+  "customerId": "cust_789",
+  "creditLimit": 10000.00,
+  "paymentTerms": "net15",
+  "riskAssessment": {
+    "score": "medium",
+    "reason": "New customer with limited history",
+    "creditScore": 680,
+    "incomeVerified": true,
+    "businessAge": 5
+  },
+  "notes": "High-value customer, approved with standard terms"
+}
+```
+
+```json Conservative Approval
+{
+  "customerId": "cust_101",
+  "creditLimit": 1000.00,
+  "paymentTerms": "net15",
+  "riskAssessment": {
+    "score": "high",
+    "reason": "Limited credit history",
+    "creditScore": 600,
+    "requiresGuarantee": true
+  },
+  "notes": "Conservative approval, monitor closely"
+}
+```
+</RequestExample>
+
+## Request Fields
+
+<Param body="customerId" type="string" required>
+The unique identifier for the customer requesting credit
+</Param>
+
+<Param body="creditLimit" type="number" required>
+Maximum credit limit to approve (minimum: $100, maximum: $100,000)
+</Param>
+
+<Param body="paymentTerms" type="string" required>
+Payment terms for the account:
+- `immediate` - Payment due immediately
+- `net15` - Payment due within 15 days
+- `net30` - Payment due within 30 days
+- `net60` - Payment due within 60 days
+</Param>
+
+<Param body="riskAssessment" type="object">
+Risk assessment data for credit decision
+  <Expandable title="riskAssessment properties">
+    <Param body="score" type="string">
+    Risk score category (low, medium, high, critical)
+    </Param>
+    
+    <Param body="reason" type="string">
+    Explanation for the risk assessment
+    </Param>
+    
+    <Param body="creditScore" type="integer">
+    External credit score (300-850)
+    </Param>
+    
+    <Param body="incomeVerified" type="boolean">
+    Whether income has been verified
+    </Param>
+    
+    <Param body="businessAge" type="integer">
+    Age of business in years
+    </Param>
+    
+    <Param body="requiresGuarantee" type="boolean">
+    Whether personal guarantee is required
+    </Param>
+  </Expandable>
+</Param>
+
+<Param body="notes" type="string">
+Internal notes about the account (maximum 500 characters)
+</Param>
+
+## Response Fields
+
+<ResponseField name="accountId" type="string">
+Unique identifier for the newly created credit account
+</ResponseField>
+
+<ResponseField name="customerId" type="string">
+Unique identifier for the associated customer
+</ResponseField>
+
+<ResponseField name="creditLimit" type="number">
+Approved credit limit
+</ResponseField>
+
+<ResponseField name="currentBalance" type="number">
+Current outstanding balance (0.00 for new accounts)
+</ResponseField>
+
+<ResponseField name="availableCredit" type="number">
+Available credit (equals creditLimit for new accounts)
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Account status (always "active" for new accounts)
+</ResponseField>
+
+<ResponseField name="paymentTerms" type="string">
+Payment terms for the account
+</ResponseField>
+
+<ResponseField name="riskScore" type="string">
+Assigned risk score category
+</ResponseField>
+
+<ResponseField name="minimumPayment" type="number">
+Current minimum payment due (0.00 for new accounts)
+</ResponseField>
+
+<ResponseField name="overdueAmount" type="number">
+Amount past due (0.00 for new accounts)
+</ResponseField>
+
+<ResponseField name="daysPastDue" type="integer">
+Days past due (0 for new accounts)
+</ResponseField>
+
+<ResponseField name="notes" type="string">
+Internal notes stored with the account
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+ISO 8601 timestamp when account was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when account was last updated
+</ResponseField>
+
+## Validation Rules
+
+### Credit Limit Constraints
+- Minimum: $100.00
+- Maximum: $100,000.00
+- Must be a positive number with up to 2 decimal places
+
+### Payment Terms
+Must be one of: `immediate`, `net15`, `net30`, `net60`
+
+### Risk Assessment Validation
+- `creditScore` must be between 300-850 if provided
+- `businessAge` must be 0 or positive integer
+- `score` must be one of: `low`, `medium`, `high`, `critical`
+
+## Automatic Account Features
+
+### Initial Setup
+- Account status automatically set to "active"
+- Current balance starts at $0.00
+- Available credit equals full credit limit
+- Payment due date calculated based on payment terms
+
+### Risk-Based Controls
+- High-risk accounts may require manual approval for charges
+- Credit limits may be automatically reviewed periodically
+- Payment terms may be adjusted based on payment history
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid input data format
+- `CUSTOMER_NOT_FOUND` - Customer does not exist
+- `ACCOUNT_ALREADY_EXISTS` - Credit account already exists for customer
+- `CREDIT_LIMIT_EXCEEDED` - Requested limit exceeds maximum allowed
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to create accounts
+- `RATE_LIMIT_EXCEEDED` - Too many requests
+
+## Notes
+
+- Only one credit account per customer is allowed
+- Account creation triggers automatic risk assessment
+- New accounts are subject to initial monitoring period
+- Credit limits can be adjusted after account creation using the update endpoint

@@ -1,0 +1,377 @@
+# Upload Knowledge Base File
+
+Upload files to the knowledge base for use in articles, such as images, documents, and other media.
+
+<Param body="file" type="file" required>
+The file to upload (max 10MB)
+</Param>
+
+<Param body="category" type="string">
+Category to organize the file (images, documents, media)
+</Param>
+
+<Param body="description" type="string">
+Description of the file content
+</Param>
+
+<Param body="tags" type="array">
+Array of tag strings for file organization
+</Param>
+
+<Param body="isPublic" type="boolean">
+Whether the file should be publicly accessible (default: false)
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST \
+  -H "Cookie: session=your_session_token" \
+  -F "file=@credit-flow-diagram.png" \
+  -F "category=images" \
+  -F "description=Credit application flow diagram" \
+  -F "tags=credit,diagram,flow" \
+  -F "isPublic=true" \
+  https://api.deelrxcrm.app/api/kb/files
+```
+
+```javascript JavaScript
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+formData.append('category', 'images');
+formData.append('description', 'Credit application flow diagram');
+formData.append('tags', 'credit,diagram,flow');
+formData.append('isPublic', 'true');
+
+const uploadedFile = await crm.kb.uploadFile(formData);
+```
+
+```python Python
+files = {'file': open('credit-flow-diagram.png', 'rb')}
+data = {
+    'category': 'images',
+    'description': 'Credit application flow diagram',
+    'tags': 'credit,diagram,flow',
+    'isPublic': True
+}
+
+uploaded_file = crm.kb.upload_file(files=files, data=data)
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "data": {
+    "id": "file_001",
+    "filename": "credit-flow-diagram.png",
+    "originalName": "credit-flow-diagram.png",
+    "mimeType": "image/png",
+    "size": 156789,
+    "category": "images",
+    "description": "Credit application flow diagram",
+    "tags": ["credit", "diagram", "flow"],
+    "isPublic": true,
+    "url": "https://files.deelrxcrm.app/kb/credit-flow-diagram.png",
+    "thumbnailUrl": "https://files.deelrxcrm.app/kb/thumbs/credit-flow-diagram.png",
+    "downloadUrl": "https://api.deelrxcrm.app/api/kb/files/file_001/download",
+    "uploadedBy": {
+      "id": "user_123",
+      "name": "John Smith",
+      "email": "john.smith@deelrx.com"
+    },
+    "metadata": {
+      "width": 800,
+      "height": 600,
+      "format": "PNG",
+      "hasTransparency": true
+    },
+    "createdAt": "2024-01-20T16:45:00Z",
+    "updatedAt": "2024-01-20T16:45:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid file upload",
+    "details": [
+      {
+        "field": "file",
+        "message": "File size exceeds maximum limit of 10MB"
+      }
+    ]
+  }
+}
+```
+
+```json 415 Unsupported Media Type
+{
+  "success": false,
+  "error": {
+    "code": "UNSUPPORTED_FILE_TYPE",
+    "message": "File type not supported",
+    "supportedTypes": ["jpg", "jpeg", "png", "gif", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx"]
+  }
+}
+```
+</ResponseExample>
+
+## Supported File Types
+
+### Images
+- **JPEG** (.jpg, .jpeg) - Photos and images
+- **PNG** (.png) - Images with transparency
+- **GIF** (.gif) - Animated images
+- **WebP** (.webp) - Modern image format
+- **SVG** (.svg) - Vector graphics
+
+### Documents
+- **PDF** (.pdf) - Portable documents
+- **Word** (.doc, .docx) - Microsoft Word documents
+- **Excel** (.xls, .xlsx) - Spreadsheets
+- **PowerPoint** (.ppt, .pptx) - Presentations
+- **Text** (.txt) - Plain text files
+
+### Media
+- **MP4** (.mp4) - Video files
+- **WebM** (.webm) - Web video format
+- **MP3** (.mp3) - Audio files
+- **WAV** (.wav) - Uncompressed audio
+
+## File Categories
+
+### Images
+- Screenshots and diagrams
+- Product photos
+- Charts and graphs
+- UI mockups
+
+### Documents
+- Policy documents
+- Forms and templates
+- Reports and presentations
+- Training materials
+
+### Media
+- Instructional videos
+- Audio recordings
+- Interactive content
+
+## Request Fields
+
+<Param body="file" type="file" required>
+File to upload (maximum size: 10MB)
+</Param>
+
+<Param body="category" type="string">
+File category for organization:
+- `images` - Image files
+- `documents` - Document files
+- `media` - Video and audio files
+- `other` - Other file types
+</Param>
+
+<Param body="description" type="string">
+Description of the file content (maximum 500 characters)
+</Param>
+
+<Param body="tags" type="array">
+Array of tag strings for file organization (maximum 10 tags)
+</Param>
+
+<Param body="isPublic" type="boolean">
+Whether the file should be publicly accessible:
+- `true` - File can be accessed without authentication
+- `false` - File requires authentication to access (default)
+</Param>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the uploaded file
+</ResponseField>
+
+<ResponseField name="filename" type="string">
+Generated filename used for storage
+</ResponseField>
+
+<ResponseField name="originalName" type="string">
+Original filename from the upload
+</ResponseField>
+
+<ResponseField name="mimeType" type="string">
+MIME type of the uploaded file
+</ResponseField>
+
+<ResponseField name="size" type="integer">
+File size in bytes
+</ResponseField>
+
+<ResponseField name="category" type="string">
+Assigned category for the file
+</ResponseField>
+
+<ResponseField name="description" type="string">
+File description provided during upload
+</ResponseField>
+
+<ResponseField name="tags" type="array">
+Array of tags associated with the file
+</ResponseField>
+
+<ResponseField name="isPublic" type="boolean">
+Whether the file is publicly accessible
+</ResponseField>
+
+<ResponseField name="url" type="string">
+Direct URL to access the file
+</ResponseField>
+
+<ResponseField name="thumbnailUrl" type="string">
+Thumbnail URL (only for image files)
+</ResponseField>
+
+<ResponseField name="downloadUrl" type="string">
+API endpoint URL to download the file
+</ResponseField>
+
+<ResponseField name="uploadedBy" type="object">
+Information about the user who uploaded the file
+  <Expandable title="uploadedBy properties">
+    <ResponseField name="id" type="string">
+    User ID of the uploader
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+    Full name of the uploader
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+    Email address of the uploader
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="metadata" type="object">
+File-specific metadata (varies by file type)
+  <Expandable title="metadata properties (images)">
+    <ResponseField name="width" type="integer">
+    Image width in pixels
+    </ResponseField>
+    
+    <ResponseField name="height" type="integer">
+    Image height in pixels
+    </ResponseField>
+    
+    <ResponseField name="format" type="string">
+    Image format (PNG, JPEG, etc.)
+    </ResponseField>
+    
+    <ResponseField name="hasTransparency" type="boolean">
+    Whether image has transparency
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+ISO 8601 timestamp when file was uploaded
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when file metadata was last updated
+</ResponseField>
+
+## File Processing
+
+### Image Processing
+- **Thumbnails**: Automatically generated for images
+- **Optimization**: Images compressed for web delivery
+- **Format Detection**: Metadata extracted automatically
+- **Validation**: File integrity checked
+
+### Document Processing
+- **Text Extraction**: Content indexed for search
+- **Preview Generation**: Preview images created when possible
+- **Metadata Extraction**: Document properties extracted
+- **Virus Scanning**: Files scanned for security
+
+### Security Features
+- **Access Control**: File access controlled by permissions
+- **Virus Scanning**: All uploads scanned for malware
+- **Content Validation**: File content validated against MIME type
+- **Rate Limiting**: Upload frequency controlled
+
+## Using Uploaded Files
+
+### In Articles
+```markdown
+![Credit Flow](https://files.deelrxcrm.app/kb/credit-flow-diagram.png)
+
+[Download Policy Document](https://api.deelrxcrm.app/api/kb/files/file_001/download)
+```
+
+### Direct Links
+Use the `url` field for direct file access or the `downloadUrl` for API-controlled downloads.
+
+### Thumbnails
+For images, use `thumbnailUrl` for preview displays and `url` for full-size images.
+
+## File Management
+
+### Organization
+- Use categories to organize files by type
+- Apply relevant tags for easy searching
+- Include descriptive descriptions
+- Use consistent naming conventions
+
+### Access Control
+- Set `isPublic: false` for sensitive content
+- Use `isPublic: true` for general resources
+- Monitor file access through analytics
+- Regularly review file permissions
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid file or parameters
+- `UNSUPPORTED_FILE_TYPE` - File type not allowed
+- `FILE_TOO_LARGE` - File exceeds size limit
+- `VIRUS_DETECTED` - File failed security scan
+- `INSUFFICIENT_PERMISSIONS` - User lacks upload permission
+- `STORAGE_QUOTA_EXCEEDED` - Organization storage limit reached
+- `RATE_LIMIT_EXCEEDED` - Too many uploads
+
+## Limitations
+
+- **File Size**: Maximum 10MB per file
+- **Storage**: Organization-wide storage quotas apply
+- **File Types**: Only supported file types accepted
+- **Naming**: Filenames sanitized and may be modified
+- **Processing**: Large files may take time to process
+
+## Best Practices
+
+### File Organization
+- Use descriptive filenames
+- Apply consistent tagging strategy
+- Categorize files appropriately
+- Include meaningful descriptions
+
+### Performance
+- Optimize images before uploading
+- Use appropriate file formats
+- Consider file size impact on loading times
+- Utilize thumbnails for previews
+
+### Security
+- Don't upload sensitive information in public files
+- Regularly audit file access
+- Use virus scanning results
+- Follow organizational data policies

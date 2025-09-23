@@ -1,0 +1,301 @@
+# Update Customer
+
+Update an existing customer's information.
+
+<Param body="name" type="string">
+Customer's name or company name
+</Param>
+
+<Param body="email" type="string">
+Primary email address
+</Param>
+
+<Param body="phone" type="string">
+Primary phone number
+</Param>
+
+<Param body="status" type="string">
+Customer status (active, inactive, archived)
+</Param>
+
+<Param body="address" type="object">
+Customer's address information
+</Param>
+
+<Param body="tags" type="array">
+Array of tag strings for categorization
+</Param>
+
+<Param body="customFields" type="object">
+Custom field values specific to your organization
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X PUT \
+  -H "Cookie: session=your_session_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme Corporation Ltd",
+    "email": "billing@acme.com",
+    "phone": "+1-555-0124",
+    "status": "active",
+    "address": {
+      "street": "456 Enterprise Blvd",
+      "city": "Business City",
+      "state": "CA",
+      "zip": "90211",
+      "country": "US"
+    },
+    "tags": ["enterprise", "technology", "premium"],
+    "customFields": {
+      "industry": "Software Technology",
+      "employees": "100-250",
+      "website": "https://acme.com",
+      "priority": "high"
+    }
+  }' \
+  https://api.deelrxcrm.app/api/customers/cust_123
+```
+
+```javascript JavaScript
+const updatedCustomer = await crm.customers.update("cust_123", {
+  name: "Acme Corporation Ltd",
+  email: "billing@acme.com",
+  phone: "+1-555-0124",
+  status: "active",
+  address: {
+    street: "456 Enterprise Blvd",
+    city: "Business City",
+    state: "CA",
+    zip: "90211",
+    country: "US"
+  },
+  tags: ["enterprise", "technology", "premium"],
+  customFields: {
+    industry: "Software Technology",
+    employees: "100-250",
+    website: "https://acme.com",
+    priority: "high"
+  }
+});
+```
+
+```python Python
+updated_customer = crm.customers.update("cust_123", {
+    "name": "Acme Corporation Ltd",
+    "email": "billing@acme.com",
+    "phone": "+1-555-0124",
+    "status": "active",
+    "address": {
+        "street": "456 Enterprise Blvd",
+        "city": "Business City",
+        "state": "CA",
+        "zip": "90211",
+        "country": "US"
+    },
+    "tags": ["enterprise", "technology", "premium"],
+    "customFields": {
+        "industry": "Software Technology",
+        "employees": "100-250",
+        "website": "https://acme.com",
+        "priority": "high"
+    }
+})
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": "cust_123",
+    "name": "Acme Corporation Ltd",
+    "email": "billing@acme.com",
+    "phone": "+1-555-0124",
+    "status": "active",
+    "address": {
+      "street": "456 Enterprise Blvd",
+      "city": "Business City",
+      "state": "CA",
+      "zip": "90211",
+      "country": "US"
+    },
+    "tags": ["enterprise", "technology", "premium"],
+    "customFields": {
+      "industry": "Software Technology",
+      "employees": "100-250",
+      "website": "https://acme.com",
+      "priority": "high"
+    },
+    "totalOrders": 15,
+    "lifetimeValue": 12500.00,
+    "lastOrderDate": "2024-01-20T09:30:00Z",
+    "acquisitionSource": "website",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "updatedAt": "2024-01-21T16:45:00Z"
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      {
+        "field": "email",
+        "message": "Invalid email format"
+      }
+    ]
+  }
+}
+```
+
+```json 404 Not Found
+{
+  "success": false,
+  "error": {
+    "code": "CUSTOMER_NOT_FOUND",
+    "message": "Customer not found"
+  }
+}
+```
+
+```json 409 Conflict
+{
+  "success": false,
+  "error": {
+    "code": "EMAIL_ALREADY_EXISTS",
+    "message": "A customer with this email already exists"
+  }
+}
+```
+</ResponseExample>
+
+## Request Body
+
+<RequestExample>
+```json Update Basic Information
+{
+  "name": "Updated Company Name",
+  "email": "new-email@company.com",
+  "phone": "+1-555-9999"
+}
+```
+
+```json Update Status
+{
+  "status": "inactive"
+}
+```
+
+```json Update Address
+{
+  "address": {
+    "street": "789 New Street",
+    "city": "New City",
+    "state": "NY",
+    "zip": "10001",
+    "country": "US"
+  }
+}
+```
+
+```json Update Tags and Custom Fields
+{
+  "tags": ["vip", "technology", "partner"],
+  "customFields": {
+    "accountManager": "John Smith",
+    "contractType": "annual",
+    "specialRequirements": "White-glove service"
+  }
+}
+```
+</RequestExample>
+
+## Response Fields
+
+<ResponseField name="id" type="string">
+Unique identifier for the customer (unchanged)
+</ResponseField>
+
+<ResponseField name="name" type="string">
+Updated customer name or company name
+</ResponseField>
+
+<ResponseField name="email" type="string">
+Updated primary email address
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+Updated primary phone number
+</ResponseField>
+
+<ResponseField name="status" type="string">
+Updated customer status (active, inactive, archived)
+</ResponseField>
+
+<ResponseField name="address" type="object">
+Updated customer address information
+</ResponseField>
+
+<ResponseField name="tags" type="array">
+Updated array of tag strings for categorization
+</ResponseField>
+
+<ResponseField name="customFields" type="object">
+Updated custom field values specific to your organization
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+ISO 8601 timestamp when customer was last updated (updated automatically)
+</ResponseField>
+
+## Validation Rules
+
+### Required Fields
+None of the fields are required for updates. You can update any subset of fields.
+
+### Field Constraints
+- **email**: Must be a valid email format and unique across all customers
+- **phone**: Must be a valid phone number format
+- **status**: Must be one of: `active`, `inactive`, `archived`
+- **address.country**: Must be a valid ISO 3166-1 alpha-2 country code
+- **tags**: Maximum 20 tags per customer
+- **customFields**: Maximum 50 custom fields per customer
+
+### Partial Updates
+You can update individual fields without affecting others:
+
+```json
+{
+  "status": "inactive"
+}
+```
+
+This will only update the status field, leaving all other fields unchanged.
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid input data format
+- `CUSTOMER_NOT_FOUND` - Customer does not exist
+- `EMAIL_ALREADY_EXISTS` - Email address is already in use
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to update customer
+- `RATE_LIMIT_EXCEEDED` - Too many requests
+- `INTERNAL_ERROR` - Server error occurred
+
+## Notes
+
+- Only provide the fields you want to update in the request body
+- The `updatedAt` timestamp is automatically set to the current time
+- Email addresses must be unique across all customers
+- Custom fields are merged with existing values (use `null` to remove a custom field)
+- Tags completely replace the existing tag array

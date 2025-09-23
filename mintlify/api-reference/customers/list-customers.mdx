@@ -1,0 +1,189 @@
+# List Customers
+
+Retrieve a list of customers with filtering and pagination options.
+
+## Query Parameters
+
+<Param query="limit" type="integer" default="50">
+Number of customers to return (max 100)
+</Param>
+
+<Param query="offset" type="integer" default="0">
+Number of customers to skip
+</Param>
+
+<Param query="status" type="string">
+Filter by customer status (active, inactive, archived)
+</Param>
+
+<Param query="created_after" type="string">
+Filter customers created after this date (ISO 8601)
+</Param>
+
+<Param query="created_before" type="string">
+Filter customers created before this date (ISO 8601)
+</Param>
+
+<Param query="search" type="string">
+Search customers by name, email, or phone
+</Param>
+
+<Param query="sort" type="string" default="created_at">
+Sort field (name, email, created_at, updated_at)
+</Param>
+
+<Param query="order" type="string" default="desc">
+Sort order (asc, desc)
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET \
+  -H "Cookie: session=your_session_token" \
+  "https://api.deelrxcrm.app/api/customers?limit=25&status=active&sort=name&order=asc"
+```
+
+```javascript JavaScript
+const customers = await crm.customers.list({
+  limit: 25,
+  status: "active",
+  sort: "name",
+  order: "asc"
+});
+```
+
+```python Python
+customers = crm.customers.list(
+  limit=25,
+  status="active",
+  sort="name",
+  order="asc"
+)
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": [
+    {
+      "id": "cust_123",
+      "name": "Acme Corporation",
+      "email": "contact@acme.com",
+      "phone": "+1-555-0123",
+      "status": "active",
+      "address": {
+        "street": "123 Business Ave",
+        "city": "Enterprise City",
+        "state": "CA",
+        "zip": "90210",
+        "country": "US"
+      },
+      "tags": ["enterprise", "technology"],
+      "totalOrders": 15,
+      "lifetimeValue": 12500.00,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-20T14:15:00Z"
+    }
+  ],
+  "pagination": {
+    "limit": 25,
+    "offset": 0,
+    "total": 150,
+    "hasMore": true
+  }
+}
+```
+
+```json 400 Bad Request
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid limit parameter",
+    "details": {
+      "field": "limit",
+      "value": "150",
+      "max": "100"
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Response Fields
+
+<ResponseField name="data" type="array">
+Array of customer objects
+  <Expandable title="customer properties">
+    <ResponseField name="id" type="string">
+    Unique identifier for the customer
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+    Customer's name or company name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+    Primary email address
+    </ResponseField>
+    
+    <ResponseField name="phone" type="string">
+    Primary phone number
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+    Customer status (active, inactive, archived)
+    </ResponseField>
+    
+    <ResponseField name="address" type="object">
+    Customer's address information
+    </ResponseField>
+    
+    <ResponseField name="tags" type="array">
+    Array of tag strings
+    </ResponseField>
+    
+    <ResponseField name="totalOrders" type="integer">
+    Total number of orders
+    </ResponseField>
+    
+    <ResponseField name="lifetimeValue" type="number">
+    Customer lifetime value in currency units
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+    ISO 8601 timestamp when customer was created
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="string">
+    ISO 8601 timestamp when customer was last updated
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+Pagination information
+  <Expandable title="pagination properties">
+    <ResponseField name="limit" type="integer">
+    Number of results per page
+    </ResponseField>
+    
+    <ResponseField name="offset" type="integer">
+    Number of results skipped
+    </ResponseField>
+    
+    <ResponseField name="total" type="integer">
+    Total number of matching customers
+    </ResponseField>
+    
+    <ResponseField name="hasMore" type="boolean">
+    Whether there are more results available
+    </ResponseField>
+  </Expandable>
+</ResponseField>

@@ -1,0 +1,333 @@
+# List Credit Transactions
+
+Retrieve a list of credit transactions for an account or across all accounts.
+
+<Param query="accountId" type="string">
+Filter transactions by specific credit account
+</Param>
+
+<Param query="customerId" type="string">
+Filter transactions by customer
+</Param>
+
+<Param query="type" type="string">
+Filter by transaction type (charge, payment, adjustment, fee)
+</Param>
+
+<Param query="status" type="string">
+Filter by transaction status (completed, pending, failed, cancelled)
+</Param>
+
+<Param query="dateFrom" type="string">
+Start date for transaction range (ISO 8601)
+</Param>
+
+<Param query="dateTo" type="string">
+End date for transaction range (ISO 8601)
+</Param>
+
+<Param query="limit" type="integer">
+Maximum number of transactions to return (default: 50, max: 500)
+</Param>
+
+<Param query="offset" type="integer">
+Number of transactions to skip for pagination (default: 0)
+</Param>
+
+## Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET \
+  -H "Cookie: session=your_session_token" \
+  "https://api.deelrxcrm.app/api/credit/transactions?accountId=acc_123&limit=25"
+```
+
+```javascript JavaScript
+// List all transactions
+const transactions = await crm.credit.listTransactions();
+
+// Filter by account
+const accountTransactions = await crm.credit.listTransactions({
+  accountId: "acc_123",
+  limit: 25
+});
+
+// Filter by date range and type
+const payments = await crm.credit.listTransactions({
+  type: "payment",
+  dateFrom: "2024-01-01T00:00:00Z",
+  dateTo: "2024-01-31T23:59:59Z"
+});
+```
+
+```python Python
+# List all transactions
+transactions = crm.credit.list_transactions()
+
+# Filter by account
+account_transactions = crm.credit.list_transactions(
+    account_id="acc_123",
+    limit=25
+)
+
+# Filter by date range and type
+payments = crm.credit.list_transactions(
+    type="payment",
+    date_from="2024-01-01T00:00:00Z",
+    date_to="2024-01-31T23:59:59Z"
+)
+```
+</CodeGroup>
+
+## Response
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "transactions": [
+      {
+        "id": "txn_789",
+        "accountId": "acc_123",
+        "customerId": "cust_456",
+        "type": "charge",
+        "amount": 299.99,
+        "description": "Product purchase - Order #ORD-001",
+        "reference": "order_001",
+        "status": "completed",
+        "processedAt": "2024-01-20T09:30:00Z",
+        "balanceAfter": 1549.99,
+        "metadata": {
+          "orderId": "order_001",
+          "source": "pos_system"
+        },
+        "createdAt": "2024-01-20T09:30:00Z"
+      },
+      {
+        "id": "txn_788",
+        "accountId": "acc_123",
+        "customerId": "cust_456",
+        "type": "payment",
+        "amount": -500.00,
+        "description": "Payment received - Check #1234",
+        "reference": "check_1234",
+        "status": "completed",
+        "processedAt": "2024-01-15T10:30:00Z",
+        "balanceAfter": 1250.00,
+        "paymentMethod": "check",
+        "metadata": {
+          "checkNumber": "1234",
+          "bankName": "First National Bank"
+        },
+        "createdAt": "2024-01-15T10:30:00Z"
+      },
+      {
+        "id": "txn_787",
+        "accountId": "acc_123",
+        "customerId": "cust_456",
+        "type": "fee",
+        "amount": 25.00,
+        "description": "Late payment fee",
+        "reference": "late_fee_001",
+        "status": "completed",
+        "processedAt": "2024-01-10T00:00:00Z",
+        "balanceAfter": 1750.00,
+        "metadata": {
+          "feeType": "late_payment",
+          "daysPastDue": 15
+        },
+        "createdAt": "2024-01-10T00:00:00Z"
+      }
+    ],
+    "pagination": {
+      "total": 127,
+      "limit": 50,
+      "offset": 0,
+      "hasMore": true
+    }
+  }
+}
+```
+
+```json 200 Empty Results
+{
+  "success": true,
+  "data": {
+    "transactions": [],
+    "pagination": {
+      "total": 0,
+      "limit": 50,
+      "offset": 0,
+      "hasMore": false
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Response Fields
+
+<ResponseField name="transactions" type="array">
+Array of transaction objects
+  <Expandable title="transaction properties">
+    <ResponseField name="id" type="string">
+    Unique identifier for the transaction
+    </ResponseField>
+    
+    <ResponseField name="accountId" type="string">
+    Credit account associated with this transaction
+    </ResponseField>
+    
+    <ResponseField name="customerId" type="string">
+    Customer associated with this transaction
+    </ResponseField>
+    
+    <ResponseField name="type" type="string">
+    Transaction type (charge, payment, adjustment, fee)
+    </ResponseField>
+    
+    <ResponseField name="amount" type="number">
+    Transaction amount (positive for charges/fees, negative for payments)
+    </ResponseField>
+    
+    <ResponseField name="description" type="string">
+    Human-readable description of the transaction
+    </ResponseField>
+    
+    <ResponseField name="reference" type="string">
+    External reference identifier (order ID, invoice number, etc.)
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+    Transaction status (completed, pending, failed, cancelled)
+    </ResponseField>
+    
+    <ResponseField name="processedAt" type="string">
+    ISO 8601 timestamp when transaction was processed
+    </ResponseField>
+    
+    <ResponseField name="balanceAfter" type="number">
+    Account balance after this transaction was applied
+    </ResponseField>
+    
+    <ResponseField name="paymentMethod" type="string">
+    Payment method used (only for payment transactions)
+    </ResponseField>
+    
+    <ResponseField name="metadata" type="object">
+    Additional transaction-specific data
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="string">
+    ISO 8601 timestamp when transaction was created
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+Pagination information
+  <Expandable title="pagination properties">
+    <ResponseField name="total" type="integer">
+    Total number of transactions matching the filter
+    </ResponseField>
+    
+    <ResponseField name="limit" type="integer">
+    Number of transactions requested per page
+    </ResponseField>
+    
+    <ResponseField name="offset" type="integer">
+    Number of transactions skipped
+    </ResponseField>
+    
+    <ResponseField name="hasMore" type="boolean">
+    Whether there are more transactions available
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Transaction Types
+
+### Charge
+Increases the account balance (positive amount)
+- Product purchases
+- Service charges
+- Interest charges
+
+### Payment
+Decreases the account balance (negative amount)
+- Cash payments
+- Check payments
+- Credit card payments
+- Bank transfers
+
+### Adjustment
+Balance corrections (positive or negative)
+- Manual corrections
+- Dispute resolutions
+- Credit adjustments
+
+### Fee
+Additional charges (positive amount)
+- Late payment fees
+- Processing fees
+- Service fees
+
+## Transaction Status Values
+
+- `completed` - Transaction has been successfully processed
+- `pending` - Transaction is being processed
+- `failed` - Transaction processing failed
+- `cancelled` - Transaction was cancelled before processing
+
+## Filtering Examples
+
+### By Date Range
+```
+GET /api/credit/transactions?dateFrom=2024-01-01T00:00:00Z&dateTo=2024-01-31T23:59:59Z
+```
+
+### By Transaction Type
+```
+GET /api/credit/transactions?type=payment
+```
+
+### By Account and Status
+```
+GET /api/credit/transactions?accountId=acc_123&status=completed
+```
+
+### Combined Filters
+```
+GET /api/credit/transactions?customerId=cust_456&type=charge&status=completed&limit=10
+```
+
+## Pagination
+
+Use `limit` and `offset` parameters for pagination:
+
+```
+GET /api/credit/transactions?limit=25&offset=50
+```
+
+This returns transactions 51-75. Check the `hasMore` field to determine if additional pages are available.
+
+## Sorting
+
+Transactions are returned in reverse chronological order (newest first) by default.
+
+## Error Codes
+
+- `VALIDATION_ERROR` - Invalid query parameters
+- `ACCOUNT_NOT_FOUND` - Specified account does not exist
+- `CUSTOMER_NOT_FOUND` - Specified customer does not exist
+- `INSUFFICIENT_PERMISSIONS` - User lacks permission to view transactions
+- `RATE_LIMIT_EXCEEDED` - Too many requests
+
+## Performance Considerations
+
+- Use specific account or customer filters when possible to improve performance
+- Limit date ranges to reduce query time
+- Use appropriate `limit` values for your use case
+- Cache results when appropriate to reduce API calls
