@@ -316,11 +316,12 @@ function PricingCard({ plan, billing }: { plan: any; billing: string }) {
       
       <CardContent className="space-y-6">
         <div className="space-y-3">
-          {plan.features.map((feature: string, index: number) => (
-            <div key={index} className="flex items-center gap-3">
-              <Check className="h-4 w-4 text-primary flex-shrink-0" />
-              <span className="text-sm">{feature}</span>
-            </div>
+              {plan.features.map((feature: string, index: number) => (
+                <div key={index} className="flex items-center gap-3">
+                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span className="text-sm">{feature}</span>
+                </div>
+              ))}
           ))}
           
           {plan.limitations.map((limitation: string, index: number) => (
