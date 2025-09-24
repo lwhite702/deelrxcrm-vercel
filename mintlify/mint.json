@@ -30,7 +30,10 @@
     {
       "group": "Platform",
       "pages": [
-        "pages/integrations-overview"
+        "pages/integrations-overview",
+        "pages/manual-payments",
+        "pages/pricing-fees",
+        "pages/privacy-security"
       ]
     },
     {
