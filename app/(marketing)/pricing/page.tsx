@@ -258,6 +258,18 @@ export default function PricingPage() {
   );
 }
 
+/**
+ * Renders a pricing card component displaying plan details and features.
+ *
+ * The component utilizes the provided plan and billing information to display the plan's name, description, price, and features.
+ * It conditionally renders a badge for popular plans and formats the pricing based on the billing cycle.
+ * The card also includes a button linking to the plan's call-to-action.
+ *
+ * @param {Object} props - The properties for the PricingCard component.
+ * @param {any} props.plan - The plan object containing details such as name, description, price, features, and limitations.
+ * @param {string} props.billing - The billing cycle, either "monthly" or "yearly".
+ * @returns {JSX.Element} The rendered pricing card component.
+ */
 function PricingCard({ plan, billing }: { plan: any; billing: string }) {
   const Icon = plan.icon;
   
