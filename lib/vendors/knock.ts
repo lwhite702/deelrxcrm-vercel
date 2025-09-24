@@ -46,11 +46,11 @@ function skippedResult(workflow: string): KnockResult {
 }
 
 function errorResult(workflow: string, error: unknown): KnockResult {
-  console.error(`Knock ${workflow} notification failed:`, error);
+  console.error(`Knock ${workflow} notification failed`);
   return {
     success: false,
     provider: "knock",
-    error: error instanceof Error ? error.message : "Unknown error",
+    error: error instanceof Error ? "Notification failed" : "Unknown error",
   };
 }
 
