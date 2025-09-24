@@ -15,6 +15,17 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/**
+ * Handles the POST request for data enrichment.
+ *
+ * This function parses the incoming request body, validates the team ID, and resolves authorization context.
+ * It then generates data enrichments based on the provided payload. If any validation or processing errors occur,
+ * appropriate error responses are returned with relevant status codes.
+ *
+ * @param request - The incoming HTTP request object.
+ * @returns A JSON response containing either the generated data enrichment or an error message.
+ * @throws HttpError If there is an issue with the HTTP request.
+ */
 export async function POST(request: Request) {
   try {
     const body = await parseBoundedJson(request);
