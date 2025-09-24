@@ -8,9 +8,9 @@ set -e  # Exit on any error
 echo "📚 Starting Phase 5: Documentation Reconciliation & Transparency"
 echo "================================================================"
 
-# Check if we're in the right directory
-if [ ! -f "package.json" ]; then
-    echo "❌ Error: package.json not found. Please run from project root."
+# Check if we're in the right directory by checking for essential files
+if [ ! -f "package.json" ] || [ ! -f "next.config.mjs" ]; then
+    echo "❌ Error: Essential project files not found. Please run from project root."
     exit 1
 fi
 
