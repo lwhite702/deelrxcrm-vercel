@@ -254,9 +254,11 @@ export default function PaymentsFeaturePage() {
           )}>
             <CardContent className="p-4">
               <p className="text-sm text-destructive font-semibold text-center">
-                <strong>LEGAL DISCLAIMER:</strong> This software must only be used for lawful business purposes. 
+              <p className="text-sm text-destructive font-semibold text-center">
+                <strong>LEGAL DISCLAIMER:</strong> This software must only be used for lawful business purposes in compliance with 21 U.S.C. § 801 et seq. and local regulations. 
                 It must not be used for any illegal drug or controlled substance activity. 
                 Users are responsible for operating in compliance with all applicable laws.
+              </p>
               </p>
             </CardContent>
           </Card>
