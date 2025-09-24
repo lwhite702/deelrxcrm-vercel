@@ -4,12 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
  * Perform a health check for the application, verifying database and Redis connectivity,
  * as well as the presence and validity of required environment variables.
  *
- * The function first checks the database connection by executing a simple query.
- * If Redis is configured, it attempts to ping the Redis server. It then checks for
- * the presence of essential environment variables and validates the format of the
- * encryption key. If any checks fail, it returns a JSON response indicating the
- * health status as "unhealthy" along with relevant error information.
- * If all checks pass, it returns a "healthy" status with additional metadata.
+ * The function checks the database connection by executing a simple query. If Redis is configured,
+ * it attempts to ping the Redis server. It then verifies the presence of essential environment variables
+ * and validates the format of the encryption key. If any checks fail, it returns a JSON response indicating
+ * the health status as "unhealthy" along with relevant error information. If all checks pass, it returns
+ * a "healthy" status with additional metadata.
  *
  * @param request - The incoming NextRequest object.
  * @returns A JSON response indicating the health status of the application.
