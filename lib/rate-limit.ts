@@ -16,7 +16,7 @@ interface RateLimitEntry {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Redis client (lazy loaded)
-let redis: any = null;
+let redis: import('@upstash/redis').Redis | null = null;
 let redisInitialized = false;
 
 async function getRedisClient() {
@@ -69,7 +69,7 @@ export async function rateLimit(
  * Redis-based distributed rate limiting
  */
 async function distributedRateLimit(
-  redis: any,
+  redis: import('@upstash/redis').Redis,
   key: string,
   config: RateLimitConfig
 ): Promise<{ allowed: boolean; limit: number; remaining: number; resetTime: number }> {
