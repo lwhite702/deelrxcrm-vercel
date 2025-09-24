@@ -2,9 +2,6 @@ import { inngest } from "../client";
 import { db } from "@/lib/db/drizzle";
 import { credits, creditTransactions, teams } from "@/lib/db/schema";
 import { eq, and, lt, sql } from "drizzle-orm";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
 
 export const creditReminderDaily = inngest.createFunction(
   { id: "credit-reminder-daily" },

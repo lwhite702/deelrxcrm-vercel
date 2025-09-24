@@ -1,6 +1,18 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY environment variable is required");
+  }
+  
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  
+  return resend;
+}
 
 export interface EmailPayload {
   to: string[];
@@ -26,11 +38,8 @@ export async function sendCreditDueEmail({
     creditId: string;
   };
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY environment variable is required");
-  }
-
   try {
+    const resendClient = getResendClient();
     const urgencyClass = payload.daysOverdue > 60 ? "urgent" : payload.daysOverdue > 30 ? "high" : "normal";
     const urgencyColor = urgencyClass === "urgent" ? "#dc2626" : urgencyClass === "high" ? "#ea580c" : "#2563eb";
 
@@ -104,7 +113,7 @@ Thank you,
 DeelRx CRM Team
     `;
 
-    const result = await resend.emails.send({
+    const result = await resendClient.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "noreply@deelrxcrm.app",
       to,
       subject: `Credit Payment ${payload.daysOverdue > 0 ? 'Overdue' : 'Due'} - $${(payload.amount / 100).toFixed(2)}`,
@@ -142,11 +151,8 @@ export async function sendKBArticleEmail({
     teamName: string;
   };
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY environment variable is required");
-  }
-
   try {
+    const resendClient = getResendClient();
     const html = `
       <!DOCTYPE html>
       <html>
@@ -184,7 +190,7 @@ export async function sendKBArticleEmail({
       </html>
     `;
 
-    const result = await resend.emails.send({
+    const result = await resendClient.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "noreply@deelrxcrm.app",
       to,
       subject: `New Article: ${payload.articleTitle}`,
@@ -221,11 +227,8 @@ export async function sendAdminAlertEmail({
     details?: Record<string, any>;
   };
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY environment variable is required");
-  }
-
   try {
+    const resendClient = getResendClient();
     const severityColors = {
       low: "#10b981",
       medium: "#f59e0b",
@@ -285,7 +288,7 @@ export async function sendAdminAlertEmail({
       </html>
     `;
 
-    const result = await resend.emails.send({
+    const result = await resendClient.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "alerts@deelrxcrm.app",
       to,
       subject: `[${payload.severity.toUpperCase()}] ${payload.alertType}: ${payload.message}`,
@@ -311,12 +314,9 @@ export async function sendAdminAlertEmail({
  * Generic email sender
  */
 export async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY environment variable is required");
-  }
-
   try {
-    const result = await resend.emails.send({
+    const resendClient = getResendClient();
+    const result = await resendClient.emails.send({
       from: payload.from || process.env.RESEND_FROM_EMAIL || "noreply@deelrxcrm.app",
       to: payload.to,
       subject: payload.subject,
