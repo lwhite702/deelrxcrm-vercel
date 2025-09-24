@@ -23,6 +23,15 @@ export class HttpError extends Error {
   }
 }
 
+/**
+ * Parse a bounded JSON from the request body.
+ *
+ * This function retrieves the raw text from the request, checks for an empty body, and validates the size of the payload against a predefined limit. If the payload is valid, it attempts to parse the JSON; if any checks fail or parsing throws an error, an HttpError is thrown with the appropriate status code.
+ *
+ * @param request - The HTTP request object containing the body to be parsed.
+ * @returns A Promise that resolves to the parsed JSON object.
+ * @throws HttpError If the request body is empty, exceeds the size limit, or contains invalid JSON.
+ */
 export async function parseBoundedJson(request: Request): Promise<any> {
   const raw = await request.text();
 
@@ -42,6 +51,15 @@ export async function parseBoundedJson(request: Request): Promise<any> {
   }
 }
 
+/**
+ * Resolves AI authorization for a given team.
+ *
+ * This function retrieves the authorization context for a team identified by teamId, ensuring the user has the appropriate role.
+ * It initializes the Statsig service and creates a Statsig user object based on the retrieved authorization context.
+ * If the user does not have the required role, an error is thrown.
+ *
+ * @param {number} teamId - The ID of the team for which to resolve authorization.
+ */
 export async function resolveAiAuthorization(teamId: number): Promise<{
   authContext: AuthContext;
   statsigUser: StatsigUser;
@@ -65,6 +83,17 @@ export async function resolveAiAuthorization(teamId: number): Promise<{
   return { authContext, statsigUser };
 }
 
+/**
+ * Enforces the AI gate by checking the status of the AI kill switch and feature availability.
+ *
+ * This function first checks if the AI endpoints are disabled by calling isKillSwitchActive.
+ * If the kill switch is active, it throws an HttpError indicating that AI endpoints are temporarily disabled.
+ * Next, it verifies if the requested feature gate is enabled for the given statsigUser.
+ * If the feature is not enabled, it throws an HttpError indicating that the requested AI capability is disabled.
+ *
+ * @param {StatsigUser} statsigUser - The user object containing information for feature gating.
+ * @param {FeatureGateKey} gate - The key representing the feature gate to be checked.
+ */
 export async function enforceAiGate(
   statsigUser: StatsigUser,
   gate: FeatureGateKey
