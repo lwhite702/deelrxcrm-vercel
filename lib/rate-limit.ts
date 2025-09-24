@@ -19,6 +19,13 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 let redis: import('@upstash/redis').Redis | null = null;
 let redisInitialized = false;
 
+/**
+ * Get a Redis client for rate limiting.
+ *
+ * This function initializes a Redis client if it hasn't been initialized yet. It checks for the necessary environment variables to configure the Redis connection. If the connection fails, it falls back to in-memory storage. Additionally, it logs warnings based on the environment and connection status.
+ *
+ * @returns A Redis client instance or null if initialization fails.
+ */
 async function getRedisClient() {
   if (!redisInitialized) {
     redisInitialized = true;
@@ -47,8 +54,12 @@ async function getRedisClient() {
 }
 
 /**
- * Distributed rate limiter with Redis support and in-memory fallback
- * Uses Redis in production for distributed rate limiting across instances
+ * Implements a rate limiting mechanism using Redis or in-memory fallback.
+ * The function generates a unique key for the request using the provided keyGenerator or defaults to a standard method.
+ * It attempts to connect to a Redis client; if successful, it applies distributed rate limiting, otherwise it falls back to in-memory rate limiting.
+ *
+ * @param request - The incoming request object used to generate the rate limit key.
+ * @param config - Configuration object containing rate limit settings and key generation logic.
  */
 export async function rateLimit(
   request: NextRequest,
@@ -65,7 +76,15 @@ export async function rateLimit(
 }
 
 /**
- * Redis-based distributed rate limiting
+ * Implements Redis-based distributed rate limiting.
+ *
+ * This function utilizes Redis to manage rate limiting by incrementing a counter for a given key and setting an expiration time.
+ * It calculates the allowed requests, remaining requests, and the reset time based on the provided RateLimitConfig.
+ * In case of a Redis error, it falls back to an in-memory rate limiting strategy using the inMemoryRateLimit function.
+ *
+ * @param redis - The Redis client instance used for rate limiting operations.
+ * @param key - The unique key for the rate limit.
+ * @param config - The configuration object containing rate limit settings.
  */
 async function distributedRateLimit(
   redis: import('@upstash/redis').Redis,
@@ -103,7 +122,7 @@ async function distributedRateLimit(
 }
 
 /**
- * In-memory rate limiting (fallback)
+ * Implements in-memory rate limiting based on a key and configuration.
  */
 async function inMemoryRateLimit(
   key: string,
