@@ -52,6 +52,15 @@ interface Customer {
   email: string;
 }
 
+/**
+ * Manages the loyalty program and customer accounts within the application.
+ *
+ * This component fetches loyalty programs, accounts, and customers on mount, and provides forms for creating programs and managing points.
+ * It maintains local state for programs, accounts, customers, and form inputs, and handles submissions to create programs and update points.
+ * The component also includes loading states and conditional rendering for forms and data displays.
+ *
+ * @returns {JSX.Element} The rendered loyalty client component.
+ */
 export default function LoyaltyClient() {
   const [programs, setPrograms] = useState<LoyaltyProgram[]>([]);
   const [accounts, setAccounts] = useState<LoyaltyAccount[]>([]);
