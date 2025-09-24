@@ -15,6 +15,17 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/**
+ * Handles the POST request for generating a credit assessment.
+ *
+ * The function first parses the request body and validates the teamId using TeamIdSchema. If validation fails, it returns a 400 error.
+ * It then resolves the AI authorization and enforces the AI gate for the user. After preparing the payload, it attempts to generate a credit assessment.
+ * If any errors occur during this process, appropriate error responses are returned based on the type of error encountered.
+ *
+ * @param request - The incoming HTTP request object.
+ * @returns A JSON response containing either the credit assessment or an error message.
+ * @throws HttpError If there is an issue with the HTTP request.
+ */
 export async function POST(request: Request) {
   try {
     const body = await parseBoundedJson(request);
