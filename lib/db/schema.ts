@@ -1017,3 +1017,6 @@ export type TrainingContent = typeof trainingContent.$inferSelect;
 export type NewTrainingContent = typeof trainingContent.$inferInsert;
 export type TrainingSession = typeof trainingSessions.$inferSelect;
 export type NewTrainingSession = typeof trainingSessions.$inferInsert;
+export type JobExecution = typeof jobExecutions.$inferSelect;
+export type NewJobExecution = typeof jobExecutions.$inferInsert;
+export type NewTrainingSession = typeof trainingSessions.$inferInsert;
