@@ -20,7 +20,7 @@ export default function PaymentsPage() {
 
   const handleSavePayment = () => {
     // This is just a UI stub - no backend processing
-    alert("Payment saved! (This is a UI demonstration only)");
+    alert(`Payment saved! (This is a UI demonstration only) - Amount: ${amount}`);
     
     // Reset form
     setPaymentMethod("");
