@@ -1,16 +1,80 @@
 import { Knock } from "@knocklabs/node";
 
-const knock = new Knock(process.env.KNOCK_API_KEY);
-
-export interface NotificationPayload {
-  userId: string;
-  email: string;
-  data: Record<string, any>;
+export interface KnockResult {
+  success: boolean;
+  provider: "knock";
+  messageId?: string;
+  error?: string;
+  skipped?: boolean;
 }
 
-/**
- * Send credit due notification via Knock workflow
- */
+export const KnockTopics = {
+  ACCOUNT_EVENTS: "account_events",
+  BILLING_NOTICES: "billing_notices",
+  EXPORT_READY: "export_ready",
+  CREDIT_NOTICES: "credit_due",
+  KNOWLEDGE_BASE: "kb_article_published",
+  ADMIN_ALERTS: "admin_alert",
+} as const;
+
+let knockClient: Knock | null = null;
+let warned = false;
+
+function getKnock(): Knock | null {
+  if (!process.env.KNOCK_API_KEY) {
+    if (!warned) {
+      console.info("Knock disabled - KNOCK_API_KEY not configured");
+      warned = true;
+    }
+    return null;
+  }
+
+  if (!knockClient) {
+    knockClient = new Knock(process.env.KNOCK_API_KEY);
+  }
+
+  return knockClient;
+}
+
+function skippedResult(workflow: string): KnockResult {
+  return {
+    success: false,
+    provider: "knock",
+    skipped: true,
+    error: `${workflow} skipped; Knock not configured`,
+  };
+}
+
+function errorResult(workflow: string, error: unknown): KnockResult {
+  console.error(`Knock ${workflow} notification failed`);
+  return {
+    success: false,
+    provider: "knock",
+    error: error instanceof Error ? "Notification failed" : "Unknown error",
+  };
+}
+
+async function triggerWorkflow(
+  workflow: string,
+  payload: Record<string, any>
+): Promise<KnockResult> {
+  const client = getKnock();
+  if (!client) {
+    return skippedResult(workflow);
+  }
+
+  try {
+    const result = await client.workflows.trigger(workflow, payload);
+    return {
+      success: true,
+      provider: "knock",
+      messageId: result.workflow_run_id,
+    };
+  } catch (error) {
+    return errorResult(workflow, error);
+  }
+}
+
 export async function notifyCreditDue({
   userId,
   email,
@@ -25,48 +89,26 @@ export async function notifyCreditDue({
     daysOverdue: number;
     creditId: string;
   };
-}): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
-  try {
-    const result = await knock.workflows.trigger("credit_due", {
-      recipients: [
-        {
-          id: userId,
-          email,
-        },
-      ],
-      data: {
-        customer_name: payload.customerName,
-        amount_formatted: `$${(payload.amount / 100).toFixed(2)}`,
-        amount_cents: payload.amount,
-        due_date: payload.dueDate,
-        days_overdue: payload.daysOverdue,
-        credit_id: payload.creditId,
-        urgency_level: payload.daysOverdue > 60 ? "urgent" : payload.daysOverdue > 30 ? "high" : "normal",
+}): Promise<KnockResult> {
+  return triggerWorkflow("credit_due", {
+    recipients: [
+      {
+        id: userId,
+        email,
       },
-    });
-
-    return {
-      success: true,
-      provider: "knock",
-      messageId: result.workflow_run_id,
-    };
-  } catch (error) {
-    console.error("Knock notification failed:", error);
-    return {
-      success: false,
-      provider: "knock",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+    ],
+    data: {
+      customer_name: payload.customerName,
+      amount_formatted: `$${(payload.amount / 100).toFixed(2)}`,
+      amount_cents: payload.amount,
+      due_date: payload.dueDate,
+      days_overdue: payload.daysOverdue,
+      credit_id: payload.creditId,
+      urgency_level: payload.daysOverdue > 60 ? "urgent" : payload.daysOverdue > 30 ? "high" : "normal",
+    },
+  });
 }
 
-/**
- * Send KB article published notification
- */
 export async function notifyKBArticlePublished({
   userId,
   email,
@@ -80,45 +122,23 @@ export async function notifyKBArticlePublished({
     authorName: string;
     teamName: string;
   };
-}): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
-  try {
-    const result = await knock.workflows.trigger("kb_article_published", {
-      recipients: [
-        {
-          id: userId,
-          email,
-        },
-      ],
-      data: {
-        article_title: payload.articleTitle,
-        article_id: payload.articleId,
-        author_name: payload.authorName,
-        team_name: payload.teamName,
+}): Promise<KnockResult> {
+  return triggerWorkflow("kb_article_published", {
+    recipients: [
+      {
+        id: userId,
+        email,
       },
-    });
-
-    return {
-      success: true,
-      provider: "knock",
-      messageId: result.workflow_run_id,
-    };
-  } catch (error) {
-    console.error("Knock KB notification failed:", error);
-    return {
-      success: false,
-      provider: "knock",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+    ],
+    data: {
+      article_title: payload.articleTitle,
+      article_id: payload.articleId,
+      author_name: payload.authorName,
+      team_name: payload.teamName,
+    },
+  });
 }
 
-/**
- * Send admin alert notification
- */
 export async function notifyAdminAlert({
   userId,
   email,
@@ -132,79 +152,103 @@ export async function notifyAdminAlert({
     message: string;
     details?: Record<string, any>;
   };
-}): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
-  try {
-    const result = await knock.workflows.trigger("admin_alert", {
-      recipients: [
-        {
-          id: userId,
-          email,
-        },
-      ],
-      data: {
-        alert_type: payload.alertType,
-        severity: payload.severity,
-        message: payload.message,
-        details: payload.details || {},
-        timestamp: new Date().toISOString(),
+}): Promise<KnockResult> {
+  return triggerWorkflow("admin_alert", {
+    recipients: [
+      {
+        id: userId,
+        email,
       },
-    });
-
-    return {
-      success: true,
-      provider: "knock",
-      messageId: result.workflow_run_id,
-    };
-  } catch (error) {
-    console.error("Knock admin alert failed:", error);
-    return {
-      success: false,
-      provider: "knock",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+    ],
+    data: {
+      alert_type: payload.alertType,
+      severity: payload.severity,
+      message: payload.message,
+      details: payload.details || {},
+      timestamp: new Date().toISOString(),
+    },
+  });
 }
 
-/**
- * Send batch notifications to multiple users
- */
-export async function notifyBatch({
-  workflowId,
-  recipients,
-  data,
+export async function notifyAccountEvent({
+  topic,
+  userId,
+  email,
+  eventType,
+  metadata,
 }: {
-  workflowId: string;
-  recipients: Array<{ userId: string; email: string }>;
-  data: Record<string, any>;
-}): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
+  topic?: string;
+  userId: string;
+  email: string;
+  eventType: "signup" | "password_change" | "suspicious_activity";
+  metadata?: Record<string, any>;
+}): Promise<KnockResult> {
+  return triggerWorkflow(topic || "account_event", {
+    recipients: [
+      {
+        id: userId,
+        email,
+      },
+    ],
+    data: {
+      event_type: eventType,
+      metadata,
+    },
+  });
+}
 
-  try {
-    const result = await knock.workflows.trigger(workflowId, {
-      recipients: recipients.map((r) => ({
-        id: r.userId,
-        email: r.email,
-      })),
-      data,
-    });
+export async function notifyBillingNotice({
+  userId,
+  email,
+  noticeType,
+  amountCents,
+  dueDate,
+  payload,
+}: {
+  userId: string;
+  email: string;
+  noticeType: "invoice_posted" | "payment_received" | "payment_failed";
+  amountCents: number;
+  dueDate?: string;
+  payload?: Record<string, any>;
+}): Promise<KnockResult> {
+  return triggerWorkflow("billing_notice", {
+    recipients: [
+      {
+        id: userId,
+        email,
+      },
+    ],
+    data: {
+      notice_type: noticeType,
+      amount_cents: amountCents,
+      due_date: dueDate,
+      payload,
+    },
+  });
+}
 
-    return {
-      success: true,
-      provider: "knock",
-      messageId: result.workflow_run_id,
-    };
-  } catch (error) {
-    console.error("Knock batch notification failed:", error);
-    return {
-      success: false,
-      provider: "knock",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+export async function notifyExportReady({
+  userId,
+  email,
+  exportId,
+  downloadUrl,
+}: {
+  userId: string;
+  email: string;
+  exportId: string;
+  downloadUrl: string;
+}): Promise<KnockResult> {
+  return triggerWorkflow("export_ready", {
+    recipients: [
+      {
+        id: userId,
+        email,
+      },
+    ],
+    data: {
+      export_id: exportId,
+      download_url: downloadUrl,
+    },
+  });
 }

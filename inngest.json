@@ -1,0 +1,7 @@
+{
+  "$schema": "https://inngest.com/schema/route.v1.json",
+  "serve": {
+    "path": "/api/inngest",
+    "methods": ["GET", "POST", "PUT"]
+  }
+}

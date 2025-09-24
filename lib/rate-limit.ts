@@ -11,18 +11,104 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-// In-memory store (use Redis in production)
+// In-memory fallback store for development or when Redis is not available
+// Redis is used for distributed rate limiting in production (see getRedisClient())
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
+// Redis client (lazy loaded)
+let redis: import('@upstash/redis').Redis | null = null;
+let redisInitialized = false;
+
+async function getRedisClient() {
+  if (!redisInitialized) {
+    redisInitialized = true;
+    // Use Redis when configured (production or development with explicit config)
+    const redisUrl = process.env.UPSTASH_REDIS_KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+    const redisToken = process.env.UPSTASH_REDIS_KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+    
+    if (redisUrl && redisToken) {
+      try {
+        const { Redis } = await import('@upstash/redis');
+        redis = new Redis({
+          url: redisUrl,
+          token: redisToken,
+        });
+        // Connection test removed to avoid unnecessary latency
+        console.log('Rate limiting using Redis (distributed)');
+      } catch (error) {
+        console.warn('Failed to initialize Redis for rate limiting, falling back to in-memory:', error);
+        redis = null;
+      }
+    } else if (process.env.NODE_ENV === 'production') {
+      console.warn('Redis not configured for production rate limiting, using in-memory (not recommended for scaled deployments)');
+    }
+  }
+  return redis;
+}
+
 /**
- * Simple in-memory rate limiter
- * For production, use Redis or similar external store
+ * Distributed rate limiter with Redis support and in-memory fallback
+ * Uses Redis in production for distributed rate limiting across instances
  */
 export async function rateLimit(
   request: NextRequest,
   config: RateLimitConfig
 ): Promise<{ allowed: boolean; limit: number; remaining: number; resetTime: number }> {
   const key = config.keyGenerator ? config.keyGenerator(request) : getDefaultKey(request);
+  const redisClient = await getRedisClient();
+  
+  if (redisClient) {
+    return await distributedRateLimit(redisClient, key, config);
+  } else {
+    return await inMemoryRateLimit(key, config);
+  }
+}
+
+/**
+ * Redis-based distributed rate limiting
+ */
+async function distributedRateLimit(
+  redis: import('@upstash/redis').Redis,
+  key: string,
+  config: RateLimitConfig
+): Promise<{ allowed: boolean; limit: number; remaining: number; resetTime: number }> {
+  try {
+    const redisKey = `rl:${key}`;
+    const windowSeconds = Math.ceil(config.windowMs / 1000);
+    const now = Date.now();
+    const resetTime = now + config.windowMs;
+
+    // Use Redis pipeline for atomic operations
+    const pipeline = redis.multi();
+    pipeline.incr(redisKey);
+    pipeline.expire(redisKey, windowSeconds);
+    
+    const results = await pipeline.exec();
+    const count = results[0][1] || 0;
+    
+    const allowed = count <= config.maxRequests;
+    const remaining = Math.max(0, config.maxRequests - count);
+
+    return {
+      allowed,
+      limit: config.maxRequests,
+      remaining,
+      resetTime,
+    };
+  } catch (error) {
+    console.error('Redis rate limiting failed, falling back to in-memory:', error);
+    // Fall back to in-memory on Redis errors
+    return await inMemoryRateLimit(key, config);
+  }
+}
+
+/**
+ * In-memory rate limiting (fallback)
+ */
+async function inMemoryRateLimit(
+  key: string,
+  config: RateLimitConfig
+): Promise<{ allowed: boolean; limit: number; remaining: number; resetTime: number }> {
   const now = Date.now();
   
   // Clean up expired entries periodically
