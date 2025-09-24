@@ -163,7 +163,7 @@ export default function InventoryClient() {
     }).format(cents / 100);
   };
 
-  const getStockStatus = (product: Product) => {
+  const getStockStatus = (product: Product): 'out-of-stock' | 'low-stock' | 'in-stock' => {
     if (product.stockQuantity <= 0) return "out-of-stock";
     if (product.stockQuantity <= product.lowStockThreshold) return "low-stock";
     return "in-stock";
