@@ -1,6 +1,18 @@
 import { Knock } from "@knocklabs/node";
 
-const knock = new Knock(process.env.KNOCK_API_KEY);
+let knock: Knock | null = null;
+
+function getKnockClient(): Knock {
+  if (!process.env.KNOCK_API_KEY) {
+    throw new Error("KNOCK_API_KEY environment variable is required");
+  }
+  
+  if (!knock) {
+    knock = new Knock(process.env.KNOCK_API_KEY);
+  }
+  
+  return knock;
+}
 
 export interface NotificationPayload {
   userId: string;
@@ -26,12 +38,9 @@ export async function notifyCreditDue({
     creditId: string;
   };
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
   try {
-    const result = await knock.workflows.trigger("credit_due", {
+    const knockClient = getKnockClient();
+    const result = await knockClient.workflows.trigger("credit_due", {
       recipients: [
         {
           id: userId,
@@ -81,12 +90,9 @@ export async function notifyKBArticlePublished({
     teamName: string;
   };
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
   try {
-    const result = await knock.workflows.trigger("kb_article_published", {
+    const knockClient = getKnockClient();
+    const result = await knockClient.workflows.trigger("kb_article_published", {
       recipients: [
         {
           id: userId,
@@ -133,12 +139,9 @@ export async function notifyAdminAlert({
     details?: Record<string, any>;
   };
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
   try {
-    const result = await knock.workflows.trigger("admin_alert", {
+    const knockClient = getKnockClient();
+    const result = await knockClient.workflows.trigger("admin_alert", {
       recipients: [
         {
           id: userId,
@@ -181,12 +184,9 @@ export async function notifyBatch({
   recipients: Array<{ userId: string; email: string }>;
   data: Record<string, any>;
 }): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
-  if (!process.env.KNOCK_API_KEY) {
-    throw new Error("KNOCK_API_KEY environment variable is required");
-  }
-
   try {
-    const result = await knock.workflows.trigger(workflowId, {
+    const knockClient = getKnockClient();
+    const result = await knockClient.workflows.trigger(workflowId, {
       recipients: recipients.map((r) => ({
         id: r.userId,
         email: r.email,
