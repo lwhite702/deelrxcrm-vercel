@@ -91,11 +91,11 @@ test_security_headers() {
     if headers=$(curl --max-time "$TEST_TIMEOUT" --silent --head "$BASE_URL" 2>&1); then
         local missing_headers=()
         
-        # Check for essential security headers
-        [[ ! $headers =~ "X-Content-Type-Options: nosniff" ]] && missing_headers+=("X-Content-Type-Options")
-        [[ ! $headers =~ "Referrer-Policy:" ]] && missing_headers+=("Referrer-Policy")
-        [[ ! $headers =~ "X-Frame-Options:" ]] && missing_headers+=("X-Frame-Options")
-        [[ ! $headers =~ "Content-Security-Policy:" ]] && missing_headers+=("Content-Security-Policy")
+        # Check for essential security headers (case-insensitive, flexible whitespace)
+        echo "$headers" | grep -i -E '^X-Content-Type-Options:[[:space:]]*nosniff' >/dev/null || missing_headers+=("X-Content-Type-Options")
+        echo "$headers" | grep -i -E '^Referrer-Policy:[[:space:]]*' >/dev/null || missing_headers+=("Referrer-Policy")
+        echo "$headers" | grep -i -E '^X-Frame-Options:[[:space:]]*' >/dev/null || missing_headers+=("X-Frame-Options")
+        echo "$headers" | grep -i -E '^Content-Security-Policy:[[:space:]]*' >/dev/null || missing_headers+=("Content-Security-Policy")
         
         if [[ ${#missing_headers[@]} -eq 0 ]]; then
             echo -e "${GREEN}✓ OK${NC}"
