@@ -33,8 +33,7 @@ async function getRedisClient() {
           url: redisUrl,
           token: redisToken,
         });
-        // Test the connection
-        await redis.ping();
+        // Connection test removed to avoid unnecessary latency
         console.log('Rate limiting using Redis (distributed)');
       } catch (error) {
         console.warn('Failed to initialize Redis for rate limiting, falling back to in-memory:', error);
