@@ -51,8 +51,13 @@ export async function GET(request: NextRequest) {
     );
 
     // Check encryption key format
-    if (process.env.ENCRYPTION_KEY && process.env.ENCRYPTION_KEY.length !== 64) {
-      missingEnvVars.push("ENCRYPTION_KEY (invalid format - must be 64 hex chars)");
+    if (process.env.ENCRYPTION_KEY) {
+      const key = process.env.ENCRYPTION_KEY;
+      if (key.length !== 64) {
+        missingEnvVars.push("ENCRYPTION_KEY (invalid format - must be 64 hex chars)");
+      } else if (!/^[0-9a-fA-F]+$/.test(key)) {
+        missingEnvVars.push("ENCRYPTION_KEY (invalid format - must be valid hex characters)");
+      }
     }
 
     if (missingEnvVars.length > 0 || !redisHealthy) {
