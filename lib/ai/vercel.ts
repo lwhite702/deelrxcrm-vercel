@@ -29,6 +29,10 @@ import {
 } from "./schemas";
 
 const DEFAULT_MODEL = process.env.VERCEL_AI_MODEL || "gpt-4o-mini";
+const PRICING_MODEL = process.env.VERCEL_AI_PRICING_MODEL || "gpt-4o-mini";
+const DATA_MODEL = process.env.VERCEL_AI_DATA_MODEL || "gpt-4o-mini";
+const TRAINING_MODEL = process.env.VERCEL_AI_TRAINING_MODEL || "gpt-4o";
+const CREDIT_MODEL = process.env.VERCEL_AI_CREDIT_MODEL || "gpt-4o";
 const PROVIDER_NAME = "vercel-openai";
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
 
