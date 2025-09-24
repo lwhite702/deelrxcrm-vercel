@@ -322,7 +322,6 @@ function PricingCard({ plan, billing }: { plan: any; billing: string }) {
                   <span className="text-sm">{feature}</span>
                 </div>
               ))}
-          ))}
           
           {plan.limitations.map((limitation: string, index: number) => (
             <div key={index} className="flex items-center gap-3 opacity-60">

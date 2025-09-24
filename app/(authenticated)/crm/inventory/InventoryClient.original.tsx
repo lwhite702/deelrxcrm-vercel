@@ -275,7 +275,6 @@ export default function InventoryClient() {
                   </Button>
                 </CardContent>
               </Card>
-              </div>
             );
           })}
         </div>
@@ -286,7 +285,8 @@ export default function InventoryClient() {
             <p className="text-gray-400">No products found</p>
           </div>
         )}
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Adjustments Panel */}
       {showAdjustmentsPanel && (

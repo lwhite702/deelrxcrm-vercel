@@ -340,15 +340,18 @@ export default function LoyaltyClient() {
               <p className="text-gray-400">No loyalty programs found</p>
             </div>
           )}
-        </div>
-      )}
+          </CardContent>
+        </Card>
+        </TabsContent>
 
-      {/* Accounts Tab */}
-      {activeTab === "accounts" && (
-        <div className="urban-card">
-          <h2 className="text-2xl font-bold text-white mb-6">
-            Customer Loyalty Accounts
-          </h2>
+        <TabsContent value="accounts" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">
+                Customer Loyalty Accounts
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -419,8 +422,10 @@ export default function LoyaltyClient() {
               <p className="text-gray-400">No customer accounts found</p>
             </div>
           )}
-        </div>
-      )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Create Program Modal */}
       {showProgramForm && (
