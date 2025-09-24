@@ -11,7 +11,7 @@ import {
 } from "@/lib/feature-gates";
 import { requireTenantRole, type AuthContext } from "@/lib/auth/guards";
 
-export const REQUEST_BYTE_LIMIT = 32 * 1024; // 32KB
+export const REQUEST_BYTE_LIMIT = 8 * 1024; // 8KB
 export const TeamIdSchema = z.object({ teamId: z.number().int().positive() });
 
 export class HttpError extends Error {
