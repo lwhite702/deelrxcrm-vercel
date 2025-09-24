@@ -15,6 +15,18 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+/**
+ * Handles the POST request to generate a training plan.
+ *
+ * The function first parses the request body and validates the teamId using TeamIdSchema.
+ * If validation fails, it returns a 400 error. It then resolves the authorization context
+ * and enforces feature gates before generating the training plan. If any errors occur during
+ * the process, appropriate error responses are returned based on the type of error encountered.
+ *
+ * @param request - The incoming HTTP request object.
+ * @returns A JSON response containing either the generated training plan or an error message.
+ * @throws HttpError If an HTTP error occurs during processing.
+ */
 export async function POST(request: Request) {
   try {
     const body = await parseBoundedJson(request);
