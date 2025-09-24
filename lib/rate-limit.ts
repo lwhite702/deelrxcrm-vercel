@@ -85,7 +85,7 @@ async function distributedRateLimit(
     pipeline.expire(redisKey, windowSeconds);
     
     const results = await pipeline.exec();
-    const count = results[0] || 0;
+    const count = results[0][1] || 0;
     
     const allowed = count <= config.maxRequests;
     const remaining = Math.max(0, config.maxRequests - count);
