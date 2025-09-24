@@ -1,20 +1,21 @@
-import "./globals.css";
-import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
-import { getUser, getTeamForUser } from "@/lib/db/queries";
-import { SWRConfig } from "swr";
+import './globals.css';
+import type { Metadata, Viewport } from 'next';
+import { Manrope } from 'next/font/google';
+import { getUser, getTeamForUser } from '@/lib/db/queries';
+import { SWRConfig } from 'swr';
+import MyStatsig from './my-statsig';
 
 export const metadata: Metadata = {
-  title: "DeelRx CRM - Street-Smart Business Management",
+  title: 'DeelRx CRM - Street-Smart Business Management',
   description:
-    "Run the Block. Run the Business. Professional CRM for street-pharmacy operators and urban entrepreneurs.",
+    'Run the Block. Run the Business. Professional CRM for street-pharmacy operators and urban entrepreneurs.',
 };
 
 export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-const manrope = Manrope({ subsets: ["latin"] });
+const manrope = Manrope({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -24,18 +25,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${manrope.className}`}>
       <body className="min-h-[100dvh]">
-        <SWRConfig
-          value={{
-            fallback: {
-              // We do NOT await here
-              // Only components that read this data will suspend
-              "/api/user": getUser(),
-              "/api/team": getTeamForUser(),
-            },
-          }}
-        >
-          {children}
-        </SWRConfig>
+        <MyStatsig>
+          <SWRConfig
+            value={{
+              fallback: {
+                // We do NOT await here
+                // Only components that read this data will suspend
+                '/api/user': getUser(),
+                '/api/team': getTeamForUser(),
+              },
+            }}
+          >
+            {children}
+          </SWRConfig>
+        </MyStatsig>
       </body>
     </html>
   );

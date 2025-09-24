@@ -1,21 +1,33 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Plus,
   Package,
   TrendingUp,
   TrendingDown,
   RotateCcw,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 interface Product {
   id: string;
@@ -59,18 +71,18 @@ export default function InventoryClient() {
 
   // Form state for adjustments
   const [adjustmentForm, setAdjustmentForm] = useState({
-    adjustmentType: "increase" as "increase" | "decrease" | "correction",
-    quantity: "",
-    reason: "other" as
-      | "waste"
-      | "sample"
-      | "personal"
-      | "recount"
-      | "damage"
-      | "theft"
-      | "expired"
-      | "other",
-    notes: "",
+    adjustmentType: 'increase' as 'increase' | 'decrease' | 'correction',
+    quantity: '',
+    reason: 'other' as
+      | 'waste'
+      | 'sample'
+      | 'personal'
+      | 'recount'
+      | 'damage'
+      | 'theft'
+      | 'expired'
+      | 'other',
+    notes: '',
   });
 
   useEffect(() => {
@@ -80,13 +92,13 @@ export default function InventoryClient() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("/api/teams/1/products");
+      const response = await fetch('/api/teams/1/products');
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products || []);
       }
     } catch (error) {
-      console.error("Failed to fetch products:", error);
+      console.error('Failed to fetch products:', error);
     } finally {
       setLoading(false);
     }
@@ -94,13 +106,13 @@ export default function InventoryClient() {
 
   const fetchAdjustments = async () => {
     try {
-      const response = await fetch("/api/teams/1/adjustments");
+      const response = await fetch('/api/teams/1/adjustments');
       if (response.ok) {
         const data = await response.json();
         setAdjustments(data.adjustments || []);
       }
     } catch (error) {
-      console.error("Failed to fetch adjustments:", error);
+      console.error('Failed to fetch adjustments:', error);
     }
   };
 
@@ -118,10 +130,10 @@ export default function InventoryClient() {
     if (!selectedProduct) return;
 
     try {
-      const response = await fetch("/api/teams/1/adjustments", {
-        method: "POST",
+      const response = await fetch('/api/teams/1/adjustments', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           productId: selectedProduct.id,
@@ -139,34 +151,36 @@ export default function InventoryClient() {
 
         // Reset form
         setAdjustmentForm({
-          adjustmentType: "increase",
-          quantity: "",
-          reason: "other",
-          notes: "",
+          adjustmentType: 'increase',
+          quantity: '',
+          reason: 'other',
+          notes: '',
         });
         setShowAdjustmentForm(false);
         setSelectedProduct(null);
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error || "Failed to create adjustment"}`);
+        alert(`Error: ${error.error || 'Failed to create adjustment'}`);
       }
     } catch (error) {
-      console.error("Failed to create adjustment:", error);
-      alert("Failed to create adjustment");
+      console.error('Failed to create adjustment:', error);
+      alert('Failed to create adjustment');
     }
   };
 
   const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
     }).format(cents / 100);
   };
 
-  const getStockStatus = (product: Product): 'out-of-stock' | 'low-stock' | 'in-stock' => {
-    if (product.stockQuantity <= 0) return "out-of-stock";
-    if (product.stockQuantity <= product.lowStockThreshold) return "low-stock";
-    return "in-stock";
+  const getStockStatus = (
+    product: Product
+  ): 'out-of-stock' | 'low-stock' | 'in-stock' => {
+    if (product.stockQuantity <= 0) return 'out-of-stock';
+    if (product.stockQuantity <= product.lowStockThreshold) return 'low-stock';
+    return 'in-stock';
   };
 
   /**
@@ -181,12 +195,12 @@ export default function InventoryClient() {
    */
   const getStockStatusColor = (status: string) => {
     switch (status) {
-      case "out-of-stock":
-        return "text-red-400";
-      case "low-stock":
-        return "text-yellow-400";
+      case 'out-of-stock':
+        return 'text-red-400';
+      case 'low-stock':
+        return 'text-yellow-400';
       default:
-        return "text-green-400";
+        return 'text-green-400';
     }
   };
 
@@ -205,7 +219,7 @@ export default function InventoryClient() {
         <div className="flex space-x-4">
           <Button
             onClick={() => setShowAdjustmentsPanel(!showAdjustmentsPanel)}
-            variant={showAdjustmentsPanel ? "default" : "secondary"}
+            variant={showAdjustmentsPanel ? 'default' : 'secondary'}
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             Adjustments History
@@ -219,72 +233,72 @@ export default function InventoryClient() {
           <CardTitle className="text-2xl">Products</CardTitle>
         </CardHeader>
         <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => {
-            const status = getStockStatus(product);
-            return (
-              <Card key={product.id} className="bg-card">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {product.name}
-                      </h3>
-                      {product.sku && (
-                        <p className="text-sm text-muted-foreground">
-                          SKU: {product.sku}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => {
+              const status = getStockStatus(product);
+              return (
+                <Card key={product.id} className="bg-card">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="text-lg font-semibold">
+                          {product.name}
+                        </h3>
+                        {product.sku && (
+                          <p className="text-sm text-muted-foreground">
+                            SKU: {product.sku}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-primary">
+                          {formatCurrency(product.priceCents)}
                         </p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <p
+                          className={`text-sm font-medium ${getStockStatusColor(
+                            status
+                          )}`}
+                        >
+                          Stock: {product.stockQuantity}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Low Stock: {product.lowStockThreshold}
+                        </p>
+                      </div>
+                      {product.category && (
+                        <span className="px-2 py-1 bg-gray-700 text-xs rounded text-gray-300">
+                          {product.category}
+                        </span>
                       )}
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-primary">
-                        {formatCurrency(product.priceCents)}
-                      </p>
-                    </div>
-                  </div>
 
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <p
-                      className={`text-sm font-medium ${getStockStatusColor(
-                        status
-                      )}`}
+                    <Button
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setShowAdjustmentForm(true);
+                      }}
+                      className="w-full"
                     >
-                      Stock: {product.stockQuantity}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Low Stock: {product.lowStockThreshold}
-                    </p>
-                  </div>
-                  {product.category && (
-                    <span className="px-2 py-1 bg-gray-700 text-xs rounded text-gray-300">
-                      {product.category}
-                    </span>
-                  )}
-                </div>
-
-                                  <Button
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setShowAdjustmentForm(true);
-                    }}
-                    className="w-full"
-                  >
-                    <Package className="h-4 w-4 mr-2" />
-                    Adjust Stock
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {products.length === 0 && (
-          <div className="text-center py-12">
-            <Package className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-400">No products found</p>
+                      <Package className="h-4 w-4 mr-2" />
+                      Adjust Stock
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
-        )}
+
+          {products.length === 0 && (
+            <div className="text-center py-12">
+              <Package className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+              <p className="text-gray-400">No products found</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -324,13 +338,13 @@ export default function InventoryClient() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center">
-                        {adjustment.adjustmentType === "increase" && (
+                        {adjustment.adjustmentType === 'increase' && (
                           <TrendingUp className="h-4 w-4 text-green-400 mr-1" />
                         )}
-                        {adjustment.adjustmentType === "decrease" && (
+                        {adjustment.adjustmentType === 'decrease' && (
                           <TrendingDown className="h-4 w-4 text-red-400 mr-1" />
                         )}
-                        {adjustment.adjustmentType === "correction" && (
+                        {adjustment.adjustmentType === 'correction' && (
                           <RotateCcw className="h-4 w-4 text-blue-400 mr-1" />
                         )}
                         <span className="text-gray-300 capitalize">
@@ -342,7 +356,7 @@ export default function InventoryClient() {
                       <div className="text-white">
                         <p>{adjustment.quantity}</p>
                         <p className="text-xs text-gray-400">
-                          {adjustment.previousQuantity} →{" "}
+                          {adjustment.previousQuantity} →{' '}
                           {adjustment.newQuantity}
                         </p>
                       </div>
@@ -404,9 +418,9 @@ export default function InventoryClient() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  {adjustmentForm.adjustmentType === "correction"
-                    ? "New Quantity"
-                    : "Quantity"}
+                  {adjustmentForm.adjustmentType === 'correction'
+                    ? 'New Quantity'
+                    : 'Quantity'}
                 </label>
                 <input
                   type="number"

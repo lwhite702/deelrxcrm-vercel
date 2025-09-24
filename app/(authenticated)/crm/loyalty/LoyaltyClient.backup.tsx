@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Plus,
   Star,
@@ -8,15 +8,20 @@ import {
   TrendingDown,
   Users,
   Gift,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 
 interface LoyaltyProgram {
   id: string;
@@ -62,27 +67,27 @@ export default function LoyaltyClient() {
   const [selectedAccount, setSelectedAccount] = useState<LoyaltyAccount | null>(
     null
   );
-  const [activeTab, setActiveTab] = useState<"programs" | "accounts">(
-    "programs"
+  const [activeTab, setActiveTab] = useState<'programs' | 'accounts'>(
+    'programs'
   );
 
   // Form states
   const [programForm, setProgramForm] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
     isActive: true,
-    pointsPerDollar: "1",
-    dollarsPerPoint: "100",
-    minimumRedemption: "100",
-    expirationMonths: "",
+    pointsPerDollar: '1',
+    dollarsPerPoint: '100',
+    minimumRedemption: '100',
+    expirationMonths: '',
   });
 
   const [pointsForm, setPointsForm] = useState({
-    action: "accrue" as "accrue" | "redeem",
-    customerId: "",
-    programId: "",
-    points: "",
-    description: "",
+    action: 'accrue' as 'accrue' | 'redeem',
+    customerId: '',
+    programId: '',
+    points: '',
+    description: '',
   });
 
   useEffect(() => {
@@ -93,25 +98,25 @@ export default function LoyaltyClient() {
 
   const fetchPrograms = async () => {
     try {
-      const response = await fetch("/api/teams/1/loyalty/programs");
+      const response = await fetch('/api/teams/1/loyalty/programs');
       if (response.ok) {
         const data = await response.json();
         setPrograms(data.programs || []);
       }
     } catch (error) {
-      console.error("Failed to fetch programs:", error);
+      console.error('Failed to fetch programs:', error);
     }
   };
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch("/api/teams/1/loyalty/accounts");
+      const response = await fetch('/api/teams/1/loyalty/accounts');
       if (response.ok) {
         const data = await response.json();
         setAccounts(data.accounts || []);
       }
     } catch (error) {
-      console.error("Failed to fetch accounts:", error);
+      console.error('Failed to fetch accounts:', error);
     } finally {
       setLoading(false);
     }
@@ -119,13 +124,13 @@ export default function LoyaltyClient() {
 
   const fetchCustomers = async () => {
     try {
-      const response = await fetch("/api/teams/1/customers");
+      const response = await fetch('/api/teams/1/customers');
       if (response.ok) {
         const data = await response.json();
         setCustomers(data.customers || []);
       }
     } catch (error) {
-      console.error("Failed to fetch customers:", error);
+      console.error('Failed to fetch customers:', error);
     }
   };
 
@@ -133,10 +138,10 @@ export default function LoyaltyClient() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/teams/1/loyalty/programs", {
-        method: "POST",
+      const response = await fetch('/api/teams/1/loyalty/programs', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...programForm,
@@ -155,11 +160,11 @@ export default function LoyaltyClient() {
         resetProgramForm();
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error || "Failed to create program"}`);
+        alert(`Error: ${error.error || 'Failed to create program'}`);
       }
     } catch (error) {
-      console.error("Failed to create program:", error);
-      alert("Failed to create program");
+      console.error('Failed to create program:', error);
+      alert('Failed to create program');
     }
   };
 
@@ -167,10 +172,10 @@ export default function LoyaltyClient() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/teams/1/loyalty/accounts", {
-        method: "POST",
+      const response = await fetch('/api/teams/1/loyalty/accounts', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           action: pointsForm.action,
@@ -187,40 +192,40 @@ export default function LoyaltyClient() {
         resetPointsForm();
       } else {
         const error = await response.json();
-        alert(`Error: ${error.error || "Failed to process points"}`);
+        alert(`Error: ${error.error || 'Failed to process points'}`);
       }
     } catch (error) {
-      console.error("Failed to process points:", error);
-      alert("Failed to process points");
+      console.error('Failed to process points:', error);
+      alert('Failed to process points');
     }
   };
 
   const resetProgramForm = () => {
     setProgramForm({
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       isActive: true,
-      pointsPerDollar: "1",
-      dollarsPerPoint: "100",
-      minimumRedemption: "100",
-      expirationMonths: "",
+      pointsPerDollar: '1',
+      dollarsPerPoint: '100',
+      minimumRedemption: '100',
+      expirationMonths: '',
     });
   };
 
   const resetPointsForm = () => {
     setPointsForm({
-      action: "accrue",
-      customerId: "",
-      programId: "",
-      points: "",
-      description: "",
+      action: 'accrue',
+      customerId: '',
+      programId: '',
+      points: '',
+      description: '',
     });
   };
 
   const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
     }).format(cents / 100);
   };
 
@@ -248,16 +253,19 @@ export default function LoyaltyClient() {
               Customer Accounts
             </TabsTrigger>
           </TabsList>
-          
+
           <div className="flex space-x-2">
-            {activeTab === "programs" && (
+            {activeTab === 'programs' && (
               <Button onClick={() => setShowProgramForm(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Program
               </Button>
             )}
-            {activeTab === "accounts" && (
-              <Button onClick={() => setShowPointsForm(true)} variant="secondary">
+            {activeTab === 'accounts' && (
+              <Button
+                onClick={() => setShowPointsForm(true)}
+                variant="secondary"
+              >
                 <Gift className="h-4 w-4 mr-2" />
                 Manage Points
               </Button>
@@ -268,80 +276,79 @@ export default function LoyaltyClient() {
         <TabsContent value="programs" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">
-                Loyalty Programs
-              </CardTitle>
+              <CardTitle className="text-2xl">Loyalty Programs</CardTitle>
             </CardHeader>
             <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {programs.map((program) => (
-              <div key={program.id} className="bg-gray-800 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">
-                      {program.name}
-                    </h3>
-                    {program.description && (
-                      <p className="text-sm text-gray-400 mt-1">
-                        {program.description}
-                      </p>
-                    )}
-                  </div>
-                  <span
-                    className={`px-2 py-1 text-xs rounded ${
-                      program.isActive
-                        ? "bg-green-800 text-green-200"
-                        : "bg-red-800 text-red-200"
-                    }`}
-                  >
-                    {program.isActive ? "Active" : "Inactive"}
-                  </span>
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Points per $:</span>
-                    <span className="text-white">
-                      {program.pointsPerDollar}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Point value:</span>
-                    <span className="text-white">
-                      {formatCurrency(program.dollarsPerPoint)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Min redemption:</span>
-                    <span className="text-white">
-                      {program.minimumRedemption} pts
-                    </span>
-                  </div>
-                  {program.expirationMonths && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Expires:</span>
-                      <span className="text-white">
-                        {program.expirationMonths} months
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {programs.map((program) => (
+                  <div key={program.id} className="bg-gray-800 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">
+                          {program.name}
+                        </h3>
+                        {program.description && (
+                          <p className="text-sm text-gray-400 mt-1">
+                            {program.description}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs rounded ${
+                          program.isActive
+                            ? 'bg-green-800 text-green-200'
+                            : 'bg-red-800 text-red-200'
+                        }`}
+                      >
+                        {program.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                  )}
-                </div>
 
-                <div className="text-xs text-gray-500">
-                  Created: {new Date(program.createdAt).toLocaleDateString()}
-                </div>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Points per $:</span>
+                        <span className="text-white">
+                          {program.pointsPerDollar}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Point value:</span>
+                        <span className="text-white">
+                          {formatCurrency(program.dollarsPerPoint)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Min redemption:</span>
+                        <span className="text-white">
+                          {program.minimumRedemption} pts
+                        </span>
+                      </div>
+                      {program.expirationMonths && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Expires:</span>
+                          <span className="text-white">
+                            {program.expirationMonths} months
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="text-xs text-gray-500">
+                      Created:{' '}
+                      {new Date(program.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {programs.length === 0 && (
-            <div className="text-center py-12">
-              <Star className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-              <p className="text-gray-400">No loyalty programs found</p>
-            </div>
-          )}
-          </CardContent>
-        </Card>
+              {programs.length === 0 && (
+                <div className="text-center py-12">
+                  <Star className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                  <p className="text-gray-400">No loyalty programs found</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="accounts" className="space-y-6">
@@ -352,76 +359,80 @@ export default function LoyaltyClient() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-gray-300">
-                    Customer
-                  </th>
-                  <th className="text-left py-3 px-4 text-gray-300">Program</th>
-                  <th className="text-left py-3 px-4 text-gray-300">
-                    Current Points
-                  </th>
-                  <th className="text-left py-3 px-4 text-gray-300">
-                    Lifetime Points
-                  </th>
-                  <th className="text-left py-3 px-4 text-gray-300">
-                    Redeemed
-                  </th>
-                  <th className="text-left py-3 px-4 text-gray-300">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {accounts.map((account) => (
-                  <tr key={account.id} className="border-b border-gray-800">
-                    <td className="py-3 px-4">
-                      <div>
-                        <p className="text-white font-medium">
-                          {account.customerName}
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          {account.customerEmail}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-white">
-                      {account.programName}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="text-green-400 font-bold">
-                        {account.currentPoints.toLocaleString()}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-gray-300">
-                      {account.lifetimePoints.toLocaleString()}
-                    </td>
-                    <td className="py-3 px-4 text-gray-300">
-                      {account.lifetimeRedeemed.toLocaleString()}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-1 text-xs rounded ${
-                          account.isActive
-                            ? "bg-green-800 text-green-200"
-                            : "bg-red-800 text-red-200"
-                        }`}
-                      >
-                        {account.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        Customer
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        Program
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        Current Points
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        Lifetime Points
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        Redeemed
+                      </th>
+                      <th className="text-left py-3 px-4 text-gray-300">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {accounts.map((account) => (
+                      <tr key={account.id} className="border-b border-gray-800">
+                        <td className="py-3 px-4">
+                          <div>
+                            <p className="text-white font-medium">
+                              {account.customerName}
+                            </p>
+                            <p className="text-sm text-gray-400">
+                              {account.customerEmail}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-white">
+                          {account.programName}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-green-400 font-bold">
+                            {account.currentPoints.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-gray-300">
+                          {account.lifetimePoints.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4 text-gray-300">
+                          {account.lifetimeRedeemed.toLocaleString()}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span
+                            className={`px-2 py-1 text-xs rounded ${
+                              account.isActive
+                                ? 'bg-green-800 text-green-200'
+                                : 'bg-red-800 text-red-200'
+                            }`}
+                          >
+                            {account.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          {accounts.length === 0 && (
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-              <p className="text-gray-400">No customer accounts found</p>
-            </div>
-          )}
+              {accounts.length === 0 && (
+                <div className="text-center py-12">
+                  <Users className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                  <p className="text-gray-400">No customer accounts found</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -703,7 +714,7 @@ export default function LoyaltyClient() {
                   }
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white"
                   placeholder={`${
-                    pointsForm.action === "accrue" ? "Earned" : "Redeemed"
+                    pointsForm.action === 'accrue' ? 'Earned' : 'Redeemed'
                   } ${pointsForm.points} points`}
                 />
               </div>
@@ -712,12 +723,12 @@ export default function LoyaltyClient() {
                 <button
                   type="submit"
                   className={`flex-1 urban-btn ${
-                    pointsForm.action === "accrue"
-                      ? "bg-green-600"
-                      : "bg-red-600"
+                    pointsForm.action === 'accrue'
+                      ? 'bg-green-600'
+                      : 'bg-red-600'
                   }`}
                 >
-                  {pointsForm.action === "accrue" ? (
+                  {pointsForm.action === 'accrue' ? (
                     <>
                       <TrendingUp className="h-4 w-4 mr-2" />
                       Award Points

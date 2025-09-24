@@ -7,13 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025.09.24] - Phase 5: Documentation & Pricing Transparency
 
 ### Added
+
 - **Manual Payments Guide** (`pages/manual-payments.mdx`)
+
   - Comprehensive guide for Zelle, Apple Pay, Cash App, and cash payments
   - Step-by-step payment reconciliation workflows
   - Best practices for payment tracking and security
   - Troubleshooting guide for common payment issues
 
 - **Pricing & Fees Page** (`pages/pricing-fees.mdx`)
+
   - Transparent three-tier pricing structure
   - Clear "Coming Soon" messaging for card processing
   - Complete fee disclosure for future card processing
@@ -27,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Data encryption and protection details
 
 ### Updated
+
 - **Navigation Structure** (`mint.json`)
   - Added "Platform" section with new pages
   - Reorganized documentation for better user flow
@@ -34,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Maintained existing API reference structure
 
 ### Documentation Improvements
+
 - **Manual Payment Processing**: No platform fees messaging
 - **Card Processing Transparency**: "Coming Soon" badges throughout
 - **Fee Structure**: Clear all-in-one fee disclosure (5.0% + $0.30 max)
@@ -44,7 +49,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025.09.15] - Phase 4: AI Layer & Extended Features
 
 ### Added
+
 - **AI Intelligence Documentation**
+
   - Pricing intelligence API documentation
   - Credit analysis endpoint documentation
   - Data enrichment API reference
@@ -57,6 +64,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Delivery tracking and route optimization
 
 ### Updated
+
 - **API Reference**: Added AI endpoint documentation
 - **Core CRM**: Enhanced customer and order management docs
 - **Integration Guide**: Updated with new AI service integrations
@@ -66,7 +74,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025.09.01] - Phase 3: Payment System & Branding
 
 ### Added
+
 - **Payment Processing Documentation**
+
   - Manual payment reconciliation guides
   - Payment method setup instructions
   - Transaction recording procedures
@@ -78,6 +88,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Professional styling and layout improvements
 
 ### Updated
+
 - **Core CRM Documentation**: Refreshed payment processing sections
 - **Getting Started Guide**: Updated with new payment features
 - **API Reference**: Added payment endpoint documentation
@@ -87,7 +98,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025.08.15] - Phase 2: Core CRM Completion
 
 ### Added
+
 - **Complete CRM Documentation**
+
   - Customer management comprehensive guide
   - Product catalog setup and management
   - Order processing workflows
@@ -99,7 +112,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Team collaboration tools
 
 ### Updated
-- **API Reference**: Complete API endpoint documentation  
+
+- **API Reference**: Complete API endpoint documentation
 - **Integration Guide**: Third-party service integration instructions
 - **Security Documentation**: Enhanced security feature documentation
 
@@ -108,7 +122,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2025.08.01] - Phase 1: Foundation Documentation
 
 ### Added
+
 - **Initial Documentation Structure**
+
   - Getting started guide
   - Authentication setup
   - Basic CRM functionality documentation
@@ -120,6 +136,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Troubleshooting common issues
 
 ### Infrastructure
+
 - **Mintlify Documentation Platform**: Deployed and configured
 - **Navigation Structure**: Initial organization and categorization
 - **Search Functionality**: Full-text search across all documentation
@@ -130,18 +147,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Upcoming Features
 
 ### Card Processing Integration (Coming Soon)
+
 - Credit and debit card processing documentation
 - Fee structure and pricing guides
 - PCI compliance documentation
 - Payment gateway integration guides
 
 ### Advanced AI Features (Planned)
+
 - Machine learning model documentation
 - Predictive analytics guides
 - Custom AI training documentation
 - Advanced intelligence APIs
 
 ### Mobile Application (Roadmap)
+
 - Mobile app user guides
 - Offline functionality documentation
 - Mobile-specific API documentation
@@ -152,15 +172,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Feedback & Contributions
 
 ### Documentation Updates
+
 - All documentation updates are tracked in this changelog
 - Community contributions welcome via GitHub issues
 - Regular review and update cycles implemented
 
 ### User Feedback
+
 - Documentation quality surveys sent quarterly
 - User-requested documentation tracked and prioritized
 - Continuous improvement based on user analytics
 
 ---
 
-*For technical support or documentation questions, contact [support@deelrx.com](mailto:support@deelrx.com)*
+_For technical support or documentation questions, contact [support@deelrx.com](mailto:support@deelrx.com)_
