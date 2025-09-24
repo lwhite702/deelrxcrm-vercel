@@ -1,6 +1,21 @@
 import { Knock } from "@knocklabs/node";
 
-const knock = new Knock(process.env.KNOCK_API_KEY);
+let knockClient: Knock | null = null;
+
+/**
+ * Get Knock client instance, initializing lazily when needed
+ */
+function getKnockClient(): Knock {
+  if (!process.env.KNOCK_API_KEY) {
+    throw new Error("KNOCK_API_KEY environment variable is required");
+  }
+
+  if (!knockClient) {
+    knockClient = new Knock({ apiKey: process.env.KNOCK_API_KEY });
+  }
+
+  return knockClient;
+}
 
 export interface NotificationPayload {
   userId: string;
@@ -31,6 +46,7 @@ export async function notifyCreditDue({
   }
 
   try {
+    const knock = getKnockClient();
     const result = await knock.workflows.trigger("credit_due", {
       recipients: [
         {
@@ -86,6 +102,7 @@ export async function notifyKBArticlePublished({
   }
 
   try {
+    const knock = getKnockClient();
     const result = await knock.workflows.trigger("kb_article_published", {
       recipients: [
         {
@@ -138,6 +155,7 @@ export async function notifyAdminAlert({
   }
 
   try {
+    const knock = getKnockClient();
     const result = await knock.workflows.trigger("admin_alert", {
       recipients: [
         {
@@ -186,6 +204,7 @@ export async function notifyBatch({
   }
 
   try {
+    const knock = getKnockClient();
     const result = await knock.workflows.trigger(workflowId, {
       recipients: recipients.map((r) => ({
         id: r.userId,
