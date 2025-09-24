@@ -32,6 +32,17 @@ export class RateLimiter {
     this.config = config;
   }
 
+  /**
+   * Check the rate limit for a request and determine if it is allowed.
+   *
+   * This function retrieves the identifier from the request and constructs a Redis key for rate limiting.
+   * If Redis is unavailable, it allows the request by default. If Redis is available, it checks the current
+   * request count, calculates the remaining requests, and updates the count in Redis. If the limit is reached,
+   * it denies the request. In case of any errors during the process, it also allows the request by default.
+   *
+   * @param req - The NextRequest object representing the incoming request.
+   * @returns An object containing whether the request is allowed, the remaining requests, and the reset time.
+   */
   async check(req: NextRequest): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
     const identifier = this.getIdentifier(req);
     const redisKey = `rl:${this.config.key}:${identifier}`;
