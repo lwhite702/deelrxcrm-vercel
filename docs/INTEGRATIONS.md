@@ -321,20 +321,42 @@ export async function POST(request: NextRequest) {
 
 ### Production Considerations
 
-For high-traffic production, use Redis-based rate limiting:
+Rate limiting now automatically uses Redis for distributed rate limiting in production when configured:
 
 ```typescript
-// With Redis (recommended for production)
-const redis = new Redis(process.env.RATE_LIMIT_REDIS_URL);
+// lib/rate-limit.ts - Automatically detects Redis and uses distributed limiting
+import { rateLimit, RateLimitConfigs } from '@/lib/rate-limit';
 
-export async function distributedRateLimit(key: string, limit: number, window: number) {
-  const multi = redis.multi();
-  multi.incr(key);
-  multi.expire(key, window);
-  const [count] = await multi.exec();
+export async function POST(request: NextRequest) {
+  // Uses Redis in production, in-memory in development
+  const result = await rateLimit(request, RateLimitConfigs.API_GENERAL);
   
-  return { allowed: count <= limit, remaining: limit - count };
+  if (!result.allowed) {
+    return new Response('Rate limit exceeded', { status: 429 });
+  }
+  
+  // Your API logic here
 }
+```
+
+The implementation:
+- **Production**: Uses Redis for distributed rate limiting across instances
+- **Development**: Falls back to in-memory rate limiting 
+- **Failure handling**: Fails open if Redis is unavailable (allows requests)
+- **Environment detection**: Automatically chooses the right backend
+
+### Redis Configuration
+
+Configure these environment variables for production rate limiting:
+
+```bash
+# Primary Redis configuration (recommended)
+UPSTASH_REDIS_KV_REST_API_URL=https://your-redis-host.upstash.io
+UPSTASH_REDIS_KV_REST_API_TOKEN=your-api-token
+
+# Fallback Redis configuration (legacy support)
+UPSTASH_REDIS_REST_URL=https://your-redis-host.upstash.io  
+UPSTASH_REDIS_REST_TOKEN=your-api-token
 ```
 
 ## Environment Variables
@@ -368,9 +390,9 @@ NEXT_PUBLIC_SENTRY_DSN=https://...@sentry.io/...
 NEXT_PUBLIC_KNOCK_PUBLIC_API_KEY=pk_test_...
 RESEND_FROM_EMAIL=noreply@yourdomain.com
 
-# Distributed rate limiting
-RATE_LIMIT_REDIS_URL=redis://...
-RATE_LIMIT_REDIS_TOKEN=...
+# Distributed rate limiting (Redis for production)
+UPSTASH_REDIS_KV_REST_API_URL=https://your-redis-host.upstash.io
+UPSTASH_REDIS_KV_REST_API_TOKEN=your-api-token
 ```
 
 ## Boot Order & Dependencies

@@ -1,11 +1,22 @@
 import { Redis } from '@upstash/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Initialize Redis client
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+// Initialize Redis client with fallback for environment variable naming
+let redis: Redis | null = null;
+
+try {
+  const redisUrl = process.env.UPSTASH_REDIS_KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const redisToken = process.env.UPSTASH_REDIS_KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  
+  if (redisUrl && redisToken) {
+    redis = new Redis({
+      url: redisUrl,
+      token: redisToken,
+    });
+  }
+} catch (error) {
+  console.warn('Failed to initialize Redis for rate limiting:', error);
+}
 
 interface RateLimitConfig {
   key: string;
@@ -24,6 +35,16 @@ export class RateLimiter {
   async check(req: NextRequest): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
     const identifier = this.getIdentifier(req);
     const redisKey = `rl:${this.config.key}:${identifier}`;
+    
+    // If Redis is not available, fail open (allow requests)
+    if (!redis) {
+      console.warn('Redis not available for rate limiting, allowing request');
+      return { 
+        allowed: true, 
+        remaining: this.config.limit, 
+        resetTime: Date.now() + (this.config.window * 1000) 
+      };
+    }
     
     try {
       const current = await redis.get<number>(redisKey) || 0;
