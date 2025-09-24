@@ -53,7 +53,7 @@ export const DataEntitySchema = z.object({
   entityId: z.string().min(1),
   entityType: z.enum(["customer", "lead", "product", "supplier", "staff", "other"]).default("other"),
   currentData: z.record(z.string(), z.any()).refine(
-    (data) => JSON.stringify(data).length <= 4000,
+    (data) => Buffer.byteLength(JSON.stringify(data), 'utf8') <= 4000,
     "currentData must be under 4KB"
   ),
   enrichmentGoals: z.array(z.string().min(1)).max(10).optional(),
