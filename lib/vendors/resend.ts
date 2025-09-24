@@ -2,6 +2,9 @@ import { Resend } from "resend";
 
 let resend: Resend | null = null;
 
+/**
+ * Retrieves the Resend client instance, creating it if necessary.
+ */
 function getResendClient(): Resend {
   if (!process.env.RESEND_API_KEY) {
     throw new Error("RESEND_API_KEY environment variable is required");
@@ -23,7 +26,21 @@ export interface EmailPayload {
 }
 
 /**
- * Send credit due notification email as fallback
+ * Send credit due notification email as fallback.
+ *
+ * This function constructs and sends an email notification regarding a credit payment that is due or overdue.
+ * It determines the urgency of the notification based on the number of days overdue and formats the email content accordingly.
+ * The email is sent using a resend client, and the function handles any errors that may occur during the sending process.
+ *
+ * @param to - An array of recipient email addresses.
+ * @param payload - An object containing details about the customer and payment.
+ * @param payload.customerName - The name of the customer.
+ * @param payload.amount - The amount due in cents.
+ * @param payload.dueDate - The due date of the payment.
+ * @param payload.daysOverdue - The number of days the payment is overdue.
+ * @param payload.creditId - The identifier for the credit account.
+ * @returns A promise that resolves to an object indicating the success of the email sending operation,
+ *          the provider used, and optionally the message ID or error message.
  */
 export async function sendCreditDueEmail({
   to,
@@ -137,7 +154,17 @@ DeelRx CRM Team
 }
 
 /**
- * Send KB article notification email as fallback
+ * Send a notification email for a new KB article.
+ *
+ * This function constructs an HTML email using the provided article details and sends it to the specified recipients using the Resend client. It handles both successful and failed email sending attempts, returning an object that indicates the success status, the email provider, and optionally the message ID or error message.
+ *
+ * @param {Object} params - The parameters for sending the email.
+ * @param {string[]} params.to - The list of recipient email addresses.
+ * @param {Object} params.payload - The details of the article.
+ * @param {string} params.payload.articleTitle - The title of the article.
+ * @param {string} params.payload.articleId - The ID of the article.
+ * @param {string} params.payload.authorName - The name of the article's author.
+ * @param {string} params.payload.teamName - The name of the team associated with the article.
  */
 export async function sendKBArticleEmail({
   to,
@@ -213,7 +240,17 @@ export async function sendKBArticleEmail({
 }
 
 /**
- * Send admin alert email as fallback
+ * Send an admin alert email as a fallback mechanism.
+ *
+ * This function constructs an HTML email based on the provided alert details, including severity and message. It utilizes a resend client to send the email to the specified recipients. The email's appearance is customized based on the severity level, and it includes optional details if provided. In case of an error during the sending process, it logs the error and returns a failure response.
+ *
+ * @param to - An array of recipient email addresses.
+ * @param payload - An object containing the alert details.
+ * @param payload.alertType - The type of alert being sent.
+ * @param payload.severity - The severity level of the alert, which can be "low", "medium", "high", or "critical".
+ * @param payload.message - The main message of the alert.
+ * @param payload.details - Optional additional details related to the alert.
+ * @returns A promise that resolves to an object indicating the success of the email sending operation, the provider used, and optionally the message ID or error message.
  */
 export async function sendAdminAlertEmail({
   to,
@@ -311,7 +348,13 @@ export async function sendAdminAlertEmail({
 }
 
 /**
- * Generic email sender
+ * Sends an email using the Resend service.
+ *
+ * This function constructs an email using the provided payload and attempts to send it via the Resend client.
+ * It handles both successful and failed email sending attempts, returning an object that indicates the success status,
+ * the provider used, and optionally the message ID or error message if the sending fails.
+ *
+ * @param {EmailPayload} payload - The email details including sender, recipient, subject, and content.
  */
 export async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; provider: string; messageId?: string; error?: string }> {
   try {
