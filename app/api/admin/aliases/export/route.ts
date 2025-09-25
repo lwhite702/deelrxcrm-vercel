@@ -4,6 +4,16 @@ import { aliases, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUser } from '@/lib/db/queries';
 
+/**
+ * Handles the GET request to export user aliases as a CSV file.
+ *
+ * The function first retrieves the current user and checks if they have the 'owner' role. If not, it returns a 403 Unauthorized response.
+ * It then fetches alias records from the database, constructs CSV content from these records, and returns it with appropriate headers for download.
+ *
+ * @param request - The NextRequest object representing the incoming request.
+ * @returns A NextResponse object containing the CSV content and a 200 status if successful.
+ * @throws Error If there is an issue during the process, a 500 status response is returned with an error message.
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
