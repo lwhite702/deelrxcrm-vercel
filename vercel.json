@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm run deploy:build",
+  "buildCommand": "pnpm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm ci",
+  "installCommand": "pnpm install --frozen-lockfile",
   
   "functions": {
     "app/api/**/*.ts": {
@@ -78,5 +78,5 @@
     }
   ],
   
-  "regions": ["iad1", "fra1", "sfo1"]
+  "regions": ["iad1"]
 }
