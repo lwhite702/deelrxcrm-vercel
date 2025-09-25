@@ -114,8 +114,19 @@
     "linkedin": "https://www.linkedin.com/company/deelrx"
   },
   "analytics": {
-    "gtag": {
-      "tagId": "G-XXXXXXXXXX"
+    "posthog": {
+      "apiKey": "phc_XXXXXXXXXX"
     }
+  },
+  "seo": {
+    "indexHiddenPages": false
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "search": {
+    "prompt": "Search DeelRx CRM documentation..."
   }
 }

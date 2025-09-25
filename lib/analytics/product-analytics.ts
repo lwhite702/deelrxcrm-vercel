@@ -32,18 +32,18 @@
 import React from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { 
-  trackEvent, 
-  identifyUser, 
-  setUserProperties, 
+import {
+  trackEvent,
+  identifyUser,
+  setUserProperties,
   trackPageView,
   getFeatureFlag,
-  isFeatureFlagEnabled 
+  isFeatureFlagEnabled,
 } from './posthog-provider';
-import { 
-  POSTHOG_EVENTS, 
-  POSTHOG_USER_PROPERTIES, 
-  isPostHogConfigured 
+import {
+  POSTHOG_EVENTS,
+  POSTHOG_USER_PROPERTIES,
+  isPostHogConfigured,
 } from './posthog-config';
 
 // Event Types for Type Safety - using PostHog events
@@ -78,7 +78,8 @@ export interface EventProperties {
 
 class ProductAnalytics {
   private initialized = false;
-  private eventQueue: Array<{ event: string; properties?: EventProperties }> = [];
+  private eventQueue: Array<{ event: string; properties?: EventProperties }> =
+    [];
 
   // Initialize analytics providers
   async initialize(userId?: string, userProperties?: Partial<UserProperties>) {
@@ -98,7 +99,7 @@ class ProductAnalytics {
 
       // Process queued events
       this.processEventQueue();
-      
+
       this.initialized = true;
 
       console.log('✅ Product Analytics initialized with PostHog');
@@ -120,7 +121,8 @@ class ProductAnalytics {
       [POSTHOG_USER_PROPERTIES.NAME]: properties.organization_name,
       [POSTHOG_USER_PROPERTIES.ROLE]: properties.user_role,
       [POSTHOG_USER_PROPERTIES.SUBSCRIPTION_PLAN]: properties.plan_type,
-      [POSTHOG_USER_PROPERTIES.CREATED_AT]: properties.signup_date || new Date().toISOString(),
+      [POSTHOG_USER_PROPERTIES.CREATED_AT]:
+        properties.signup_date || new Date().toISOString(),
       [POSTHOG_USER_PROPERTIES.TEAM_ID]: properties.organization_id,
       [POSTHOG_USER_PROPERTIES.TOTAL_CUSTOMERS]: properties.total_contacts,
       [POSTHOG_USER_PROPERTIES.TOTAL_REVENUE]: properties.monthly_revenue,
@@ -141,7 +143,10 @@ class ProductAnalytics {
       properties: {
         ...properties,
         timestamp: new Date(),
-        user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
+        user_agent:
+          typeof window !== 'undefined'
+            ? window.navigator.userAgent
+            : undefined,
         referrer: typeof window !== 'undefined' ? document.referrer : undefined,
         url: typeof window !== 'undefined' ? window.location.href : undefined,
       },
@@ -169,7 +174,11 @@ class ProductAnalytics {
   }
 
   // Track feature usage with adoption metrics
-  trackFeatureUsage(feature: string, action: string, properties?: EventProperties) {
+  trackFeatureUsage(
+    feature: string,
+    action: string,
+    properties?: EventProperties
+  ) {
     this.trackEvent('feature_used', {
       feature_name: feature,
       action,
@@ -178,7 +187,11 @@ class ProductAnalytics {
   }
 
   // Track business metrics for revenue intelligence
-  trackBusinessMetric(metric: string, value: number, properties?: EventProperties) {
+  trackBusinessMetric(
+    metric: string,
+    value: number,
+    properties?: EventProperties
+  ) {
     this.trackEvent('business_metric', {
       metric_name: metric,
       metric_value: value,
@@ -195,7 +208,11 @@ class ProductAnalytics {
   }
 
   // Track performance metrics correlated with user behavior
-  trackPerformanceMetric(metric: string, value: number, context?: EventProperties) {
+  trackPerformanceMetric(
+    metric: string,
+    value: number,
+    context?: EventProperties
+  ) {
     this.trackEvent('performance_metric', {
       metric_name: metric,
       metric_value: value,
@@ -214,7 +231,11 @@ class ProductAnalytics {
   }
 
   // Track A/B test participation
-  trackExperiment(experimentName: string, variant: string, properties?: EventProperties) {
+  trackExperiment(
+    experimentName: string,
+    variant: string,
+    properties?: EventProperties
+  ) {
     this.trackEvent('experiment_viewed', {
       experiment_name: experimentName,
       variant,
@@ -228,7 +249,11 @@ class ProductAnalytics {
   }
 
   // Track conversion funnel steps
-  trackFunnelStep(funnelName: string, step: string, properties?: EventProperties) {
+  trackFunnelStep(
+    funnelName: string,
+    step: string,
+    properties?: EventProperties
+  ) {
     this.trackEvent('funnel_step', {
       funnel_name: funnelName,
       step_name: step,
@@ -277,11 +302,19 @@ export const useAnalytics = () => {
     analytics.trackPageView(pageName, properties);
   };
 
-  const trackFeatureUsage = (feature: string, action: string, properties?: EventProperties) => {
+  const trackFeatureUsage = (
+    feature: string,
+    action: string,
+    properties?: EventProperties
+  ) => {
     analytics.trackFeatureUsage(feature, action, properties);
   };
 
-  const trackBusinessMetric = (metric: string, value: number, properties?: EventProperties) => {
+  const trackBusinessMetric = (
+    metric: string,
+    value: number,
+    properties?: EventProperties
+  ) => {
     analytics.trackBusinessMetric(metric, value, properties);
   };
 
@@ -337,15 +370,25 @@ export const AnalyticsProvider: React.FC<{
 };
 
 // Utility functions for common tracking patterns
-export const trackCRMAction = (action: keyof typeof ANALYTICS_EVENTS, properties?: EventProperties) => {
+export const trackCRMAction = (
+  action: keyof typeof ANALYTICS_EVENTS,
+  properties?: EventProperties
+) => {
   analytics.trackEvent(ANALYTICS_EVENTS[action], properties);
 };
 
-export const trackUserJourney = (step: string, properties?: EventProperties) => {
+export const trackUserJourney = (
+  step: string,
+  properties?: EventProperties
+) => {
   analytics.trackFunnelStep('user_onboarding', step, properties);
 };
 
-export const trackFeatureAdoption = (feature: string, adopted: boolean, properties?: EventProperties) => {
+export const trackFeatureAdoption = (
+  feature: string,
+  adopted: boolean,
+  properties?: EventProperties
+) => {
   analytics.trackEvent('feature_adoption', {
     feature_name: feature,
     adopted,
@@ -353,7 +396,12 @@ export const trackFeatureAdoption = (feature: string, adopted: boolean, properti
   });
 };
 
-export const trackBusinessGoal = (goal: string, achieved: boolean, value?: number, properties?: EventProperties) => {
+export const trackBusinessGoal = (
+  goal: string,
+  achieved: boolean,
+  value?: number,
+  properties?: EventProperties
+) => {
   analytics.trackEvent('business_goal', {
     goal_name: goal,
     achieved,

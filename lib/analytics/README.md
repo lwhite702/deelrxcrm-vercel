@@ -36,9 +36,7 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <CombinedAnalyticsProvider>
-          {children}
-        </CombinedAnalyticsProvider>
+        <CombinedAnalyticsProvider>{children}</CombinedAnalyticsProvider>
       </body>
     </html>
   );
@@ -69,11 +67,13 @@ export function SignUpButton() {
 The system includes 47 predefined events across different categories:
 
 ### Authentication
+
 - `USER_SIGNED_UP` - User registration
 - `USER_SIGNED_IN` - User login
 - `USER_SIGNED_OUT` - User logout
 
 ### CRM Operations
+
 - `CUSTOMER_CREATED` - New customer added
 - `CUSTOMER_UPDATED` - Customer information modified
 - `CUSTOMER_VIEWED` - Customer profile accessed
@@ -81,17 +81,20 @@ The system includes 47 predefined events across different categories:
 - `TASK_COMPLETED` - Task marked as complete
 
 ### Business Metrics
+
 - `PAYMENT_PROCESSED` - Payment transaction
 - `SUBSCRIPTION_CREATED` - New subscription
 - `INVOICE_CREATED` - Invoice generated
 - `INVOICE_PAID` - Invoice payment received
 
 ### AI Features
+
 - `AI_PRICING_GENERATED` - AI-powered pricing suggestion
 - `AI_DATA_ENRICHED` - Data enhancement via AI
 - `AI_CREDIT_USED` - AI credit consumption
 
 ### System Performance
+
 - `PAGE_LOAD_TIME` - Page loading performance
 - `API_RESPONSE_TIME` - API call performance
 - `ERROR_OCCURRED` - Error tracking
@@ -101,12 +104,12 @@ The system includes 47 predefined events across different categories:
 ### Tracking Functions
 
 ```tsx
-import { 
-  trackEvent, 
-  identifyUser, 
+import {
+  trackEvent,
+  identifyUser,
   setUserProperties,
   trackPageView,
-  getFeatureFlag 
+  getFeatureFlag,
 } from '@/lib/analytics';
 
 // Track custom events
@@ -116,13 +119,13 @@ trackEvent('Custom Event', { property: 'value' });
 identifyUser('user-123', {
   email: 'user@example.com',
   name: 'John Doe',
-  subscription_plan: 'pro'
+  subscription_plan: 'pro',
 });
 
 // Set user properties
 setUserProperties({
   total_customers: 50,
-  monthly_revenue: 5000
+  monthly_revenue: 5000,
 });
 
 // Track page views
@@ -139,14 +142,14 @@ import { usePostHog } from '@/lib/analytics';
 
 function MyComponent() {
   const posthog = usePostHog();
-  
+
   const handleClick = () => {
     posthog?.capture('button_clicked', {
       button_name: 'cta',
-      location: 'header'
+      location: 'header',
     });
   };
-  
+
   return <button onClick={handleClick}>Click Me</button>;
 }
 ```
@@ -154,17 +157,20 @@ function MyComponent() {
 ## 🏗️ Architecture
 
 ### Server-Side Analytics
+
 - Uses `posthog-node` for server-side event tracking
 - Configured in `posthog-config.ts` with `getServerPostHog()`
 - Suitable for API routes and server components
 
-### Client-Side Analytics  
+### Client-Side Analytics
+
 - Uses `posthog-js` for browser-based tracking
 - Automatic pageview tracking
 - Session recording capabilities
 - Feature flag support
 
 ### Privacy & Compliance
+
 - Respects Do Not Track headers
 - Secure cookie handling
 - GDPR-compliant user identification
@@ -186,7 +192,7 @@ testPostHogIntegration();
 Access your PostHog dashboard at https://app.posthog.com to view:
 
 - Real-time event streams
-- User behavior funnels  
+- User behavior funnels
 - Cohort analysis
 - Feature flag management
 - Session recordings
@@ -195,6 +201,7 @@ Access your PostHog dashboard at https://app.posthog.com to view:
 ## 🔍 Debugging
 
 ### Check Configuration
+
 ```tsx
 import { isPostHogConfigured } from '@/lib/analytics';
 
@@ -202,20 +209,23 @@ console.log('PostHog configured:', isPostHogConfigured());
 ```
 
 ### View Events in Console
+
 Enable debug mode in development:
+
 ```tsx
 // In posthog-config.ts
 export const posthogConfig = {
   options: {
     debug: process.env.NODE_ENV === 'development',
     // ... other options
-  }
+  },
 };
 ```
 
 ## 🔧 Advanced Configuration
 
 ### Custom Event Properties
+
 Define custom properties for events:
 
 ```tsx
@@ -223,19 +233,20 @@ trackEvent(POSTHOG_EVENTS.CUSTOMER_CREATED, {
   customer_type: 'enterprise',
   acquisition_channel: 'sales_call',
   initial_contract_value: 50000,
-  assigned_rep: 'john.doe@company.com'
+  assigned_rep: 'john.doe@company.com',
 });
 ```
 
 ### Feature Flags Integration
+
 ```tsx
 import { isFeatureFlagEnabled } from '@/lib/analytics';
 
 export function NewFeature() {
   const showFeature = isFeatureFlagEnabled('new-ui-design');
-  
+
   if (!showFeature) return null;
-  
+
   return <div>New UI Design</div>;
 }
 ```

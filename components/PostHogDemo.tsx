@@ -1,6 +1,6 @@
 /**
  * PostHog Analytics Demo Component
- * 
+ *
  * This component demonstrates how to use PostHog analytics in your application.
  * You can add this to any page to test the integration.
  */
@@ -8,12 +8,12 @@
 'use client';
 
 import React from 'react';
-import { 
-  trackEvent, 
-  identifyUser, 
+import {
+  trackEvent,
+  identifyUser,
   usePostHog,
   getFeatureFlag,
-  isFeatureFlagEnabled 
+  isFeatureFlagEnabled,
 } from '../lib/analytics/posthog-provider';
 import { POSTHOG_EVENTS } from '../lib/analytics/posthog-config';
 
@@ -27,7 +27,7 @@ export function PostHogDemo() {
       utm_source: 'demo_page',
       timestamp: new Date(),
     });
-    
+
     console.log('✅ Event tracked:', POSTHOG_EVENTS.USER_SIGNED_UP);
   };
 
@@ -38,7 +38,7 @@ export function PostHogDemo() {
       subscription_plan: 'pro',
       demo_mode: true,
     });
-    
+
     console.log('✅ User identified: demo-user-123');
   };
 
@@ -48,7 +48,7 @@ export function PostHogDemo() {
       dashboard_type: 'main',
       widgets_visible: 8,
     });
-    
+
     console.log('✅ Dashboard view tracked');
   };
 
@@ -59,27 +59,31 @@ export function PostHogDemo() {
       acquisition_channel: 'demo',
       initial_value: 25000,
     });
-    
+
     console.log('✅ Customer creation tracked');
   };
 
   const checkFeatureFlag = () => {
     const flagValue = getFeatureFlag('demo-feature-flag');
     const isEnabled = isFeatureFlagEnabled('demo-feature-flag');
-    
+
     console.log('🚩 Feature flag value:', flagValue);
     console.log('🚩 Feature flag enabled:', isEnabled);
-    
+
     alert(`Feature flag: ${flagValue || 'not set'}, Enabled: ${isEnabled}`);
   };
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">🔍 PostHog Analytics Demo</h2>
-      
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">
+        🔍 PostHog Analytics Demo
+      </h2>
+
       <div className="space-y-4">
         <div className="p-4 bg-blue-50 rounded-lg">
-          <h3 className="font-semibold text-blue-800 mb-2">User Identification</h3>
+          <h3 className="font-semibold text-blue-800 mb-2">
+            User Identification
+          </h3>
           <button
             onClick={handleIdentifyUser}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
@@ -134,7 +138,8 @@ export function PostHogDemo() {
         <div className="p-4 bg-gray-50 rounded-lg">
           <h3 className="font-semibold text-gray-800 mb-2">PostHog Instance</h3>
           <p className="text-sm text-gray-600">
-            PostHog instance available: <span className="font-mono">{posthog ? '✅ Yes' : '❌ No'}</span>
+            PostHog instance available:{' '}
+            <span className="font-mono">{posthog ? '✅ Yes' : '❌ No'}</span>
           </p>
           <p className="text-sm text-gray-600">
             Open your browser's developer console to see the tracking logs.
@@ -143,16 +148,20 @@ export function PostHogDemo() {
       </div>
 
       <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
-        <h3 className="font-semibold text-yellow-800 mb-2">📊 View Analytics</h3>
+        <h3 className="font-semibold text-yellow-800 mb-2">
+          📊 View Analytics
+        </h3>
         <p className="text-sm text-yellow-700">
-          Visit your <a 
-            href="https://us.i.posthog.com" 
-            target="_blank" 
+          Visit your{' '}
+          <a
+            href="https://us.i.posthog.com"
+            target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
           >
             PostHog Dashboard
-          </a> to see the events in real-time.
+          </a>{' '}
+          to see the events in real-time.
         </p>
       </div>
     </div>

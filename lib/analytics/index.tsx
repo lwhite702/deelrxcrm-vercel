@@ -1,6 +1,6 @@
 /**
  * Analytics Integration Setup
- * 
+ *
  * This file integrates PostHog with the existing Product Analytics system
  * to provide comprehensive tracking for the DeelRx CRM application.
  */
@@ -15,12 +15,14 @@ import { AnalyticsProvider } from './product-analytics';
  * Combined Analytics Provider
  * Wraps the application with both PostHog and Vercel Analytics
  */
-export function CombinedAnalyticsProvider({ children }: { children: React.ReactNode }) {
+export function CombinedAnalyticsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <PostHogProvider>
-      <AnalyticsProvider>
-        {children}
-      </AnalyticsProvider>
+      <AnalyticsProvider>{children}</AnalyticsProvider>
     </PostHogProvider>
   );
 }
@@ -28,7 +30,7 @@ export function CombinedAnalyticsProvider({ children }: { children: React.ReactN
 /**
  * Analytics hooks and utilities for use throughout the app
  */
-export { 
+export {
   usePostHog,
   trackEvent,
   identifyUser,
@@ -57,9 +59,12 @@ export {
  * Initialize analytics for the application
  * Call this in your root layout or main app component
  */
-export async function initializeAnalytics(userId?: string, userProperties?: any) {
+export async function initializeAnalytics(
+  userId?: string,
+  userProperties?: any
+) {
   const { default: analytics } = await import('./product-analytics');
-  
+
   if (userId && userProperties) {
     await analytics.initialize(userId, userProperties);
   } else {

@@ -1,6 +1,6 @@
 /**
  * Dashboard Analytics Tracking
- * 
+ *
  * This component automatically tracks dashboard page views and user interactions.
  * It's designed to be included in the main dashboard page.
  */

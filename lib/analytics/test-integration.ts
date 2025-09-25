@@ -1,6 +1,6 @@
 /**
  * PostHog Integration Test
- * 
+ *
  * Simple test to verify PostHog analytics integration is working correctly
  */
 
@@ -17,7 +17,11 @@ export function testPostHogIntegration(): boolean {
 
     // Test 1: Check if PostHog is configured
     const isConfigured = isPostHogConfigured();
-    console.log(`✅ PostHog Configuration: ${isConfigured ? 'CONFIGURED' : 'NOT CONFIGURED'}`);
+    console.log(
+      `✅ PostHog Configuration: ${
+        isConfigured ? 'CONFIGURED' : 'NOT CONFIGURED'
+      }`
+    );
 
     // Test 2: Test event tracking (won't actually send in test mode)
     if (isConfigured) {
@@ -38,11 +42,14 @@ export function testPostHogIntegration(): boolean {
 
     // Test 4: Test event constants are available
     const hasEvents = Object.keys(POSTHOG_EVENTS).length > 0;
-    console.log(`✅ Event Constants: ${hasEvents ? 'AVAILABLE' : 'MISSING'} (${Object.keys(POSTHOG_EVENTS).length} events)`);
+    console.log(
+      `✅ Event Constants: ${hasEvents ? 'AVAILABLE' : 'MISSING'} (${
+        Object.keys(POSTHOG_EVENTS).length
+      } events)`
+    );
 
     console.log('🎉 PostHog Integration Test: PASSED');
     return true;
-
   } catch (error) {
     console.error('❌ PostHog Integration Test: FAILED', error);
     return false;
@@ -54,7 +61,7 @@ export function testPostHogIntegration(): boolean {
  */
 export function testAnalyticsEvents() {
   console.log('📊 Testing Analytics Events...');
-  
+
   const testEvents = [
     POSTHOG_EVENTS.USER_SIGNED_UP,
     POSTHOG_EVENTS.DASHBOARD_VIEWED,
@@ -63,7 +70,7 @@ export function testAnalyticsEvents() {
     POSTHOG_EVENTS.PAYMENT_PROCESSED,
   ];
 
-  testEvents.forEach(event => {
+  testEvents.forEach((event) => {
     trackEvent(event, {
       test_mode: true,
       timestamp: new Date(),

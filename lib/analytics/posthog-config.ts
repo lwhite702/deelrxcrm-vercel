@@ -1,39 +1,11 @@
 /**
  * PostHog Analytics Configuration
- * 
+ *
  * This file configures PostHog for both client-side and server-side analytics
  * as part of the Phase 6 Product Analytics System.
  */
 
-import { PostHog } from 'posthog-node';
-
-// Server-side PostHog instance
-let posthogServer: PostHog | null = null;
-
-/**
- * Initialize server-side PostHog client
- */
-export function getServerPostHog(): PostHog {
-  if (!posthogServer) {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
-    
-    if (!key) {
-      throw new Error('NEXT_PUBLIC_POSTHOG_KEY environment variable is required');
-    }
-
-    posthogServer = new PostHog(key, {
-      host,
-      // Enable feature flags
-      personalApiKey: process.env.POSTHOG_PERSONAL_API_KEY,
-      // Batch events for better performance
-      flushAt: 20,
-      flushInterval: 30000, // 30 seconds
-    });
-  }
-  
-  return posthogServer;
-}
+// Server-side PostHog configuration moved to posthog-server.ts
 
 /**
  * Client-side PostHog configuration
@@ -78,8 +50,7 @@ export const posthogConfig = {
  */
 export function isPostHogConfigured(): boolean {
   return !!(
-    process.env.NEXT_PUBLIC_POSTHOG_KEY &&
-    process.env.NEXT_PUBLIC_POSTHOG_HOST
+    process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_POSTHOG_HOST
   );
 }
 
@@ -92,61 +63,61 @@ export const POSTHOG_EVENTS = {
   USER_SIGNED_UP: 'User Signed Up',
   USER_SIGNED_IN: 'User Signed In',
   USER_SIGNED_OUT: 'User Signed Out',
-  
+
   // Dashboard
   DASHBOARD_VIEWED: 'Dashboard Viewed',
   DASHBOARD_WIDGET_CLICKED: 'Dashboard Widget Clicked',
-  
+
   // CRM
   CUSTOMER_CREATED: 'Customer Created',
   CUSTOMER_UPDATED: 'Customer Updated',
   CUSTOMER_DELETED: 'Customer Deleted',
   CUSTOMER_VIEWED: 'Customer Viewed',
-  
+
   // Tasks
   TASK_CREATED: 'Task Created',
   TASK_COMPLETED: 'Task Completed',
   TASK_UPDATED: 'Task Updated',
   TASK_DELETED: 'Task Deleted',
-  
+
   // Communications
   EMAIL_SENT: 'Email Sent',
   EMAIL_OPENED: 'Email Opened',
   EMAIL_CLICKED: 'Email Clicked',
   SMS_SENT: 'SMS Sent',
-  
+
   // Payments
   INVOICE_CREATED: 'Invoice Created',
   INVOICE_PAID: 'Invoice Paid',
   PAYMENT_PROCESSED: 'Payment Processed',
   SUBSCRIPTION_CREATED: 'Subscription Created',
   SUBSCRIPTION_CANCELLED: 'Subscription Cancelled',
-  
+
   // AI Features
   AI_PRICING_GENERATED: 'AI Pricing Generated',
   AI_DATA_ENRICHED: 'AI Data Enriched',
   AI_TRAINING_COMPLETED: 'AI Training Completed',
   AI_CREDIT_USED: 'AI Credit Used',
-  
+
   // Analytics
   REPORT_GENERATED: 'Report Generated',
   EXPORT_DOWNLOADED: 'Export Downloaded',
   FILTER_APPLIED: 'Filter Applied',
-  
+
   // Settings
   SETTINGS_UPDATED: 'Settings Updated',
   INTEGRATION_CONFIGURED: 'Integration Configured',
   TEAM_MEMBER_ADDED: 'Team Member Added',
-  
+
   // Feature Usage
   FEATURE_VIEWED: 'Feature Viewed',
   FEATURE_CLICKED: 'Feature Clicked',
   HELP_ACCESSED: 'Help Accessed',
-  
+
   // Errors
   ERROR_OCCURRED: 'Error Occurred',
   PAGE_NOT_FOUND: 'Page Not Found',
-  
+
   // Performance
   PAGE_LOAD_TIME: 'Page Load Time',
   API_RESPONSE_TIME: 'API Response Time',

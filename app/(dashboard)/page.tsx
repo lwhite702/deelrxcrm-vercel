@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight, CreditCard, Database } from "lucide-react";
-import { Terminal } from "./terminal";
-import DashboardAnalytics from "./dashboard-analytics";
+import { Button } from '@/components/ui/button';
+import { ArrowRight, CreditCard, Database } from 'lucide-react';
+import { Terminal } from './terminal';
+import DashboardAnalytics from './dashboard-analytics';
 
 export default function HomePage() {
   return (

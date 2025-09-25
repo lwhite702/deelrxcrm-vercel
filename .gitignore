@@ -1,20 +1,40 @@
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build outputs
 .dist
-.DS_Store
 dist
+out
+.next
+.turbo
+
+# Environment files
 .env
-npm-install.log
+.env*.local
+
+# System files
+.DS_Store
+*.log
 
 # Drizzle generated artifacts
 /drizzle
+
+# Vercel
 .vercel
-.env*.local
 
+# Archive directory
+/_archive
 
-# Next.js build outputs and caches
-.next
-next-dev.log
-.turbo
+# IDE and editor files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
 
-# pnpm store
-.pnpm-store
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+.cache

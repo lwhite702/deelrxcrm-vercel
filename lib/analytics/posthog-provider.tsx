@@ -1,6 +1,6 @@
 /**
  * PostHog Provider Component
- * 
+ *
  * React provider component for client-side PostHog analytics integration.
  * This integrates with the Phase 6 Product Analytics System.
  */
@@ -10,7 +10,11 @@
 import { useEffect } from 'react';
 import posthog from 'posthog-js';
 import { PostHogProvider as PostHogReactProvider } from 'posthog-js/react';
-import { posthogConfig, isPostHogConfigured, POSTHOG_USER_PROPERTIES } from './posthog-config';
+import {
+  posthogConfig,
+  isPostHogConfigured,
+  POSTHOG_USER_PROPERTIES,
+} from './posthog-config';
 
 // Initialize PostHog on the client side
 if (typeof window !== 'undefined' && isPostHogConfigured()) {
@@ -53,9 +57,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <PostHogReactProvider client={posthog}>
-      {children}
-    </PostHogReactProvider>
+    <PostHogReactProvider client={posthog}>{children}</PostHogReactProvider>
   );
 }
 
@@ -72,11 +74,14 @@ export function usePostHog() {
 /**
  * Helper function to track events consistently
  */
-export function trackEvent(eventName: string, properties?: Record<string, any>) {
+export function trackEvent(
+  eventName: string,
+  properties?: Record<string, any>
+) {
   if (!isPostHogConfigured()) {
     return;
   }
-  
+
   posthog.capture(eventName, {
     timestamp: new Date().toISOString(),
     ...properties,
@@ -90,7 +95,7 @@ export function identifyUser(userId: string, properties?: Record<string, any>) {
   if (!isPostHogConfigured()) {
     return;
   }
-  
+
   posthog.identify(userId, properties);
 }
 
@@ -101,18 +106,21 @@ export function setUserProperties(properties: Record<string, any>) {
   if (!isPostHogConfigured()) {
     return;
   }
-  
+
   posthog.people.set(properties);
 }
 
 /**
  * Helper function to track page views
  */
-export function trackPageView(pageName?: string, properties?: Record<string, any>) {
+export function trackPageView(
+  pageName?: string,
+  properties?: Record<string, any>
+) {
   if (!isPostHogConfigured()) {
     return;
   }
-  
+
   posthog.capture('$pageview', {
     $current_url: window.location.href,
     page_name: pageName,
@@ -127,7 +135,7 @@ export function getFeatureFlag(flagKey: string, defaultValue?: any) {
   if (!isPostHogConfigured()) {
     return defaultValue;
   }
-  
+
   return posthog.getFeatureFlag(flagKey, defaultValue);
 }
 
@@ -138,7 +146,7 @@ export function isFeatureFlagEnabled(flagKey: string): boolean {
   if (!isPostHogConfigured()) {
     return false;
   }
-  
+
   return posthog.isFeatureEnabled(flagKey) ?? false;
 }
 

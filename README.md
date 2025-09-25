@@ -1,10 +1,23 @@
 # DeelRx CRM
 
-**🎉 Phase 1 Complete - Production Ready!**
+**🎉 Repository Modernized & Documentation Enhanced!**
 
 A comprehensive multi-tenant CRM system with inventory management, customer relations, order processing, and payment handling. Built on Next.js 14 with serverless architecture for Vercel deployment.
 
-**Production URL**: https://deelrxcrm.app
+**Production URL**: https://deelrxcrm.app  
+**Documentation**: https://docs.deelrxcrm.app
+
+## 🧹 Recent Improvements
+
+**Repository Cleanup & Modernization (January 2025)**
+- ✅ **42.3MB** legacy code archived safely
+- ✅ **421** unused files removed
+- ✅ **17** unused dependencies eliminated  
+- ✅ **Complete Mintlify docs** with automated CI/CD
+- ✅ **Dead code detection** with knip.js
+- ✅ **Environment validation** system
+
+👉 **See [Cleanup Report](CLEANUP_COMPLETION_REPORT.md) for full details**
 
 ## 📋 Project Status
 
@@ -39,12 +52,22 @@ This system uses a modern serverless architecture:
 
 ## 📚 Documentation
 
-- 📖 **[Project Phases](docs/PROJECT_PHASES.md)** - Development roadmap and current status
+### Primary Documentation Site
+- 🌐 **[docs.deelrxcrm.app](https://docs.deelrxcrm.app)** - Complete documentation with search
+- � **[Getting Started](https://docs.deelrxcrm.app/quickstart)** - Quick setup guide
+- 🔧 **[API Reference](https://docs.deelrxcrm.app/api-reference/introduction)** - Complete API docs
+
+### Technical Documentation
+- �📖 **[Project Phases](docs/PROJECT_PHASES.md)** - Development roadmap and current status
 - 🚀 **[Deployment Guide](README-VERCEL.md)** - Step-by-step Vercel deployment
 - 💾 **[Database Setup](DB-SETUP.md)** - Database configuration and migrations
 - ⚙️ **[Environment Variables](docs/ENV_VARS.md)** - Required configuration
 - 🔧 **[Core CRM Technical Spec](docs/CORE_CRM.md)** - Phase 1 implementation details
 - 🧪 **[Smoke Testing](docs/SMOKE_TEST.md)** - Testing procedures
+
+### Repository Maintenance
+- 🧹 **[Cleanup Report](CLEANUP_COMPLETION_REPORT.md)** - Recent modernization efforts
+- 📊 **[Public API Audit](PUBLIC_API_AUDIT.md)** - Complete route and endpoint inventory
 
 ## Deployment
 
