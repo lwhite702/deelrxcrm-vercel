@@ -95,12 +95,12 @@ async function logAiRequest(args: LogRequestArgs) {
     userId: args.userId,
     providerId: args.providerId,
     model: args.model,
-    promptHash,
-    latencyMs: args.latencyMs,
+    prompt: args.prompt,
+    duration: args.latencyMs,
     inputTokens: args.usage?.inputTokens ?? null,
     outputTokens: args.usage?.outputTokens ?? null,
     success: args.success,
-    errorMessage: args.errorMessage,
+    error: args.errorMessage,
   });
 }
 
@@ -195,10 +195,10 @@ async function runStructuredCall<TSchema extends { parse: (value: unknown) => an
     maxTokens?: number;
     temperature?: number;
   }
-): Promise<{ object: any; usage?: GenerateObjectResult["usage"]; latencyMs: number; model: string }>
+): Promise<{ object: any; usage?: any; latencyMs: number; model: string }>
 async function runStructuredCall(args: {
   request: PricingRequest | DataEnrichmentRequest | TrainingRequest | CreditRequest;
-  schema: { parse: (value: unknown) => any };
+  schema: any; // Zod schema
   prompt: string;
   model?: string;
   maxTokens?: number;
@@ -215,7 +215,6 @@ async function runStructuredCall(args: {
         system: "Respond strictly in JSON complying with the provided schema.",
         prompt: args.prompt,
         schema: args.schema,
-        maxTokens: args.maxTokens ?? 900,
         temperature: args.temperature ?? 0.3,
       })
     );

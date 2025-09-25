@@ -10,6 +10,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Check, X, Star, Shield, Zap, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -25,11 +33,12 @@ const plans = {
         '1 team member',
         'Up to 100 customers',
         'Basic dashboard',
+        'Manual payments only (Zelle, Apple Pay, Cash App, Cash, custom)',
         'Email support',
         'Standard encryption',
       ],
       limitations: [
-        'No payment processing',
+        'No card processing (Coming Soon)',
         'No loyalty programs',
         'No advanced reporting',
       ],
@@ -46,7 +55,7 @@ const plans = {
         'Up to 5 team members',
         'Unlimited customers',
         'Advanced dashboard',
-        'Payment processing',
+        'Manual payments now. Card processing Coming Soon',
         'Loyalty & referrals',
         'Priority support',
         'Advanced encryption',
@@ -66,6 +75,7 @@ const plans = {
       features: [
         'Unlimited team members',
         'Unlimited customers',
+        'Manual payments now. Card processing Coming Soon',
         'White-label options',
         'Advanced integrations',
         'Custom workflows',
@@ -91,11 +101,12 @@ const plans = {
         '1 team member',
         'Up to 100 customers',
         'Basic dashboard',
+        'Manual payments only (Zelle, Apple Pay, Cash App, Cash, custom)',
         'Email support',
         'Standard encryption',
       ],
       limitations: [
-        'No payment processing',
+        'No card processing (Coming Soon)',
         'No loyalty programs',
         'No advanced reporting',
       ],
@@ -113,7 +124,7 @@ const plans = {
         'Up to 5 team members',
         'Unlimited customers',
         'Advanced dashboard',
-        'Payment processing',
+        'Manual payments now. Card processing Coming Soon',
         'Loyalty & referrals',
         'Priority support',
         'Advanced encryption',
@@ -134,6 +145,7 @@ const plans = {
       features: [
         'Unlimited team members',
         'Unlimited customers',
+        'Manual payments now. Card processing Coming Soon',
         'White-label options',
         'Advanced integrations',
         'Custom workflows',
@@ -205,7 +217,84 @@ export default function PricingPage() {
         </Tabs>
       </section>
 
-      {/* FAQ or Additional Info */}
+      {/* Payment Fees Section */}
+      <section className="py-12 px-6 mx-auto max-w-4xl lg:px-8">
+        <div className="space-y-6">
+          <Alert>
+            <AlertDescription>
+              Card processing is not yet available. Manual reconciliation has no
+              platform fee from DeelRxCRM.
+            </AlertDescription>
+          </Alert>
+
+          <Card className="border-muted/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                Payment Processing Fees
+                <Badge variant="secondary">Coming Soon</Badge>
+              </CardTitle>
+              <CardDescription>
+                Fee schedule activates when card processing launches.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-muted-foreground opacity-60">
+                <div className="flex justify-between">
+                  <span>Processing Fee</span>
+                  <span>3.5% + $0.30</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Street Tax</span>
+                  <span>+0.5%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Instant Payout</span>
+                  <span>+1.0%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Chargeback Fee</span>
+                  <span>$15.00</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-12 px-6 mx-auto max-w-4xl lg:px-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+        </div>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="card-processing">
+            <AccordionTrigger>Can I process cards now?</AccordionTrigger>
+            <AccordionContent>
+              Not yet. Card processing is <strong>Coming Soon</strong>. Today
+              you can reconcile Zelle, Apple Pay, Cash App, Cash, or custom
+              methods.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="fees-today">
+            <AccordionTrigger>Are there fees today?</AccordionTrigger>
+            <AccordionContent>
+              No platform fee for manual reconciliation. Card fees apply once
+              processing launches.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="manual-methods">
+            <AccordionTrigger>
+              What manual payment methods are supported?
+            </AccordionTrigger>
+            <AccordionContent>
+              Zelle, Apple Pay, Cash App, Cash, and custom payment methods with
+              reference notes and tracking.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* All Plans Include */}
       <section className="py-24 px-6 mx-auto max-w-4xl lg:px-8">
         <Card className="border-primary/20">
           <CardHeader className="text-center">

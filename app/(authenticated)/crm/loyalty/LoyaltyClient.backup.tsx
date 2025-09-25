@@ -241,7 +241,7 @@ export default function LoyaltyClient() {
 
   return (
     <div className="space-y-6">
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'programs' | 'accounts')}>
         <div className="flex justify-between items-center mb-6">
           <TabsList>
             <TabsTrigger value="programs" className="flex items-center gap-2">

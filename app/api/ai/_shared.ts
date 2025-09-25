@@ -56,10 +56,10 @@ export async function resolveAiAuthorization(teamId: number): Promise<{
 
   await initializeStatsig();
 
-  const statsigUser = createStatsigUser(authContext.user.id, {
-    email: authContext.user.email,
+  const statsigUser = createStatsigUser({
+    id: authContext.user.id,
+    teamId: authContext.team?.id ?? teamId,
     role: authContext.team?.role,
-    tenantId: authContext.team?.id ?? teamId,
   });
 
   return { authContext, statsigUser };
@@ -69,7 +69,7 @@ export async function enforceAiGate(
   statsigUser: StatsigUser,
   gate: FeatureGateKey
 ): Promise<void> {
-  const aiKill = await isKillSwitchActive(FEATURE_GATES.KILL_AI_ENDPOINTS, statsigUser);
+  const aiKill = await isKillSwitchActive(statsigUser);
   if (aiKill) {
     throw new HttpError("AI endpoints are temporarily disabled", 503);
   }
