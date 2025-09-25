@@ -36,6 +36,13 @@ interface AliasData {
   totalCount: number;
 }
 
+/**
+ * Admin page for managing user privacy aliases.
+ *
+ * This component handles the loading, displaying, and management of user privacy aliases. It fetches alias data from the server, allows searching through aliases, and provides functionality to disable aliases and export the alias data to a CSV file. The component maintains loading states and error/success messages to inform the user of the current operation status.
+ *
+ * @returns {JSX.Element} The rendered AdminAliasesPage component.
+ */
 export default function AdminAliasesPage() {
   const [data, setData] = useState<AliasData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,6 +68,14 @@ export default function AdminAliasesPage() {
     }
   }, [data, searchTerm]);
 
+  /**
+   * Loads aliases from the server and updates the application state.
+   *
+   * This function sets the loading state to true, fetches alias data from the '/api/admin/aliases' endpoint,
+   * and handles the response. If the response is not ok, it throws an error. The fetched data is then parsed
+   * and stored using setData. In case of an error during the fetch, it sets an error message. Finally,
+   * it resets the loading state to false.
+   */
   const loadAliases = async () => {
     setLoading(true);
     try {
@@ -77,6 +92,18 @@ export default function AdminAliasesPage() {
     }
   };
 
+  /**
+   * Disables a specified alias by sending a request to the server.
+   *
+   * This function sets the loading state, clears any previous error or success messages,
+   * and attempts to disable the alias by making a POST request to the server.
+   * If the request is successful, it updates the success message and reloads the aliases.
+   * In case of an error, it captures the error message and sets it accordingly,
+   * ensuring the loading state is reset at the end of the process.
+   *
+   * @param {string} aliasId - The ID of the alias to be disabled.
+   * @param {string} alias - The name of the alias to be displayed in success messages.
+   */
   const disableAlias = async (aliasId: string, alias: string) => {
     setActionLoading(`disable-${aliasId}`);
     setError('');
@@ -105,6 +132,11 @@ export default function AdminAliasesPage() {
     }
   };
 
+  /**
+   * Exports data to a CSV file.
+   *
+   * This function initiates the export process by setting the action loading state. It fetches data from the '/api/admin/aliases/export' endpoint and checks for a successful response. If successful, it creates a downloadable CSV file and triggers the download. In case of an error, it sets an error message. Finally, it resets the action loading state.
+   */
   const exportToCsv = async () => {
     setActionLoading('export');
     try {

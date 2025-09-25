@@ -4,6 +4,16 @@ import { aliases, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUser } from '@/lib/db/queries';
 
+/**
+ * Handles the GET request to fetch user aliases.
+ *
+ * This function first retrieves the current user and checks if the user has the 'owner' role, which is required for access.
+ * If the user is unauthorized, a 403 response is returned. If authorized, it queries the database for all aliases associated
+ * with the user, including relevant user information, and returns the results along with the total count of aliases.
+ * In case of an error during the process, a 500 response is returned with an error message.
+ *
+ * @param request - The incoming NextRequest object.
+ */
 export async function GET(request: NextRequest) {
   try {
     const user = await getUser();
