@@ -16,6 +16,19 @@ const SubjectRequestSchema = z.object({
   }).optional().default({}),
 });
 
+/**
+ * Handles the POST request to generate an email subject based on the provided data.
+ *
+ * This function enforces the 'superAdmin' role, parses and validates the request body,
+ * and then generates an email subject using AI based on the validated data. It returns
+ * a JSON response containing the result, user metadata, and a timestamp. In case of
+ * errors, it handles authentication and validation errors appropriately.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @returns A JSON response with the success status, generated data, and metadata.
+ * @throws AuthError If the user does not have the required role.
+ * @throws z.ZodError If the request data is invalid.
+ */
 export async function POST(request: NextRequest) {
   try {
     // Enforce superAdmin role
