@@ -2,6 +2,9 @@ import type { ReactNode } from 'react';
 
 import { requireSuperAdmin } from './_auth';
 
+/**
+ * Renders the admin email layout with required super admin check.
+ */
 export default async function AdminEmailLayout({
   children,
 }: {
