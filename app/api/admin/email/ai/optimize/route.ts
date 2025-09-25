@@ -19,6 +19,16 @@ const OptimizeRequestSchema = z.object({
   }).optional().default({}),
 });
 
+/**
+ * Handles the POST request to optimize an email template.
+ *
+ * This function enforces the 'superAdmin' role, parses and validates the request body, and then optimizes the email template using AI. It constructs a response containing the optimization results along with metadata. If any errors occur during processing, it handles authentication and validation errors appropriately, returning relevant status codes and messages.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @returns A JSON response with the optimization results and metadata.
+ * @throws AuthError If the user does not have the required role.
+ * @throws z.ZodError If the request data is invalid.
+ */
 export async function POST(request: NextRequest) {
   try {
     // Enforce superAdmin role
