@@ -10,6 +10,15 @@ const disableAliasSchema = z.object({
   aliasId: z.string(),
 });
 
+/**
+ * Handles the POST request to disable an alias.
+ *
+ * This function first verifies the user's role, ensuring only an 'owner' can proceed. It then parses the request body to extract the aliasId and checks if the alias exists and is active. If the alias is found, it attempts to disable it in SimpleLogin, while also updating the local database. Errors are caught and handled appropriately, returning relevant status codes and messages.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @returns A JSON response indicating success or error details.
+ * @throws Error If the request data is invalid or if an unexpected error occurs during processing.
+ */
 export async function POST(request: NextRequest) {
   try {
     const user = await getUser();
