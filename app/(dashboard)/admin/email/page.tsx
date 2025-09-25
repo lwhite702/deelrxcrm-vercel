@@ -129,6 +129,9 @@ const recentEvents = [
   },
 ] as const;
 
+/**
+ * Renders the Admin Email Control Center page for managing email templates and broadcasts.
+ */
 export default async function AdminEmailPage() {
   const user = await requireSuperAdmin();
 
