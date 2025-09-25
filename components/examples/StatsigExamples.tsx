@@ -7,15 +7,16 @@ import {
   useExperiment,
   useStatsigClient,
 } from '@statsig/react-bindings';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+} from '../../components/ui/card';
+import { Badge } from '../../components/ui/badge';
 
 // Example 1: Feature Gate for New CRM Features
 export function NewCRMFeatures() {
@@ -103,7 +104,7 @@ export function ThemedDashboard() {
 export function PricingExperiment() {
   const experiment = useExperiment('pricing_layout_test');
 
-  const layout = experiment.getGroupName(); // "control" or "new_layout"
+  const layout = experiment.groupName; // "control" or "new_layout"
   const showDiscount = experiment.get('discount_banner', false);
   const discountPercent = experiment.get('discount_amount', 10);
 
@@ -168,19 +169,15 @@ export function AnalyticsTrackingExample() {
     action: string,
     metadata?: Record<string, any>
   ) => {
-    statsigClient.logEvent('customer_action', {
-      action,
-      timestamp: Date.now(),
+    statsigClient.logEvent('customer_action', action, {
       page: 'crm_dashboard',
       ...metadata,
     });
   };
 
   const trackBusinessMetric = (metric: string, value: number) => {
-    statsigClient.logEvent('business_metric', {
+    statsigClient.logEvent('business_metric', value, {
       metric_name: metric,
-      value,
-      timestamp: Date.now(),
     });
   };
 
@@ -236,13 +233,7 @@ export default function StatsigCRMDashboard() {
 
   React.useEffect(() => {
     // Track dashboard load
-    statsigClient.logEvent('dashboard_loaded', {
-      timestamp: Date.now(),
-      feature_flags: {
-        new_features: showNewFeatures,
-        layout_variant: experiment.getGroupName(),
-      },
-    });
+    statsigClient.logEvent('dashboard_loaded');
   }, [statsigClient, showNewFeatures, experiment]);
 
   const dashboardTitle = config.get('dashboard_title', 'DeelRx CRM Dashboard');

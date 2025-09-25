@@ -2,30 +2,30 @@ import React from 'react';
 import { Resend } from 'resend';
 import { eq } from 'drizzle-orm';
 
-import { WelcomeEmail, type WelcomeEmailProps } from '@/emails/templates/WelcomeEmail';
-import { welcomeEmailText } from '@/emails/templates/WelcomeEmail.text';
+import { WelcomeEmail, type WelcomeEmailProps } from '../../emails/templates/WelcomeEmail';
+import { welcomeEmailText } from '../../emails/templates/WelcomeEmail.text';
 import {
   PasswordResetEmail,
   type PasswordResetEmailProps,
-} from '@/emails/templates/PasswordResetEmail';
-import { passwordResetEmailText } from '@/emails/templates/PasswordResetEmail.text';
+} from '../../emails/templates/PasswordResetEmail';
+import { passwordResetEmailText } from '../../emails/templates/PasswordResetEmail.text';
 import {
   PayoutConfirmationEmail,
   type PayoutConfirmationEmailProps,
-} from '@/emails/templates/PayoutConfirmationEmail';
-import { payoutConfirmationEmailText } from '@/emails/templates/PayoutConfirmationEmail.text';
+} from '../../emails/templates/PayoutConfirmationEmail';
+import { payoutConfirmationEmailText } from '../../emails/templates/PayoutConfirmationEmail.text';
 import {
   ChargebackAlertEmail,
   type ChargebackAlertEmailProps,
-} from '@/emails/templates/ChargebackAlertEmail';
-import { chargebackAlertEmailText } from '@/emails/templates/ChargebackAlertEmail.text';
+} from '../../emails/templates/ChargebackAlertEmail';
+import { chargebackAlertEmailText } from '../../emails/templates/ChargebackAlertEmail.text';
 import {
   ExportReadyEmail,
   type ExportReadyEmailProps,
-} from '@/emails/templates/ExportReadyEmail';
-import { exportReadyEmailText } from '@/emails/templates/ExportReadyEmail.text';
-import { emails as emailTable } from '@/db/schema/email';
-import { db } from '@/lib/db/drizzle';
+} from '../../emails/templates/ExportReadyEmail';
+import { exportReadyEmailText } from '../../emails/templates/ExportReadyEmail.text';
+import { emails as emailTable } from '../../db/schema/email';
+import { db } from '../db/drizzle';
 
 export type EmailTemplateId =
   | 'welcome'

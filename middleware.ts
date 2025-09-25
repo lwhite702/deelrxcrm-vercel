@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { signToken, verifyToken } from '@/lib/auth/session';
-import { applySecurityHeaders } from '@/lib/security';
-import { AuthError, requireRole } from '@/lib/auth/jwt';
+import { signToken, verifyToken } from './lib/auth/session';
+import { applySecurityHeaders } from './lib/security';
+import { AuthError, requireRole } from './lib/auth/jwt';
 
 const PROTECTED_PREFIX = '/dashboard';
 const SUPERADMIN_DASHBOARD_PREFIX = '/dashboard/admin/email';
 const SUPERADMIN_API_PREFIX = '/api/admin/email';
+
+// Block dev-only routes in production
+const DEV_ONLY_ROUTES = [
+  '/email-previews',
+  '/api/_health/error-test',
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,6 +20,14 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = pathname.startsWith(PROTECTED_PREFIX);
   const isSuperAdminDashboard = pathname.startsWith(SUPERADMIN_DASHBOARD_PREFIX);
   const isSuperAdminApi = pathname.startsWith(SUPERADMIN_API_PREFIX);
+  
+  // Block dev-only routes in production
+  if (process.env.NODE_ENV === 'production') {
+    const isDevRoute = DEV_ONLY_ROUTES.some(route => pathname.startsWith(route));
+    if (isDevRoute) {
+      return new NextResponse('Not Found', { status: 404 });
+    }
+  }
 
   if (isSuperAdminDashboard || isSuperAdminApi) {
     try {
@@ -76,7 +90,8 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/api/admin/email/:path*',
-    '/((?!api|_next/static|_next/image|favicon.ico|mintlify|webhooks|_health).*)',
+    // Exclude static files, API routes (handled separately), and public assets
+    '/((?!api|_next/static|_next/image|favicon.ico|mintlify|webhooks|_health|public).*)',
   ],
   runtime: 'nodejs',
 };

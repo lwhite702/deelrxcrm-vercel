@@ -3,16 +3,31 @@ const REQUIRED_ENV_VARS = [
   'JWT_SECRET',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
-  'SENTRY_DSN',
-  'NEXT_PUBLIC_SENTRY_DSN',
+  'STRIPE_PUBLISHABLE_KEY',
+  'RESEND_API_KEY',
+  'KNOCK_API_KEY',
   'STATSIG_SERVER_SECRET_KEY',
   'NEXT_PUBLIC_STATSIG_CLIENT_KEY',
+] as const;
+
+const PRODUCTION_REQUIRED_ENV_VARS = [
+  ...REQUIRED_ENV_VARS,
+  'SENTRY_DSN',
+  'NEXT_PUBLIC_SENTRY_DSN',
+  'DATA_ENCRYPTION_KEY',
+] as const;
+
+const OPTIONAL_ENV_VARS = [
   'UPSTASH_REDIS_REST_URL',
   'UPSTASH_REDIS_REST_TOKEN',
   'INNGEST_EVENT_KEY',
   'INNGEST_SIGNING_KEY',
-  'KNOCK_SECRET_KEY',
-  'RESEND_API_KEY',
+  'TWILIO_ACCOUNT_SID',
+  'TWILIO_AUTH_TOKEN',
+  'TWILIO_PHONE_NUMBER',
+  'OPENAI_API_KEY',
+  'SIMPLELOGIN_API_KEY',
+  'BLOB_READ_WRITE_TOKEN',
 ] as const;
 
 /**
@@ -20,10 +35,31 @@ const REQUIRED_ENV_VARS = [
  */
 export function validateRequiredEnvVars() {
   const missing: string[] = [];
+  const envVarsToCheck = process.env.NODE_ENV === 'production' 
+    ? PRODUCTION_REQUIRED_ENV_VARS 
+    : REQUIRED_ENV_VARS;
   
-  for (const envVar of REQUIRED_ENV_VARS) {
+  for (const envVar of envVarsToCheck) {
     if (!process.env[envVar]) {
       missing.push(envVar);
+    }
+  }
+
+  // Additional production-specific validations
+  if (process.env.NODE_ENV === 'production') {
+    // Check JWT secret strength
+    if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
+      missing.push('JWT_SECRET (must be at least 32 characters in production)');
+    }
+    
+    // Check database pooling
+    if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('pooler')) {
+      console.warn('⚠️  DATABASE_URL should use Neon pooled connection in production');
+    }
+    
+    // Check encryption key
+    if (process.env.DATA_ENCRYPTION_KEY && process.env.DATA_ENCRYPTION_KEY.length < 32) {
+      missing.push('DATA_ENCRYPTION_KEY (must be at least 32 characters)');
     }
   }
 
@@ -42,16 +78,13 @@ export function validateRequiredEnvVars() {
  * Checks for missing optional environment variables and logs a warning if any are not set.
  */
 export function checkOptionalEnvVars() {
-  const optional = [
-    'BLOB_READ_WRITE_TOKEN',
-    'ANTHROPIC_API_KEY',
-    'OPENAI_API_KEY',
-    'MEILISEARCH_URL',
-    'MEILISEARCH_KEY',
-    'POSTHOG_KEY',
-  ];
-
-  const missing = optional.filter(envVar => !process.env[envVar]);
+  const missing: string[] = [];
+  
+  for (const envVar of OPTIONAL_ENV_VARS) {
+    if (!process.env[envVar]) {
+      missing.push(envVar);
+    }
+  }
   
   if (missing.length > 0) {
     console.warn('⚠️  Optional environment variables not set:');

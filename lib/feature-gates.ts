@@ -44,10 +44,19 @@ export const FEATURE_GATES = {
   ADMIN_PURGE_CONTROLS: 'admin_purge_controls',
   SEARCH_ENABLED: 'search_enabled',
 
+  // Email AI Features
+  AI_EMAIL_ENABLED: 'ai_email_enabled',
+  AI_EMAIL_SUBJECT_GENERATION: 'ai_email_subject_generation',
+  AI_EMAIL_BODY_COMPOSITION: 'ai_email_body_composition',
+  AI_EMAIL_TEMPLATE_OPTIMIZATION: 'ai_email_template_optimization',
+  AI_EMAIL_PERSONALIZATION: 'ai_email_personalization',
+
   // System Kill Switches (default OFF, emergency use)
+  KILL_SWITCH: 'kill_switch',
   KILL_CREDIT_SYSTEM: 'kill_credit_system',
   KILL_KB_UPLOADS: 'kill_kb_uploads', 
   KILL_AI_ENDPOINTS: 'kill_ai_endpoints',
+  KILL_AI_EMAIL_SYSTEM: 'kill_ai_email_system',
   KILL_PAYMENTS: 'kill_payments',
 } as const;
 
@@ -290,6 +299,29 @@ export async function shutdownStatsig(): Promise<void> {
     await Statsig.shutdown();
     statsigInitialized = false;
   }
+}
+
+// Utility functions
+/**
+ * Creates a Statsig user from request headers or user data
+ */
+export function createStatsigUser(user: { id: string | number; teamId?: number; role?: string }): any {
+  return {
+    userID: String(user.id),
+    custom: {
+      teamId: user.teamId,
+      role: user.role || 'member',
+    },
+  };
+}
+
+/**
+ * Checks if kill switch is active for any feature
+ */
+export async function isKillSwitchActive(user: any): Promise<boolean> {
+  await initializeStatsig();
+  return Statsig.checkGate(user, FEATURE_GATES.KILL_SWITCH) || 
+         Statsig.checkGate(user, FEATURE_GATES.KILL_PAYMENTS);
 }
 
 // Export for use in API routes and components
