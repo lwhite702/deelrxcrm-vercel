@@ -23,6 +23,16 @@ const BodyRequestSchema = z.object({
   }).optional().default({}),
 });
 
+/**
+ * Handles the POST request to generate an email body using AI.
+ *
+ * This function enforces the 'superAdmin' role, parses and validates the request body, and then generates the email body based on the validated data. It returns a JSON response containing the result and metadata, or handles errors related to authentication and validation appropriately.
+ *
+ * @param request - The NextRequest object containing the request data.
+ * @returns A JSON response with the success status, generated email body, and metadata.
+ * @throws AuthError If the user does not have the required role.
+ * @throws z.ZodError If the request data is invalid.
+ */
 export async function POST(request: NextRequest) {
   try {
     // Enforce superAdmin role
