@@ -662,6 +662,5 @@
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.24.6",
     "zwitch": "^2.0.4"
-  },
-  "description": ""
+  }
 }
