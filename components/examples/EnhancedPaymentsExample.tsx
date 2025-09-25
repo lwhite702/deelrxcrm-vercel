@@ -6,16 +6,17 @@ import {
   useDynamicConfig,
   useStatsigClient,
 } from '@statsig/react-bindings';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+} from '../../components/ui/card';
+import { Alert, AlertDescription } from '../../components/ui/alert';
+import { Badge } from '../../components/ui/badge';
 
 export default function EnhancedPaymentsPage() {
   const [amount, setAmount] = useState('');
@@ -35,21 +36,13 @@ export default function EnhancedPaymentsPage() {
 
   useEffect(() => {
     // Track page view
-    statsigClient.logEvent('payments_page_viewed', {
-      timestamp: Date.now(),
-      features_enabled: {
-        advanced_payments: showAdvancedPayments,
-        crypto_payments: showCryptoPayments,
-      },
-    });
+    statsigClient.logEvent('payments_page_viewed');
   }, [statsigClient, showAdvancedPayments, showCryptoPayments]);
 
   const handlePayment = (method: string) => {
     // Track payment method selection
-    statsigClient.logEvent('payment_method_selected', {
+    statsigClient.logEvent('payment_method_selected', parseFloat(amount) || 0, {
       method,
-      amount: parseFloat(amount) || 0,
-      timestamp: Date.now(),
     });
 
     // Your payment logic here
@@ -62,7 +55,7 @@ export default function EnhancedPaymentsPage() {
 
       {showPaymentTips && (
         <Alert>
-          <InfoIcon className="h-4 w-4" />
+          <span>ℹ</span>
           <AlertDescription>
             Processing fee: {processingFee}% • Max amount: $
             {maxPaymentAmount.toLocaleString()}

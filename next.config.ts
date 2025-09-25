@@ -1,19 +1,71 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // Stable experimental features for production
   experimental: {
-    ppr: true,
-    clientSegmentCache: true,
-    nodeMiddleware: true
+    ppr: false // Disable PPR temporarily for stable builds
   },
+  
+  // External packages for server components
+  serverExternalPackages: [
+    '@prisma/client',
+    'bcryptjs'
+  ],
+  
+  // Build optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+  },
+  
+  // Image optimization
+  images: {
+    domains: ['localhost'],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60
+  },
+  
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin'
+          }
+        ]
+      }
+    ];
+  },
+  
+  // Redirects for SEO
+  async redirects() {
+    return [
+      {
+        source: '/home',
+        destination: '/',
+        permanent: true
+      }
+    ];
+  },
+  
   eslint: {
-    // Temporarily ignore ESLint errors during build for Phase 5 deployment
-    // TODO: Re-enable after Phase 5 stabilization
+    // Temporarily disable for Phase 4 deployment readiness
+    // TODO: Fix linting errors in Phase 5
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // Temporarily ignore TypeScript errors during build for Phase 5 deployment  
-    // TODO: Re-enable after Phase 5 stabilization
+    // Temporarily disable for Phase 4 deployment readiness  
+    // TODO: Fix TypeScript errors in Phase 5
     ignoreBuildErrors: true,
   },
 };

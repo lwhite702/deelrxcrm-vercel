@@ -848,17 +848,17 @@ export const aiRequests = pgTable("ai_requests", {
   userId: integer("user_id")
     .notNull()
     .references(() => users.id),
-  providerId: uuid("provider_id")
-    .notNull()
-    .references(() => aiProviders.id),
+  providerId: varchar("provider_id", { length: 100 }).notNull(), // Changed from UUID reference to string
   model: varchar("model", { length: 100 }).notNull(),
-  promptHash: varchar("prompt_hash", { length: 64 }).notNull(), // SHA-256 for deduplication
-  latencyMs: integer("latency_ms").notNull(),
+  prompt: text("prompt"), // Added for logging
+  response: text("response"), // Added for logging  
+  feature: varchar("feature", { length: 100 }), // Added for categorizing AI requests
+  duration: integer("duration"), // Duration in milliseconds (renamed from latencyMs for consistency)
   inputTokens: integer("input_tokens"),
   outputTokens: integer("output_tokens"),
   costCents: integer("cost_cents"), // cost in cents for billing
   success: boolean("success").notNull(),
-  errorMessage: text("error_message"),
+  error: text("error"), // Renamed from errorMessage for consistency
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -1002,6 +1002,25 @@ export const trainingSessions = pgTable("training_sessions", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Job Executions - tracks background job execution status
+export const jobExecutions = pgTable("job_executions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobKey: varchar("job_key", { length: 255 }).notNull().unique(),
+  jobType: varchar("job_type", { length: 100 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, processing, completed, failed
+  payload: jsonb("payload"),
+  result: jsonb("result"),
+  lastError: text("last_error"), // Renamed from error to match usage
+  attempts: integer("attempts").notNull().default(0),
+  maxAttempts: integer("max_attempts").notNull().default(3),
+  runAt: timestamp("run_at"), // Added field that's being used
+  scheduledFor: timestamp("scheduled_for"),
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Phase 4A: Type exports
 export type AiProvider = typeof aiProviders.$inferSelect;
 export type NewAiProvider = typeof aiProviders.$inferInsert;
@@ -1019,3 +1038,7 @@ export type TrainingSession = typeof trainingSessions.$inferSelect;
 export type NewTrainingSession = typeof trainingSessions.$inferInsert;
 export type JobExecution = typeof jobExecutions.$inferSelect;
 export type NewJobExecution = typeof jobExecutions.$inferInsert;
+
+// Import and re-export aliases from separate schema file
+export { aliases } from '../../db/schema/alias';
+export type { Alias, NewAlias } from '../../db/schema/alias';
