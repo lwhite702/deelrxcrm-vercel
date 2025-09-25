@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 
+/**
+ * Renders a layout for email previews, redirecting to a not found page in production.
+ */
 export default function EmailPreviewsLayout({
   children,
 }: {
