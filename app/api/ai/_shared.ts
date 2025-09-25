@@ -42,6 +42,17 @@ export async function parseBoundedJson(request: Request): Promise<any> {
   }
 }
 
+/**
+ * Resolves AI authorization for a given team.
+ *
+ * This function retrieves the authorization context for a specified team by calling
+ * `requireTenantRole` with the provided teamId. If the role is successfully obtained,
+ * it initializes Statsig and creates a Statsig user object using the retrieved
+ * authorization context. The function returns both the authorization context and
+ * the Statsig user object.
+ *
+ * @param teamId - The ID of the team for which to resolve authorization.
+ */
 export async function resolveAiAuthorization(teamId: number): Promise<{
   authContext: AuthContext;
   statsigUser: StatsigUser;
@@ -65,6 +76,16 @@ export async function resolveAiAuthorization(teamId: number): Promise<{
   return { authContext, statsigUser };
 }
 
+/**
+ * Enforces the AI gate for a given user and feature.
+ *
+ * This function checks if the AI kill switch is active for the provided statsigUser.
+ * If the kill switch is active, it throws an HttpError indicating that AI endpoints are disabled.
+ * It then checks if the specified gate is enabled for the user; if not, it throws an HttpError indicating that the requested AI capability is disabled.
+ *
+ * @param {StatsigUser} statsigUser - The user for whom the AI gate is being enforced.
+ * @param {FeatureGateKey} gate - The feature gate key to check for the user's access.
+ */
 export async function enforceAiGate(
   statsigUser: StatsigUser,
   gate: FeatureGateKey

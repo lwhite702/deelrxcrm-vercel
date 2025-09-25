@@ -27,6 +27,9 @@ import { cn } from '@/lib/utils';
 import { useGate } from 'statsig-react';
 import { FEATURE_GATES } from '@/lib/feature-gates';
 
+/**
+ * Renders the Payments Feature Page with payment processing and reconciliation options.
+ */
 export default function PaymentsFeaturePage() {
   const manualUiKilled = useGate(FEATURE_GATES.KILL_PAYMENTS).value;
 

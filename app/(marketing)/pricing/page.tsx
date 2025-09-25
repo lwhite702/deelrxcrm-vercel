@@ -163,6 +163,9 @@ const plans = {
   ],
 };
 
+/**
+ * Renders the Pricing Page component with pricing options and related information.
+ */
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
