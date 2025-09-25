@@ -1,11 +1,26 @@
-"use client";
-import React from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Shield, Database, Users, CreditCard, Lock, Eye, DollarSign, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Shield,
+  Database,
+  Users,
+  CreditCard,
+  Lock,
+  Eye,
+  DollarSign,
+  Check,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function LandingPage() {
   return (
@@ -13,26 +28,38 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative px-6 py-24 mx-auto max-w-7xl lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className={cn(
-            "text-5xl font-bold tracking-tight sm:text-7xl",
-            "bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
-          )}>
+          <h1
+            className={cn(
+              'text-5xl font-bold tracking-tight sm:text-7xl',
+              'bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent'
+            )}
+          >
             Run the Block. Run the Business.
           </h1>
           <p className="mt-6 text-xl leading-8 text-muted-foreground max-w-3xl mx-auto">
-            Track product, customers, and profits—secure, private, and built for the hustle.
+            Track product, customers, and profits—secure, private, and built for
+            the hustle.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Button asChild size="lg" className={cn(
-              "shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300",
-              "hover:scale-105"
-            )}>
+            <Button
+              asChild
+              size="lg"
+              className={cn(
+                'shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300',
+                'hover:scale-105'
+              )}
+            >
               <Link href="/signup">Start Free Today</Link>
             </Button>
-            <Button asChild variant="secondary" size="lg" className={cn(
-              "shadow-lg shadow-secondary/25 hover:shadow-secondary/40 transition-all duration-300",
-              "hover:scale-105"
-            )}>
+            <Button
+              asChild
+              variant="secondary"
+              size="lg"
+              className={cn(
+                'shadow-lg shadow-secondary/25 hover:shadow-secondary/40 transition-all duration-300',
+                'hover:scale-105'
+              )}
+            >
               <Link href="/demo">See It in Action</Link>
             </Button>
           </div>
@@ -47,70 +74,91 @@ export default function LandingPage() {
           </h2>
         </div>
         <div className="mx-auto mt-16 max-w-7xl grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300",
-            "border-primary/20 hover:border-primary/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300',
+              'border-primary/20 hover:border-primary/40'
+            )}
+          >
             <CardHeader>
               <Database className="h-8 w-8 text-primary mb-4 group-hover:scale-110 transition-transform duration-300" />
               <CardTitle className="text-primary">Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Complete view of inventory, customers, and cash flow in one clean interface.
+                Complete view of inventory, customers, and cash flow in one
+                clean interface.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300",
-            "border-primary/20 hover:border-primary/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-primary/20 transition-all duration-300',
+              'border-primary/20 hover:border-primary/40'
+            )}
+          >
             <CardHeader>
               <Shield className="h-8 w-8 text-primary mb-4 group-hover:scale-110 transition-transform duration-300" />
               <CardTitle className="text-primary">Product Control</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Track batches, adjustments, and movement. Know what's moving, what's not.
+                Track batches, adjustments, and movement. Know what's moving,
+                what's not.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300",
-            "border-secondary/20 hover:border-secondary/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300',
+              'border-secondary/20 hover:border-secondary/40'
+            )}
+          >
             <CardHeader>
               <Users className="h-8 w-8 text-secondary mb-4 group-hover:scale-110 transition-transform duration-300" />
               <CardTitle className="text-secondary">Customer Loyalty</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Keep regulars close. Track referrals. Build relationships that pay.
+                Keep regulars close. Track referrals. Build relationships that
+                pay.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300",
-            "border-secondary/20 hover:border-secondary/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-secondary/20 transition-all duration-300',
+              'border-secondary/20 hover:border-secondary/40'
+            )}
+          >
             <CardHeader>
               <CreditCard className="h-8 w-8 text-secondary mb-4 group-hover:scale-110 transition-transform duration-300" />
-              <CardTitle className="text-secondary">Instant Payments</CardTitle>
+              <CardTitle className="text-secondary flex items-center gap-2">
+                Manual Payments (Now)
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Fast payouts where supported. Keep your ledger tight and cash flowing.
+                Reconcile Zelle, Apple Pay, Cash App, Cash, or custom methods
+                fast. Card processing: <strong>Coming Soon</strong>.
               </CardDescription>
+              <div className="mt-2">
+                <Badge variant="secondary" className="text-xs">
+                  Coming Soon
+                </Badge>
+              </div>
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-accent/20 transition-all duration-300",
-            "border-accent/20 hover:border-accent/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-accent/20 transition-all duration-300',
+              'border-accent/20 hover:border-accent/40'
+            )}
+          >
             <CardHeader>
               <Lock className="h-8 w-8 text-accent mb-4 group-hover:scale-110 transition-transform duration-300" />
               <CardTitle className="text-accent">Privacy Locked</CardTitle>
@@ -122,10 +170,12 @@ export default function LandingPage() {
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-accent/20 transition-all duration-300",
-            "border-accent/20 hover:border-accent/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-accent/20 transition-all duration-300',
+              'border-accent/20 hover:border-accent/40'
+            )}
+          >
             <CardHeader>
               <Eye className="h-8 w-8 text-accent mb-4 group-hover:scale-110 transition-transform duration-300" />
               <CardTitle className="text-accent">Untraceable Flow</CardTitle>
@@ -137,17 +187,22 @@ export default function LandingPage() {
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "group hover:shadow-lg hover:shadow-chart-4/20 transition-all duration-300",
-            "border-chart-4/20 hover:border-chart-4/40"
-          )}>
+          <Card
+            className={cn(
+              'group hover:shadow-lg hover:shadow-chart-4/20 transition-all duration-300',
+              'border-chart-4/20 hover:border-chart-4/40'
+            )}
+          >
             <CardHeader>
               <DollarSign className="h-8 w-8 text-chart-4 mb-4 group-hover:scale-110 transition-transform duration-300" />
-              <CardTitle className="text-chart-4">Real Income Clarity</CardTitle>
+              <CardTitle className="text-chart-4">
+                Real Income Clarity
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Clear profit margins, expense tracking, and real-time financial insights.
+                Clear profit margins, expense tracking, and real-time financial
+                insights.
               </CardDescription>
             </CardContent>
           </Card>
@@ -161,8 +216,9 @@ export default function LandingPage() {
             Built for Hustlers Who Act Like CEOs
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            You don't have time for chaos. DeelRxCRM cuts the noise so you can move smarter—clarity, 
-            speed, and control in one platform built by those who understand the game.
+            You don't have time for chaos. DeelRxCRM cuts the noise so you can
+            move smarter—clarity, speed, and control in one platform built by
+            those who understand the game.
           </p>
         </div>
       </section>
@@ -196,12 +252,16 @@ export default function LandingPage() {
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "text-center relative border-primary shadow-lg shadow-primary/25",
-            "ring-2 ring-primary/50"
-          )}>
+          <Card
+            className={cn(
+              'text-center relative border-primary shadow-lg shadow-primary/25',
+              'ring-2 ring-primary/50'
+            )}
+          >
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-              <Badge className="bg-primary text-primary-foreground px-3">Popular</Badge>
+              <Badge className="bg-primary text-primary-foreground px-3">
+                Popular
+              </Badge>
             </div>
             <CardHeader>
               <CardTitle className="text-2xl">Pro</CardTitle>
@@ -247,9 +307,14 @@ export default function LandingPage() {
           </Card>
         </div>
         <div className="text-center mt-12">
-          <Button asChild variant="secondary" size="lg" className={cn(
-            "shadow-lg shadow-secondary/25 hover:shadow-secondary/40 transition-all duration-300"
-          )}>
+          <Button
+            asChild
+            variant="secondary"
+            size="lg"
+            className={cn(
+              'shadow-lg shadow-secondary/25 hover:shadow-secondary/40 transition-all duration-300'
+            )}
+          >
             <Link href="/pricing">Compare Plans</Link>
           </Button>
         </div>
@@ -260,29 +325,42 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
           <div className="text-center space-y-6">
             <p className="text-sm text-muted-foreground">
-              © 2025 DeelRxCRM by Wrelik Brands, LLC. DeelRxCRM is a general-purpose CRM.
+              © 2025 DeelRxCRM by Wrelik Brands, LLC. DeelRxCRM is a
+              general-purpose CRM.
             </p>
-            
-            <Card className={cn(
-              "inline-block border-destructive/20 bg-destructive/5",
-              "shadow-lg shadow-destructive/10"
-            )}>
+
+            <Card
+              className={cn(
+                'inline-block border-destructive/20 bg-destructive/5',
+                'shadow-lg shadow-destructive/10'
+              )}
+            >
               <CardContent className="p-4">
                 <p className="text-sm text-destructive font-semibold">
-              <p className="text-sm text-destructive font-semibold">
-                <strong>LEGAL DISCLAIMER:</strong> This software must only be used for lawful business purposes in compliance with 21 U.S.C. § 801 et seq. and local regulations. 
-                It must not be used for any illegal drug or controlled substance activity. 
-                Users are responsible for operating in compliance with all applicable laws.
-              </p>
+                  <strong>LEGAL DISCLAIMER:</strong> This software must only be
+                  used for lawful business purposes. It must not be used for any
+                  illegal drug or controlled substance activity. Users are
+                  responsible for operating in compliance with all applicable
+                  laws.
                 </p>
               </CardContent>
             </Card>
-            
+
             <div className="flex justify-center space-x-6">
-              <Button asChild variant="link" size="sm" className="text-muted-foreground hover:text-primary">
+              <Button
+                asChild
+                variant="link"
+                size="sm"
+                className="text-muted-foreground hover:text-primary"
+              >
                 <Link href="/terms">Terms of Service</Link>
               </Button>
-              <Button asChild variant="link" size="sm" className="text-muted-foreground hover:text-primary">
+              <Button
+                asChild
+                variant="link"
+                size="sm"
+                className="text-muted-foreground hover:text-primary"
+              >
                 <Link href="/privacy">Privacy Policy</Link>
               </Button>
             </div>

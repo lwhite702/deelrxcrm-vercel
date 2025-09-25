@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     const { teamId } = teamParse.data;
     const { authContext, statsigUser } = await resolveAiAuthorization(teamId);
-    await enforceAiGate(statsigUser, FEATURE_GATES.AI_DATA_ENABLED);
+    await enforceAiGate(statsigUser, FEATURE_GATES.LLM_DATA_ENABLED);
 
     const payload = {
       ...body,
