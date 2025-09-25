@@ -112,6 +112,9 @@ const previewCatalog = {
   },
 } as const;
 
+/**
+ * Renders a preview page for an email template based on the provided parameters.
+ */
 export default function EmailTemplatePreviewPage({
   params,
 }: {
