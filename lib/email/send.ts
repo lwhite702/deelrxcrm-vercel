@@ -1,91 +1,211 @@
-import { Resend } from 'resend';
 import React from 'react';
+import { Resend } from 'resend';
+import { eq } from 'drizzle-orm';
 
-// Import email templates
-import {
-  WelcomeEmail,
-  welcomeEmailText,
-} from '../../emails/templates/WelcomeEmail';
+import { WelcomeEmail, type WelcomeEmailProps } from '@/emails/templates/WelcomeEmail';
+import { welcomeEmailText } from '@/emails/templates/WelcomeEmail.text';
 import {
   PasswordResetEmail,
-  passwordResetEmailText,
-} from '../../emails/templates/PasswordResetEmail';
+  type PasswordResetEmailProps,
+} from '@/emails/templates/PasswordResetEmail';
+import { passwordResetEmailText } from '@/emails/templates/PasswordResetEmail.text';
 import {
   PayoutConfirmationEmail,
-  payoutConfirmationEmailText,
-} from '../../emails/templates/PayoutConfirmationEmail';
+  type PayoutConfirmationEmailProps,
+} from '@/emails/templates/PayoutConfirmationEmail';
+import { payoutConfirmationEmailText } from '@/emails/templates/PayoutConfirmationEmail.text';
 import {
   ChargebackAlertEmail,
-  chargebackAlertEmailText,
-} from '../../emails/templates/ChargebackAlertEmail';
+  type ChargebackAlertEmailProps,
+} from '@/emails/templates/ChargebackAlertEmail';
+import { chargebackAlertEmailText } from '@/emails/templates/ChargebackAlertEmail.text';
 import {
   ExportReadyEmail,
-  exportReadyEmailText,
-} from '../../emails/templates/ExportReadyEmail';
+  type ExportReadyEmailProps,
+} from '@/emails/templates/ExportReadyEmail';
+import { exportReadyEmailText } from '@/emails/templates/ExportReadyEmail.text';
+import { emails as emailTable } from '@/db/schema/email';
+import { db } from '@/lib/db/drizzle';
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+export type EmailTemplateId =
+  | 'welcome'
+  | 'password-reset'
+  | 'payout-confirmation'
+  | 'chargeback-alert'
+  | 'export-ready';
 
-// Base email configuration
-const FROM_ADDRESS = 'DeelRxCRM <no-reply@deelrxcrm.app>';
-const REPLY_TO = 'support@deelrxcrm.app';
-
-// Email sending interface
-interface SendEmailOptions {
+export interface SendEmailOptions {
+  template: EmailTemplateId;
   to: string;
   subject: string;
   react: React.ReactElement;
   text: string;
   replyTo?: string;
+  tags?: { name: string; value: string }[];
+  tenantId?: string;
+  broadcastId?: string | null;
+  payload?: Record<string, unknown>;
+  metadata?: Record<string, unknown> | null;
 }
 
-// Generic email sender
-const sendEmail = async (options: SendEmailOptions) => {
+type ResendSendReturn = Awaited<ReturnType<Resend['emails']['send']>>;
+type ResendSendData = ResendSendReturn['data'];
+
+const resendApiKey = process.env.RESEND_API_KEY;
+const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
+
+function ensureResendClient(): Resend {
+  if (!resendClient) {
+    throw new Error('Resend client is not configured. Set RESEND_API_KEY.');
+  }
+
+  return resendClient;
+}
+
+function ensureFromAddress(): string {
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error('EMAIL_FROM is not configured.');
+  }
+
+  return from;
+}
+
+function ensureNonEmpty(value: string | null | undefined, field: string): string {
+  if (!value || value.trim().length === 0) {
+    throw new Error(`${field} is required.`);
+  }
+
+  return value.trim();
+}
+
+function ensureFinite(value: number | null | undefined, field: string): number {
+  if (value === null || value === undefined || !Number.isFinite(value)) {
+    throw new Error(`${field} must be a finite number.`);
+  }
+
+  return value;
+}
+
+async function dispatchEmail(options: SendEmailOptions): Promise<ResendSendData> {
+  const client = ensureResendClient();
+  const from = ensureFromAddress();
+  const to = ensureNonEmpty(options.to, 'Recipient email');
+  const subject = ensureNonEmpty(options.subject, 'Subject');
+  const text = ensureNonEmpty(options.text, 'Plaintext body');
+  const metadata =
+    options.metadata ??
+    (options.tags?.length ? { tags: options.tags } : null);
+
+  let emailRecordId: string | null = null;
+
   try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_ADDRESS,
-      to: options.to,
-      subject: options.subject,
+    const [record] = await db
+      .insert(emailTable)
+      .values({
+        template: options.template,
+        subject,
+        to,
+        from,
+        replyTo: options.replyTo ?? from,
+        tenantId: options.tenantId ?? null,
+        broadcastId: options.broadcastId ?? null,
+        payload: options.payload ?? null,
+        metadata,
+        status: 'queued',
+      })
+      .returning({ id: emailTable.id });
+
+    emailRecordId = record?.id ?? null;
+  } catch (error) {
+    console.error('Failed to persist email metadata', error);
+  }
+
+  try {
+    const { data, error } = await client.emails.send({
+      from,
+      to,
+      subject,
       react: options.react,
-      text: options.text,
-      reply_to: options.replyTo || REPLY_TO,
+      text,
+      reply_to: options.replyTo ?? from,
+      tags:
+        options.tags ?? [{ name: 'template', value: options.template }],
     });
 
     if (error) {
-      console.error('Email send error:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(
+        `Failed to send ${options.template} email: ${error.message}`
+      );
     }
 
-    console.log('Email sent successfully:', data?.id);
+    if (emailRecordId) {
+      try {
+        await db
+          .update(emailTable)
+          .set({
+            status: 'sent',
+            providerId: data?.id ?? null,
+            sentAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(emailTable.id, emailRecordId));
+      } catch (updateError) {
+        console.error('Failed to update email status', updateError);
+      }
+    }
+
     return data;
   } catch (error) {
-    console.error('Email send error:', error);
+    if (emailRecordId) {
+      try {
+        await db
+          .update(emailTable)
+          .set({
+            status: 'failed',
+            error: error instanceof Error ? error.message : String(error),
+            updatedAt: new Date(),
+          })
+          .where(eq(emailTable.id, emailRecordId));
+      } catch (updateError) {
+        console.error('Failed to flag email failure', updateError);
+      }
+    }
+
     throw error;
   }
-};
+}
 
-// Welcome/Verify Email
-export const sendWelcomeEmail = async (
-  to: string,
-  userName: string,
-  verifyUrl: string
-) => {
-  return sendEmail({
+export async function sendWelcomeEmail({
+  to,
+  userName,
+  verifyUrl,
+}: { to: string } & Pick<WelcomeEmailProps, 'userName' | 'verifyUrl'>): Promise<ResendSendData> {
+  ensureNonEmpty(userName, 'userName');
+  ensureNonEmpty(verifyUrl, 'verifyUrl');
+
+  return dispatchEmail({
+    template: 'welcome',
     to,
     subject: 'Welcome to DeelRxCRM – Verify Your Email',
     react: React.createElement(WelcomeEmail, { userName, verifyUrl }),
-    text: welcomeEmailText(userName, verifyUrl),
+    text: welcomeEmailText({ userName, verifyUrl }),
+    payload: { userName, verifyUrl },
   });
-};
+}
 
-// Password Reset Email
-export const sendPasswordResetEmail = async (
-  to: string,
-  userName: string,
-  resetUrl: string,
-  expiresIn: string = '24 hours'
-) => {
-  return sendEmail({
+export async function sendPasswordResetEmail({
+  to,
+  userName,
+  resetUrl,
+  expiresIn,
+}: { to: string } & PasswordResetEmailProps): Promise<ResendSendData> {
+  ensureNonEmpty(userName, 'userName');
+  ensureNonEmpty(resetUrl, 'resetUrl');
+  ensureNonEmpty(expiresIn, 'expiresIn');
+
+  return dispatchEmail({
+    template: 'password-reset',
     to,
     subject: 'DeelRxCRM Password Reset Request',
     react: React.createElement(PasswordResetEmail, {
@@ -93,21 +213,29 @@ export const sendPasswordResetEmail = async (
       resetUrl,
       expiresIn,
     }),
-    text: passwordResetEmailText(userName, resetUrl, expiresIn),
+    text: passwordResetEmailText({ userName, resetUrl, expiresIn }),
+    payload: { userName, resetUrl, expiresIn },
   });
-};
+}
 
-// Payout Confirmation Email
-export const sendPayoutConfirmationEmail = async (
-  to: string,
-  userName: string,
-  amount: string,
-  currency: string = 'USD',
-  paymentMethod: string,
-  expectedDate: string,
-  transactionId: string
-) => {
-  return sendEmail({
+export async function sendPayoutConfirmationEmail({
+  to,
+  userName,
+  amount,
+  currency,
+  paymentMethod,
+  expectedDate,
+  transactionId,
+}: { to: string } & PayoutConfirmationEmailProps): Promise<ResendSendData> {
+  ensureNonEmpty(userName, 'userName');
+  ensureNonEmpty(amount, 'amount');
+  ensureNonEmpty(currency, 'currency');
+  ensureNonEmpty(paymentMethod, 'paymentMethod');
+  ensureNonEmpty(expectedDate, 'expectedDate');
+  ensureNonEmpty(transactionId, 'transactionId');
+
+  return dispatchEmail({
+    template: 'payout-confirmation',
     to,
     subject: `Payout Confirmed: ${currency} ${amount} - DeelRxCRM`,
     react: React.createElement(PayoutConfirmationEmail, {
@@ -118,29 +246,45 @@ export const sendPayoutConfirmationEmail = async (
       expectedDate,
       transactionId,
     }),
-    text: payoutConfirmationEmailText(
+    text: payoutConfirmationEmailText({
       userName,
       amount,
       currency,
       paymentMethod,
       expectedDate,
-      transactionId
-    ),
+      transactionId,
+    }),
+    payload: {
+      userName,
+      amount,
+      currency,
+      paymentMethod,
+      expectedDate,
+      transactionId,
+    },
   });
-};
+}
 
-// Chargeback Alert Email
-export const sendChargebackAlertEmail = async (
-  to: string,
-  userName: string,
-  amount: string,
-  currency: string = 'USD',
-  caseId: string,
-  disputeUrl: string,
-  dueDate: string,
-  customerInfo: string
-) => {
-  return sendEmail({
+export async function sendChargebackAlertEmail({
+  to,
+  userName,
+  amount,
+  currency,
+  caseId,
+  disputeUrl,
+  dueDate,
+  customerInfo,
+}: { to: string } & ChargebackAlertEmailProps): Promise<ResendSendData> {
+  ensureNonEmpty(userName, 'userName');
+  ensureNonEmpty(amount, 'amount');
+  ensureNonEmpty(currency, 'currency');
+  ensureNonEmpty(caseId, 'caseId');
+  ensureNonEmpty(disputeUrl, 'disputeUrl');
+  ensureNonEmpty(dueDate, 'dueDate');
+  ensureNonEmpty(customerInfo, 'customerInfo');
+
+  return dispatchEmail({
+    template: 'chargeback-alert',
     to,
     subject: `🚨 URGENT: Chargeback Alert - ${currency} ${amount} - Action Required`,
     react: React.createElement(ChargebackAlertEmail, {
@@ -152,29 +296,45 @@ export const sendChargebackAlertEmail = async (
       dueDate,
       customerInfo,
     }),
-    text: chargebackAlertEmailText(
+    text: chargebackAlertEmailText({
       userName,
       amount,
       currency,
       caseId,
       disputeUrl,
       dueDate,
-      customerInfo
-    ),
+      customerInfo,
+    }),
+    payload: {
+      userName,
+      amount,
+      currency,
+      caseId,
+      disputeUrl,
+      dueDate,
+      customerInfo,
+    },
   });
-};
+}
 
-// Export Ready Email
-export const sendExportReadyEmail = async (
-  to: string,
-  userName: string,
-  exportType: string,
-  downloadUrl: string,
-  expiresIn: string = '7 days',
-  recordCount: number,
-  dateRange: string
-) => {
-  return sendEmail({
+export async function sendExportReadyEmail({
+  to,
+  userName,
+  exportType,
+  downloadUrl,
+  expiresIn,
+  recordCount,
+  dateRange,
+}: { to: string } & ExportReadyEmailProps): Promise<ResendSendData> {
+  ensureNonEmpty(userName, 'userName');
+  ensureNonEmpty(exportType, 'exportType');
+  ensureNonEmpty(downloadUrl, 'downloadUrl');
+  ensureNonEmpty(expiresIn, 'expiresIn');
+  ensureFinite(recordCount, 'recordCount');
+  ensureNonEmpty(dateRange, 'dateRange');
+
+  return dispatchEmail({
+    template: 'export-ready',
     to,
     subject: `Your ${exportType} Export is Ready - DeelRxCRM`,
     react: React.createElement(ExportReadyEmail, {
@@ -185,47 +345,50 @@ export const sendExportReadyEmail = async (
       recordCount,
       dateRange,
     }),
-    text: exportReadyEmailText(
+    text: exportReadyEmailText({
       userName,
       exportType,
       downloadUrl,
       expiresIn,
       recordCount,
-      dateRange
-    ),
+      dateRange,
+    }),
+    payload: {
+      userName,
+      exportType,
+      downloadUrl,
+      expiresIn,
+      recordCount,
+      dateRange,
+    },
   });
-};
+}
 
-// Bulk email sender for notifications
-export const sendBulkEmails = async (emails: SendEmailOptions[]) => {
+export async function sendBulkEmails(requests: SendEmailOptions[]): Promise<{
+  successful: number;
+  failed: number;
+  results: PromiseSettledResult<ResendSendData>[];
+}> {
   const results = await Promise.allSettled(
-    emails.map((email) => sendEmail(email))
+    requests.map((payload) => dispatchEmail(payload))
   );
 
-  const successful = results.filter((r) => r.status === 'fulfilled').length;
-  const failed = results.filter((r) => r.status === 'rejected').length;
+  const successful = results.filter((result) => result.status === 'fulfilled')
+    .length;
+  const failed = results.length - successful;
 
-  console.log(`Bulk email results: ${successful} sent, ${failed} failed`);
+  return { successful, failed, results };
+}
 
-  return {
-    successful,
-    failed,
-    results,
-  };
-};
-
-// Email verification helper
-export const isValidEmailFormat = (email: string): boolean => {
+export function isValidEmailFormat(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
-};
+}
 
-// Environment check
-export const isEmailConfigured = (): boolean => {
-  return !!process.env.RESEND_API_KEY;
-};
+export function isEmailConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+}
 
-// Export all email functions as a convenient object
 export const emails = {
   sendWelcome: sendWelcomeEmail,
   sendPasswordReset: sendPasswordResetEmail,

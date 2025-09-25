@@ -32,6 +32,7 @@
     "src",
     "server",
     "api",
+    "db",
     "drizzle.config.ts",
     "vite.config.ts",
     ".next/types/**/*.ts"

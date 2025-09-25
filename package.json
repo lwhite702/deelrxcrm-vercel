@@ -25,7 +25,7 @@
     "setup-admin": "tsx scripts/setup-super-admin.ts",
     "docs:dev": "cd mintlify && mintlify dev",
     "docs:build": "cd mintlify && mintlify build",
-    "test": "echo \"Phase 5 testing via smoke test script\" && exit 0",
+    "test": "node --import tsx --test tests/**/*.test.ts",
     "security:audit": "npm audit",
     "security:fix": "npm audit fix",
     "phase5:update": "./scripts/PROJECT_UPDATE.sh",

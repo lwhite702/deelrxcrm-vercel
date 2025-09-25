@@ -6,7 +6,7 @@ import {
   EmailFooter,
 } from './BaseComponents';
 
-interface PayoutConfirmationEmailProps {
+export interface PayoutConfirmationEmailProps {
   userName: string;
   amount: string;
   currency: string;
@@ -140,46 +140,5 @@ export const PayoutConfirmationEmail: React.FC<
     </div>
   </div>
 );
-
-// Plaintext fallback
-export const payoutConfirmationEmailText = (
-  userName: string,
-  amount: string,
-  currency: string,
-  paymentMethod: string,
-  expectedDate: string,
-  transactionId: string
-): string =>
-  `
-DEELRXCRM - PAYOUT CONFIRMED!
-
-Payout Confirmed! 💰
-
-Hey ${userName},
-
-Your payout is locked and loaded. Money's about to move - here's the breakdown:
-
-PAYOUT DETAILS:
-Amount: ${currency} ${amount}
-Payment Method: ${paymentMethod}
-Expected Date: ${expectedDate}
-Transaction ID: ${transactionId}
-
-We'll hit you up once the funds land in your account. In the meantime, keep grinding and stacking that paper. 📈
-
-PRO TIP: Keep this email for your records. Your accountant will thank you later.
-
-View your payment history: https://deelrxcrm.app/dashboard/payments
-
-Questions about your payout? We got you covered.
-Keep securing that bag! 💪
-
-— The DeelRxCRM Payments Team
-
----
-Need help? Contact us at support@deelrxcrm.app
-
-© 2025 DeelRxCRM. For lawful business use only. Users must comply with applicable laws.
-`.trim();
 
 export default PayoutConfirmationEmail;
