@@ -24,6 +24,13 @@ interface UserProfile {
   aliases: UserAlias[];
 }
 
+/**
+ * Renders the account settings page for the user.
+ *
+ * This component manages the user's profile settings, including loading the profile data, handling alias management, and displaying relevant alerts for errors and success messages. It utilizes hooks to manage loading states and side effects, and it fetches user data from the API. The component also provides functionality to disable aliases and change the email address, ensuring that the user can manage their account effectively.
+ *
+ * @returns {JSX.Element} The rendered account settings page.
+ */
 export default function AccountSettingsPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,6 +43,14 @@ export default function AccountSettingsPage() {
     loadProfile();
   }, []);
 
+  /**
+   * Loads the user profile from the API.
+   *
+   * This function sets the loading state to true, fetches the user profile from the '/api/user/profile' endpoint,
+   * and handles the response. If the response is not ok, it throws an error. The profile data is then parsed
+   * and set using the setProfile function. In case of an error, it sets an error message. Finally, it resets
+   * the loading state to false.
+   */
   const loadProfile = async () => {
     setLoading(true);
     try {
@@ -52,6 +67,18 @@ export default function AccountSettingsPage() {
     }
   };
 
+  /**
+   * Disables an alias by sending a request to the server.
+   *
+   * This function sets the loading state, clears any previous error or success messages,
+   * and attempts to disable the alias by making a POST request to the server.
+   * If the request is successful, it updates the success message and reloads the profile
+   * to reflect the changes. In case of an error, it captures the error message and sets it
+   * in the error state. Finally, it resets the loading state.
+   *
+   * @param {string} aliasId - The ID of the alias to be disabled.
+   * @param {string} alias - The name of the alias to be disabled.
+   */
   const disableAlias = async (aliasId: string, alias: string) => {
     setActionLoading(`disable-${aliasId}`);
     setError('');
