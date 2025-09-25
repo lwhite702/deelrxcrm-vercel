@@ -1,17 +1,19 @@
 {
-  "name": "mintlify",
+  "name": "deelrx-crm-docs",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "DeelRx CRM Documentation powered by Mintlify",
+  "main": "mint.json",
   "scripts": {
     "dev": "mintlify dev",
     "start": "mintlify dev",
     "preview": "mintlify dev",
     "build": "mintlify build",
-    "install": "mintlify install"
+    "install": "mintlify install",
+    "validate": "node validate.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["documentation", "crm", "deelrx"],
+  "author": "DeelRx Team",
+  "license": "MIT",
   "devDependencies": {
     "mintlify": "^4.2.123"
   },

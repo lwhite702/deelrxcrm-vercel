@@ -1,5 +1,0 @@
-User-agent: *
-Disallow: /
-
-# Private beta site - no crawling allowed
-# Contact: support@deelzrxcrm.com

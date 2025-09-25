@@ -4,6 +4,7 @@ import { Manrope } from 'next/font/google';
 import { getUser, getTeamForUser } from '@/lib/db/queries';
 import { SWRConfig } from 'swr';
 import MyStatsig from './my-statsig';
+import { CombinedAnalyticsProvider } from '@/lib/analytics';
 
 export const metadata: Metadata = {
   title: 'DeelRx CRM - Street-Smart Business Management',
@@ -25,20 +26,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${manrope.className}`}>
       <body className="min-h-[100dvh]">
-        <MyStatsig>
-          <SWRConfig
-            value={{
-              fallback: {
-                // We do NOT await here
-                // Only components that read this data will suspend
-                '/api/user': getUser(),
-                '/api/team': getTeamForUser(),
-              },
-            }}
-          >
-            {children}
-          </SWRConfig>
-        </MyStatsig>
+        <CombinedAnalyticsProvider>
+          <MyStatsig>
+            <SWRConfig
+              value={{
+                fallback: {
+                  // We do NOT await here
+                  // Only components that read this data will suspend
+                  '/api/user': getUser(),
+                  '/api/team': getTeamForUser(),
+                },
+              }}
+            >
+              {children}
+            </SWRConfig>
+          </MyStatsig>
+        </CombinedAnalyticsProvider>
       </body>
     </html>
   );

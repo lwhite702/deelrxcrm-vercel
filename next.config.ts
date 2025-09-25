@@ -3,13 +3,15 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Stable experimental features for production
   experimental: {
-    ppr: false // Disable PPR temporarily for stable builds
+    ppr: false, // Disable PPR temporarily for stable builds
+    nodeMiddleware: true // Required for nodejs runtime in middleware
   },
   
   // External packages for server components
   serverExternalPackages: [
     '@prisma/client',
-    'bcryptjs'
+    'bcryptjs',
+    'posthog-node'
   ],
   
   // Build optimizations

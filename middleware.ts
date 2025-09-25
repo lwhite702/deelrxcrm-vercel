@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { signToken, verifyToken } from './lib/auth/session';
 import { applySecurityHeaders } from './lib/security';
 import { AuthError, requireRole } from './lib/auth/jwt';
+import { handleDocsRedirect } from './lib/redirects';
 
 const PROTECTED_PREFIX = '/dashboard';
 const SUPERADMIN_DASHBOARD_PREFIX = '/dashboard/admin/email';
@@ -20,6 +21,12 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = pathname.startsWith(PROTECTED_PREFIX);
   const isSuperAdminDashboard = pathname.startsWith(SUPERADMIN_DASHBOARD_PREFIX);
   const isSuperAdminApi = pathname.startsWith(SUPERADMIN_API_PREFIX);
+  
+  // Handle documentation redirects first
+  const docsRedirect = handleDocsRedirect(request);
+  if (docsRedirect) {
+    return docsRedirect;
+  }
   
   // Block dev-only routes in production
   if (process.env.NODE_ENV === 'production') {

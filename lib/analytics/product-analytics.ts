@@ -6,8 +6,15 @@
  * 
  * Analytics Providers Integrated:
  * 1. Vercel Analytics - Performance and Core Web Vitals
- * 2. PostHog - Product analytics and user behavior  
- * 3. Custom Events - Business-specific metrics
+ * 2. PostHog - Product analytics and user behexport const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return React.createElement(
+    React.Fragment,
+    null,
+    children,
+    React.createElement(Analytics),
+    React.createElement(SpeedInsights)
+  );
+}; Custom Events - Business-specific metrics
  * 4. Performance Monitoring - Real-time performance tracking
  * 
  * Features:
@@ -23,78 +30,24 @@
  */
 
 import React from 'react';
-
-import { PostHog } from 'posthog-js';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import {
+  trackEvent,
+  identifyUser,
+  setUserProperties,
+  trackPageView,
+  getFeatureFlag,
+  isFeatureFlagEnabled,
+} from './posthog-provider';
+import {
+  POSTHOG_EVENTS,
+  POSTHOG_USER_PROPERTIES,
+  isPostHogConfigured,
+} from './posthog-config';
 
-// Analytics configuration
-const ANALYTICS_CONFIG = {
-  posthog: {
-    apiKey: process.env.NEXT_PUBLIC_POSTHOG_KEY || '',
-    apiHost: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-    options: {
-      capture_pageview: true,
-      capture_pageleave: true,
-      persistence: 'localStorage+cookie',
-      autocapture: true,
-      disable_session_recording: false,
-      enable_recording_console_log: false,
-      session_recording: {
-        maskAllInputs: true,
-        maskInputOptions: {
-          password: true,
-          email: false,
-        },
-      },
-    },
-  },
-  vercel: {
-    debug: process.env.NODE_ENV === 'development',
-  },
-};
-
-// Analytics Events for Business Intelligence
-export const ANALYTICS_EVENTS = {
-  // User Lifecycle
-  USER_SIGNED_UP: 'user_signed_up',
-  USER_COMPLETED_ONBOARDING: 'user_completed_onboarding',
-  USER_INVITED_TEAM_MEMBER: 'user_invited_team_member',
-  
-  // Core CRM Actions
-  CONTACT_CREATED: 'contact_created',
-  CONTACT_IMPORTED: 'contact_imported',
-  DEAL_CREATED: 'deal_created',
-  DEAL_STAGE_CHANGED: 'deal_stage_changed',
-  DEAL_WON: 'deal_won',
-  DEAL_LOST: 'deal_lost',
-  TASK_CREATED: 'task_created',
-  TASK_COMPLETED: 'task_completed',
-  
-  // Feature Usage
-  DASHBOARD_VIEWED: 'dashboard_viewed',
-  REPORT_GENERATED: 'report_generated',
-  SEARCH_PERFORMED: 'search_performed',
-  FILTER_APPLIED: 'filter_applied',
-  EXPORT_DATA: 'export_data',
-  
-  // Integration Usage
-  EMAIL_INTEGRATION_CONNECTED: 'email_integration_connected',
-  CALENDAR_SYNC_ENABLED: 'calendar_sync_enabled',
-  API_KEY_CREATED: 'api_key_created',
-  WEBHOOK_CONFIGURED: 'webhook_configured',
-  
-  // Business Metrics
-  SUBSCRIPTION_UPGRADED: 'subscription_upgraded',
-  PAYMENT_COMPLETED: 'payment_completed',
-  TRIAL_STARTED: 'trial_started',
-  TRIAL_CONVERTED: 'trial_converted',
-  
-  // User Experience
-  FEATURE_FEEDBACK_SUBMITTED: 'feature_feedback_submitted',
-  HELP_ARTICLE_VIEWED: 'help_article_viewed',
-  SUPPORT_TICKET_CREATED: 'support_ticket_created',
-} as const;
+// Event Types for Type Safety - using PostHog events
+export const ANALYTICS_EVENTS = POSTHOG_EVENTS;
 
 // User Properties for Segmentation
 export interface UserProperties {
@@ -124,38 +77,32 @@ export interface EventProperties {
 }
 
 class ProductAnalytics {
-  private posthog: PostHog | null = null;
   private initialized = false;
-  private eventQueue: Array<{ event: string; properties?: EventProperties }> = [];
+  private eventQueue: Array<{ event: string; properties?: EventProperties }> =
+    [];
 
   // Initialize analytics providers
   async initialize(userId?: string, userProperties?: Partial<UserProperties>) {
     if (this.initialized) return;
 
     try {
-      // Initialize PostHog
-      if (ANALYTICS_CONFIG.posthog.apiKey && typeof window !== 'undefined') {
-        const { default: posthog } = await import('posthog-js');
-        
-        posthog.init(ANALYTICS_CONFIG.posthog.apiKey, {
-          api_host: ANALYTICS_CONFIG.posthog.apiHost,
-          ...ANALYTICS_CONFIG.posthog.options,
-        });
-
-        this.posthog = posthog;
-
-        // Identify user if provided
-        if (userId && userProperties) {
-          this.identifyUser(userId, userProperties);
-        }
-
-        // Process queued events
-        this.processEventQueue();
-        
-        this.initialized = true;
-
-        console.log('✅ Product Analytics initialized');
+      // Check if PostHog is configured
+      if (!isPostHogConfigured()) {
+        console.warn('PostHog not configured - analytics disabled');
+        return;
       }
+
+      // Identify user if provided
+      if (userId && userProperties) {
+        this.identifyUser(userId, userProperties);
+      }
+
+      // Process queued events
+      this.processEventQueue();
+
+      this.initialized = true;
+
+      console.log('✅ Product Analytics initialized with PostHog');
     } catch (error) {
       console.error('❌ Failed to initialize analytics:', error);
     }
@@ -163,16 +110,22 @@ class ProductAnalytics {
 
   // Identify user for personalized tracking
   identifyUser(userId: string, properties: Partial<UserProperties>) {
-    if (!this.posthog) {
-      console.warn('Analytics not initialized');
+    if (!isPostHogConfigured()) {
+      console.warn('Analytics not configured');
       return;
     }
 
-    this.posthog.identify(userId, {
-      ...properties,
-      $set_once: {
-        signup_date: properties.signup_date || new Date().toISOString(),
-      },
+    // Use PostHog provider functions
+    identifyUser(userId, {
+      [POSTHOG_USER_PROPERTIES.EMAIL]: properties.email,
+      [POSTHOG_USER_PROPERTIES.NAME]: properties.organization_name,
+      [POSTHOG_USER_PROPERTIES.ROLE]: properties.user_role,
+      [POSTHOG_USER_PROPERTIES.SUBSCRIPTION_PLAN]: properties.plan_type,
+      [POSTHOG_USER_PROPERTIES.CREATED_AT]:
+        properties.signup_date || new Date().toISOString(),
+      [POSTHOG_USER_PROPERTIES.TEAM_ID]: properties.organization_id,
+      [POSTHOG_USER_PROPERTIES.TOTAL_CUSTOMERS]: properties.total_contacts,
+      [POSTHOG_USER_PROPERTIES.TOTAL_REVENUE]: properties.monthly_revenue,
     });
 
     // Track user identification event
@@ -190,20 +143,23 @@ class ProductAnalytics {
       properties: {
         ...properties,
         timestamp: new Date(),
-        user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
+        user_agent:
+          typeof window !== 'undefined'
+            ? window.navigator.userAgent
+            : undefined,
         referrer: typeof window !== 'undefined' ? document.referrer : undefined,
         url: typeof window !== 'undefined' ? window.location.href : undefined,
       },
     };
 
-    if (!this.initialized || !this.posthog) {
+    if (!this.initialized || !isPostHogConfigured()) {
       // Queue events until analytics is initialized
       this.eventQueue.push(eventData);
       return;
     }
 
     try {
-      this.posthog.capture(event, eventData.properties);
+      trackEvent(event, eventData.properties);
     } catch (error) {
       console.error('Failed to track event:', error);
     }
@@ -218,7 +174,11 @@ class ProductAnalytics {
   }
 
   // Track feature usage with adoption metrics
-  trackFeatureUsage(feature: string, action: string, properties?: EventProperties) {
+  trackFeatureUsage(
+    feature: string,
+    action: string,
+    properties?: EventProperties
+  ) {
     this.trackEvent('feature_used', {
       feature_name: feature,
       action,
@@ -227,7 +187,11 @@ class ProductAnalytics {
   }
 
   // Track business metrics for revenue intelligence
-  trackBusinessMetric(metric: string, value: number, properties?: EventProperties) {
+  trackBusinessMetric(
+    metric: string,
+    value: number,
+    properties?: EventProperties
+  ) {
     this.trackEvent('business_metric', {
       metric_name: metric,
       metric_value: value,
@@ -244,26 +208,34 @@ class ProductAnalytics {
   }
 
   // Track performance metrics correlated with user behavior
-  trackPerformanceMetric(metric: string, value: number, context?: EventProperties) {
+  trackPerformanceMetric(
+    metric: string,
+    value: number,
+    context?: EventProperties
+  ) {
     this.trackEvent('performance_metric', {
       metric_name: metric,
       metric_value: value,
-      performance_context: context,
+      performance_context: JSON.stringify(context || {}),
     });
   }
 
   // Update user properties for progressive profiling
   updateUserProperties(properties: Partial<UserProperties>) {
-    if (!this.posthog) {
-      console.warn('Analytics not initialized');
+    if (!isPostHogConfigured()) {
+      console.warn('Analytics not configured');
       return;
     }
 
-    this.posthog.setPersonProperties(properties);
+    setUserProperties(properties);
   }
 
   // Track A/B test participation
-  trackExperiment(experimentName: string, variant: string, properties?: EventProperties) {
+  trackExperiment(
+    experimentName: string,
+    variant: string,
+    properties?: EventProperties
+  ) {
     this.trackEvent('experiment_viewed', {
       experiment_name: experimentName,
       variant,
@@ -271,15 +243,17 @@ class ProductAnalytics {
     });
 
     // Set as user property for consistent experience
-    if (this.posthog) {
-      this.posthog.setPersonProperties({
-        [`experiment_${experimentName}`]: variant,
-      });
-    }
+    setUserProperties({
+      [`experiment_${experimentName}`]: variant,
+    });
   }
 
   // Track conversion funnel steps
-  trackFunnelStep(funnelName: string, step: string, properties?: EventProperties) {
+  trackFunnelStep(
+    funnelName: string,
+    step: string,
+    properties?: EventProperties
+  ) {
     this.trackEvent('funnel_step', {
       funnel_name: funnelName,
       step_name: step,
@@ -299,15 +273,13 @@ class ProductAnalytics {
 
   // Reset user session (for logout)
   reset() {
-    if (this.posthog) {
-      this.posthog.reset();
-    }
+    // This will be handled by the PostHog provider
+    console.log('User session reset - handled by PostHog provider');
   }
 
   // Get feature flags for A/B testing
   getFeatureFlag(flagName: string): boolean | string | undefined {
-    if (!this.posthog) return undefined;
-    return this.posthog.getFeatureFlag(flagName);
+    return getFeatureFlag(flagName);
   }
 
   // Check if feature flag is enabled
@@ -330,11 +302,19 @@ export const useAnalytics = () => {
     analytics.trackPageView(pageName, properties);
   };
 
-  const trackFeatureUsage = (feature: string, action: string, properties?: EventProperties) => {
+  const trackFeatureUsage = (
+    feature: string,
+    action: string,
+    properties?: EventProperties
+  ) => {
     analytics.trackFeatureUsage(feature, action, properties);
   };
 
-  const trackBusinessMetric = (metric: string, value: number, properties?: EventProperties) => {
+  const trackBusinessMetric = (
+    metric: string,
+    value: number,
+    properties?: EventProperties
+  ) => {
     analytics.trackBusinessMetric(metric, value, properties);
   };
 
@@ -384,21 +364,31 @@ export const AnalyticsProvider: React.FC<{
     React.Fragment,
     null,
     children,
-    React.createElement(Analytics, ANALYTICS_CONFIG.vercel),
+    React.createElement(Analytics),
     React.createElement(SpeedInsights)
   );
 };
 
 // Utility functions for common tracking patterns
-export const trackCRMAction = (action: keyof typeof ANALYTICS_EVENTS, properties?: EventProperties) => {
+export const trackCRMAction = (
+  action: keyof typeof ANALYTICS_EVENTS,
+  properties?: EventProperties
+) => {
   analytics.trackEvent(ANALYTICS_EVENTS[action], properties);
 };
 
-export const trackUserJourney = (step: string, properties?: EventProperties) => {
+export const trackUserJourney = (
+  step: string,
+  properties?: EventProperties
+) => {
   analytics.trackFunnelStep('user_onboarding', step, properties);
 };
 
-export const trackFeatureAdoption = (feature: string, adopted: boolean, properties?: EventProperties) => {
+export const trackFeatureAdoption = (
+  feature: string,
+  adopted: boolean,
+  properties?: EventProperties
+) => {
   analytics.trackEvent('feature_adoption', {
     feature_name: feature,
     adopted,
@@ -406,7 +396,12 @@ export const trackFeatureAdoption = (feature: string, adopted: boolean, properti
   });
 };
 
-export const trackBusinessGoal = (goal: string, achieved: boolean, value?: number, properties?: EventProperties) => {
+export const trackBusinessGoal = (
+  goal: string,
+  achieved: boolean,
+  value?: number,
+  properties?: EventProperties
+) => {
   analytics.trackEvent('business_goal', {
     goal_name: goal,
     achieved,
